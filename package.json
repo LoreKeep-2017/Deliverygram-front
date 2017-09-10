@@ -1,0 +1,25 @@
+{
+  "name": "deliverygram",
+  "version": "0.0.1",
+  "description": "Messanger for tech operators. Front part",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LoreKeep-2017/Deliverygram-front.git"
+  },
+  "keywords": [
+    "deliverygram",
+    "front",
+    "react",
+    "semanticUI"
+  ],
+  "author": "Ilya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LoreKeep-2017/Deliverygram-front/issues"
+  },
+  "homepage": "https://github.com/LoreKeep-2017/Deliverygram-front#readme"
+}
