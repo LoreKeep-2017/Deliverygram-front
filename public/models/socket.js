@@ -2,15 +2,19 @@
 
 
 export default class Socket{
-	constructor(){
-		this.socket = new WebSocket('ws://localhost:8000/api/ws');
 
+	constructor(dataRecieved){
+		this.socket = new WebSocket('ws://localhost:8000/api/ws');
+		
 		this.socket.onopen = () => {
 			console.log('Good conection');
 		};
 
-		this.socket.onmessage = () => {
-			console.log("Recieved message");
+		this.socket.onmessage = (message) => {
+			let recievedMessage = JSON.parse(message.data)
+			console.log(recievedMessage.ctrl.id);
+			console.log("Recieved message", JSON.parse(message.data));
+			dataRecieved(recievedMessage.ctrl.id); 
 		}
 	}
 
