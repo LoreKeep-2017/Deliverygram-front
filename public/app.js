@@ -7,7 +7,6 @@ import FullButton from './components/button'
 export default class App extends React.Component{
 
 	render(){
-		console.log(this.props);
 		return (
 			<LocaleProvider locale={ruRU}>
 				<FullButton/>

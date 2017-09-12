@@ -14,7 +14,7 @@ export const receiveData = () => ({
 	payload: {}
 })
 
-export const changedData = () => ({
+export const changedData = (message) => ({
 	type: DATA_CHANGED,
-	payload: {}
+	payload: {message}
 })

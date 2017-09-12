@@ -8,12 +8,13 @@ import {
 
 
 const initialState = {
+	messages: []
 }
 
 const dataWorking = (state = initialState, action) => {
 
 	let newState = Object.assign({}, state);
-	switch (action.type){
+	switch (action.type) {
 		case DATA_REQUEST:
 			return newState;
 
@@ -21,7 +22,10 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 
 		case DATA_CHANGED:
-			console.log('data changed');
+			let {message} = action.payload;
+			newState.messages.push(message);
+			newState.messages = newState.messages.map(item => item);
+			console.log(newState);
 			return newState;
 		default:
 			return newState;

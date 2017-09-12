@@ -4,7 +4,8 @@ import React from 'react'
 import {
 	Button,
 	Card,
-	Input
+	Input,
+	Form
 } from 'antd'
 import {changedData} from '../components/action';
 import {connect} from 'react-redux'
@@ -19,33 +20,41 @@ class ChatButton extends React.Component {
 		this.state = {};
 	}
 
-	componentDidMount(){
-
+	onClick(event, label) {
+		// this.props.dataChanged();
+		if (!this.hasOwnProperty('socket')) {
+			// this.socket = new Socket();
+		}
+		this.setState({card: true});
 	}
 
-	onClick(event, label) {
-		this.props.dataChanged();
-		if( !this.hasOwnProperty('socket')) {
-			this.socket = new Socket();
+	getCard(messages) {
+		let allMessages;
+		if (messages) {
+			allMessages = messages.map((item, position) => <p key={position}>{item}</p>);
 		}
-		this.setState({
-			card: (<Card title={'Чат'} bordered={'true'}>
-				<Input.TextArea autosize={{minRows: 2, maxRows: 4}} style={{width: 300, padding: 10}}
+		return (<Card title={'Чат'} bordered={'true'}>
+			{allMessages}
+			<Form>
+				<Form.Item/>
+				<Input.TextArea autosize={{minRows: 2, maxRows: 4}} style={{width: 300, padding: 10}} defaultValue={''}
 				                placeholder={'Введите свое сообщение'} onPressEnter={this.onPressEnter.bind(this)}/>
-			</Card>)
-		});
+				<Form.Item/>
+			</Form>
+		</Card>);
 	}
 
 	onPressEnter(event, label) {
-		this.props.dataRequest();
-		this.socket.send({message: event.target.value});
-		console.log(event, label);
-		console.log(event.target.value);
+		let message = event.target.value;
+		console.log(this.props.form.getFieldsValue({}));
+		this.props.dataChanged(message);
+		// this.socket.send({message: message});
 	}
 
 	render() {
+		console.log(this.props);
 		if (this.state.hasOwnProperty('card')) {
-			return this.state.card;
+			return this.getCard(this.props.messages);
 		}
 		return (<Button
 			onClick={this.onClick.bind(this)}
@@ -53,34 +62,34 @@ class ChatButton extends React.Component {
 			style={{
 				width: 200,
 				height: 50,
-				'font-size': 20,
+				fontSize: 20,
 				display: 'flex',
-				'align-items': 'center',
-				'justify-content': 'center'
+				alignItems: 'center',
+				justifyContent: 'center'
 			}}
 		>{'Начать чат'}</Button>)
 	}
 }
 
-const mapStateToProps = (state, action) => {
+const FormButton = Form.create()(ChatButton)
+
+const mapStateToProps = (state) => {
 	return {
-		newState: dataWorking(state, action)
+		messages: state.messages
 	}
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		dataChanged: id => {
-			dispatch(changedData())
-		},
-		dataRecieve: () => dispatch(receiveData()),
-		dataRequest: () => dipatch(requestData())
+		dataChanged: (message) => dispatch(changedData(message)),
+		dataReceive: () => dispatch(receiveData()),
+		dataRequest: () => dispatch(requestData())
 	}
 };
 
 const FullButton = connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(ChatButton);
+)(FormButton);
 
 export default FullButton
