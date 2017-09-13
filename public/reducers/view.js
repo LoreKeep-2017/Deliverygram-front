@@ -20,14 +20,21 @@ const dataWorking = (state = initialState, action) => {
 
 		case DATA_RECEIVE:{
 			let { message } = action.payload;
-			console.log(message);
-			newState.messages.push(message);
+			let newMessage = {
+				message,
+				place: 'socket'
+			};
+			newState.messages.push(newMessage);
 			newState.messages = newState.messages.map(item => item);
 			return newState;
 		}
 		case DATA_CHANGED:{
 			let {message} = action.payload;
-			newState.messages.push(message);
+			let newMessage = {
+				message,
+				place: 'web'
+			};
+			newState.messages.push(newMessage);
 			newState.messages = newState.messages.map(item => item);
 			return newState;
 		}

@@ -9,9 +9,9 @@ import {
 } from 'antd'
 import {changedData} from '../components/action';
 import {connect} from 'react-redux'
-import dataWorking from '../reducers/view'
 import Socket from '../models/socket'
 import {receiveData, requestData} from "./action";
+import './button.css';
 
 class ChatButton extends React.Component {
 
@@ -21,7 +21,7 @@ class ChatButton extends React.Component {
 	}
 
 	onClick(event, label) {
-		let { 
+		let {
 			dataReceive
 		} = this.props;
 		if (!this.hasOwnProperty('socket')) {
@@ -33,13 +33,15 @@ class ChatButton extends React.Component {
 	getCard(messages) {
 		let allMessages;
 		if (messages) {
-			allMessages = messages.map((item, position) => <p key={position}>{item}</p>);
+			allMessages = messages.map((item, position) => <div className={`chat-card__${item.place}-message`}>
+				<p className={`${item.place}-message`} key={position}>{item.message}</p>
+			</div>);
 		}
-		return (<Card title={'Чат'} bordered={'true'}>
+		return (<Card title={'Чат'} bordered style={{padding: 0}} className={'chat-card_border'}>
 			{allMessages}
-			<Form>
+			<Form className={`chart-form`}>
 				<Form.Item/>
-				<Input.TextArea autosize={{minRows: 2, maxRows: 4}} style={{width: 300, padding: 10}} defaultValue={''}
+				<Input.TextArea autosize={{minRows: 3, maxRows: 4}} className={'chart-input-area'} defaultValue={''}
 				                placeholder={'Введите свое сообщение'} onPressEnter={this.onPressEnter.bind(this)}/>
 				<Form.Item/>
 			</Form>
@@ -61,14 +63,7 @@ class ChatButton extends React.Component {
 		return (<Button
 			onClick={this.onClick.bind(this)}
 			size='large'
-			style={{
-				width: 200,
-				height: 50,
-				fontSize: 20,
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center'
-			}}
+			className={'start-button'}
 		>{'Начать чат'}</Button>)
 	}
 }

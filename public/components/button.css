@@ -1,0 +1,76 @@
+.start-button {
+	width: 10em;
+	height: 2.5em;
+	font-family: 'Agency FB', arial;
+	font-size: 1.5em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	border-radius: 2em;
+	background-color: #78A300;
+	color: white;
+}
+
+.start-button:hover {
+	box-shadow: .1em .1em .1em #aaa;
+}
+
+.chat-card_border {
+	width: 20em;
+	border: .1em solid #aaa
+}
+
+.chat-card__socket-message {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.chat-card__web-message {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.web-message {
+	padding: .6em;
+	margin-right: .8em;
+	margin-top: .4em;
+	margin-bottom: .4em;
+	width: 70%;
+	background-color: grey;
+	border-radius: 2em;
+}
+
+.socket-message {
+	padding: .5em;
+	margin-right: .8em;
+	margin-top: .4em;
+	margin-bottom: .4em;
+	width: 70%;
+	background-color: chartreuse;
+}
+
+.chart-form {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.chart-input-area{
+	margin-top: .2em;
+	width: 99%;
+	border: 0;
+}
+
+.ant-row{
+	padding: 0;
+	margin: 0;
+	height: 0;
+}
+
+.ant-card-head-title{
+	padding-left: .5em;
+	font-weight: 500;
+	font-size: 1.5em;
+	border-bottom: .1em solid #aaa;
+}
