@@ -9,9 +9,9 @@ export const requestData = () => ({
 	payload: {}
 })
 
-export const receiveData = () => ({
+export const receiveData = (message) => ({
 	type: DATA_RECEIVE,
-	payload: {}
+	payload: {message}
 })
 
 export const changedData = (message) => ({

@@ -21,9 +21,11 @@ class ChatButton extends React.Component {
 	}
 
 	onClick(event, label) {
-		// this.props.dataChanged();
+		let { 
+			dataReceive
+		} = this.props;
 		if (!this.hasOwnProperty('socket')) {
-			// this.socket = new Socket();
+			this.socket = new Socket(dataReceive);
 		}
 		this.setState({card: true});
 	}
@@ -46,9 +48,9 @@ class ChatButton extends React.Component {
 
 	onPressEnter(event, label) {
 		let message = event.target.value;
-		console.log(this.props.form.getFieldsValue({}));
+		event.target.value = '';
 		this.props.dataChanged(message);
-		// this.socket.send({message: message});
+		this.socket.send({Hi: {Id: message}});
 	}
 
 	render() {
@@ -82,7 +84,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
 	return {
 		dataChanged: (message) => dispatch(changedData(message)),
-		dataReceive: () => dispatch(receiveData()),
+		dataReceive: (message) => dispatch(receiveData(message)),
 		dataRequest: () => dispatch(requestData())
 	}
 };

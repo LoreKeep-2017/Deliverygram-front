@@ -18,15 +18,19 @@ const dataWorking = (state = initialState, action) => {
 		case DATA_REQUEST:
 			return newState;
 
-		case DATA_RECEIVE:
+		case DATA_RECEIVE:{
+			let { message } = action.payload;
+			console.log(message);
+			newState.messages.push(message);
+			newState.messages = newState.messages.map(item => item);
 			return newState;
-
-		case DATA_CHANGED:
+		}
+		case DATA_CHANGED:{
 			let {message} = action.payload;
 			newState.messages.push(message);
 			newState.messages = newState.messages.map(item => item);
-			console.log(newState);
 			return newState;
+		}
 		default:
 			return newState;
 	}
