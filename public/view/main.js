@@ -1,11 +1,23 @@
 'use strict';
 
 import React from 'react'
-import { Layout, Icon, Menu } from 'antd';
-import './main.css'
-const { Header, Content, Footer, Sider } = Layout;
+import {
+	Layout,
+	Menu,
+	Card,
+	Form,
+	Input,
+	Button
+} from 'antd';
 
-export default class SiderDemo extends React.Component {
+const {
+	Header,
+	Content,
+	Footer,
+	Sider
+} = Layout;
+
+class MainView extends React.Component {
 
 	constructor() {
 		super();
@@ -21,10 +33,24 @@ export default class SiderDemo extends React.Component {
 
 	settingMenuItem() {
 		let answer = (
-		<Menu.Item>
-			<Icon type={'message'} style={{width: 100, height: 100}} />
-			<span className="nav-text">nav 1</span>
-		</Menu.Item>)
+			<Menu.Item style={{
+				margin: 20,
+				backgroundColor: 'white',
+				height: 'auto',
+				width: '80%',
+				padding: '0px 0px 0px 0px'
+			}}>
+				<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>
+					<div>
+						<p style={{color: 'black', paddingLeft: '1em'}}>
+							{'Добрый день. Хотел бы вернуть деньги за свою...'}
+						</p>
+						<p style={{color: 'black', paddingLeft: '1em'}}>
+							{'Запрос поступил: 2 ч. назад'}
+						</p>
+					</div>
+				</Card>
+			</Menu.Item>)
 		let allMessages = [];
 		allMessages.push(answer);
 		allMessages.push(answer);
@@ -37,36 +63,40 @@ export default class SiderDemo extends React.Component {
 	render() {
 		return (
 			<Layout>
-				<Sider style={{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }}>
-					<div className={'logo'} />
-					<Menu className={'menu'} theme={'dark'} mode={'inline'} defaultSelectedKeys={['4']}>
+				<Sider width={300} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
+					<div className={'logo'}/>
+					<Menu theme={'dark'} mode={'inline'} defaultSelectedKeys={['4']}>
 						{this.settingMenuItem()}
 					</Menu>
 				</Sider>
-				<Layout style={{ marginLeft: 200 }}>
-					<Header style={{ background: '#fff', padding: 0 }} />
-					<Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-						<div style={{ padding: 24, background: '#fff', textAlign: 'center' }}>
-							...
-							<br />
-							Really
-							<br />...<br />...<br />...<br />
-							long
-							<br />...<br />...<br />...<br />...<br />...<br />...
-							<br />...<br />...<br />...<br />...<br />...<br />...
-							<br />...<br />...<br />...<br />...<br />...<br />...
-							<br />...<br />...<br />...<br />...<br />...<br />...
-							<br />...<br />...<br />...<br />...<br />...<br />...
-							<br />...<br />...<br />...<br />...<br />...<br />...
-							<br />...<br />...<br />...<br />...<br />...<br />
-							content
-						</div>
+				<Layout style={{marginLeft: 300}}>
+					<Header style={{background: '#fff', padding: 0, height: '10vh'}}>
+
+					</Header>
+					<Content className={'content'}>
+						<Card bordered className={'operator-messages'}>
+							<div>
+								<div style={{backgroundColor: 'black', margin: '1em', height: '2em'}}/>
+								<div style={{backgroundColor: 'black', margin: '1em', height: '2em'}}/>
+								<div style={{backgroundColor: 'black', margin: '1em', height: '2em'}}/>
+							</div>
+						</Card>
+						<Form className={'operator-chat'}>
+							<Form.Item style={{width: '100%'}}>
+								<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
+								                placeholder={'Введите свое сообщение'}
+								                className={'operator-chat__input-form'}
+								                onPressEnter={(event) => console.log(event.target.value)}/>
+								<Button>{'Отправить'}</Button>
+							</Form.Item>
+						</Form>
 					</Content>
-					<Footer style={{ textAlign: 'center' }}>
-						Ant Design ©2016 Created by Ant UED
-					</Footer>
 				</Layout>
 			</Layout>
 		);
 	}
 }
+
+const FullMainView = Form.create()(MainView);
+
+export default FullMainView;

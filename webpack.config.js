@@ -4,14 +4,22 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const pkg = require("./package.json")
+
 
 module.exports = {
-	entry : [
-		'./public/main.js'
-	],
-	output:{
+	entry: {
+		// './public/main.js',
+		// './node_modules/antd/dist/antd.less'
+		vendor: Object.keys(pkg.dependencies),
+		app: './public/main.js'
+
+},
+	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: path.join('assets', 'js', 'bundle.js'),
+		filename: path.join('assets', 'js', '[name].bundle.[chunkhash].js'),
 		publicPath: '/'
 	},
 	module: {
@@ -20,7 +28,7 @@ module.exports = {
 				test: /\.jsx?$/,
 				exclude: /(node_modules)/,
 				loader: 'babel-loader',
-				query:{
+				query: {
 					// presets: [
 					// 	['es2015', {
 					// 		'modules': false,
@@ -32,13 +40,13 @@ module.exports = {
 				}
 			},
 			{
-				test: /\.(s)?css$/,
-				loader: 'style-loader!css-loader'
+				test: /\.less$/,
+				loader: 'style-loader!css-loader!less-loader',
 			}
 		]
 	},
-	resolve:{
-		alias : {}
+	resolve: {
+		alias: {}
 	},
 	plugins: [
 		new CleanWebpackPlugin('dist'),
