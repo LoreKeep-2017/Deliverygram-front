@@ -1,6 +1,7 @@
 import React from 'react'
 import {LocaleProvider} from 'antd'
 import * as ruRU from 'antd/lib/locale-provider/ru_RU'
+import './app.less';
 
 import FullButton from './components/button'
 

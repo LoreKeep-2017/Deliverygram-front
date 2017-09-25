@@ -4,14 +4,16 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const pkg = require('./package.json')
 
 module.exports = {
-	entry : [
-		'./public/main.js'
-	],
+	entry : {
+		vendor: Object.keys(pkg.dependencies),
+		app: './public/main.js'
+	},
 	output:{
 		path: path.resolve(__dirname, 'dist'),
-		filename: path.join('assets', 'js', 'bundle.js'),
+		filename: path.join('assets', 'js', '[name].bundle.[chunkhash].js'),
 		publicPath: '/'
 	},
 	module: {
@@ -21,19 +23,12 @@ module.exports = {
 				exclude: /(node_modules)/,
 				loader: 'babel-loader',
 				query:{
-					// presets: [
-					// 	['es2015', {
-					// 		'modules': false,
-					// 		'targets': {}
-					// 	}],
-					// 	['react', {}]
-					// ]
 					presets: ['es2015', 'react']
 				}
 			},
 			{
-				test: /\.(s)?css$/,
-				loader: 'style-loader!css-loader'
+				test: /\.less$/,
+				loader: 'style-loader!css-loader!less-loader'
 			}
 		]
 	},
