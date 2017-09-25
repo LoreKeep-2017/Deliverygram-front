@@ -9,6 +9,10 @@ import {
 	Input,
 	Button
 } from 'antd';
+import {connect} from 'react-redux';
+import Socket from '../models/socket';
+import {changedData} from '../components/action';
+
 
 const {
 	Header,
@@ -29,6 +33,33 @@ class MainView extends React.Component {
 				collapsed: !this.state.collapsed,
 			});
 		}
+	}
+
+	componentDidMount() {
+		const {
+			dataRecieved
+		} = this.props;
+		this.socket = new Socket(dataRecieved);
+	}
+
+	onClick(event) {
+		this.props.dataChanged(this.props.form.getFieldsValue().message);
+		this.props.form.resetFields();
+	}
+
+	getMessages() {
+		const {
+			state
+		} = this.props;
+		console.log(this.props.state);
+		let allMessages = [];
+		if (state) {
+			state.forEach(item => {
+				allMessages.push(<div>{item.message}</div>)
+			});
+		}
+		console.log(allMessages);
+		return allMessages;
 	}
 
 	settingMenuItem() {
@@ -61,6 +92,9 @@ class MainView extends React.Component {
 	}
 
 	render() {
+		const {
+			getFieldDecorator
+		} = this.props.form;
 		return (
 			<Layout>
 				<Sider width={300} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
@@ -76,18 +110,18 @@ class MainView extends React.Component {
 					<Content className={'content'}>
 						<Card bordered className={'operator-messages'}>
 							<div>
-								<div style={{backgroundColor: 'black', margin: '1em', height: '2em'}}/>
-								<div style={{backgroundColor: 'black', margin: '1em', height: '2em'}}/>
-								<div style={{backgroundColor: 'black', margin: '1em', height: '2em'}}/>
+								{this.getMessages()}
 							</div>
 						</Card>
 						<Form className={'operator-chat'}>
 							<Form.Item style={{width: '100%'}}>
+								{getFieldDecorator('message', {})(
 								<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
 								                placeholder={'Введите свое сообщение'}
 								                className={'operator-chat__input-form'}
 								                onPressEnter={(event) => console.log(event.target.value)}/>
-								<Button>{'Отправить'}</Button>
+									)}
+								<Button onClick={() => this.onClick()}>{'Отправить'}</Button>
 							</Form.Item>
 						</Form>
 					</Content>
@@ -97,6 +131,23 @@ class MainView extends React.Component {
 	}
 }
 
-const FullMainView = Form.create()(MainView);
+const mapStateToProps = state => {
+	return {
+		state: state.messages
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+		dataChanged: (message) => dispatch(changedData(message)),
+		dataReceive: (message) => dispatch(receiveData(message)),
+		dataRequest: () => dispatch(requestData())
+	}
+}
+
+const FullMainView = connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Form.create()(MainView));
 
 export default FullMainView;
