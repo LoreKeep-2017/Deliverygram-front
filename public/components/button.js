@@ -10,6 +10,7 @@ import {
 import Socket from '../models/socket'
 import {connect} from 'react-redux'
 import './button.less';
+import {changedData, receiveData, requestData} from './action';
 
 class ChatButton extends React.Component {
 
@@ -29,6 +30,7 @@ class ChatButton extends React.Component {
 	}
 
 	getCard(messages) {
+		const {getFieldDecorator} = this.props.form;
 		let allMessages;
 		if (messages) {
 			allMessages = messages.map((item, position) => <div className={`chat-card__${item.place}-message`}>
@@ -39,8 +41,9 @@ class ChatButton extends React.Component {
 			{allMessages}
 			<Form className={`chat-form`}>
 				<Form.Item/>
-				<Input.TextArea autosize={{minRows: 3, maxRows: 4}} className={'chat-input__textarea'} defaultValue={''}
-				                placeholder={'Введите свое сообщение'}/>
+				{getFieldDecorator('message', {})(<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
+				                                                   className={'chat-input__textarea'}
+				                                                   placeholder={'Введите свое сообщение'}/>)}
 				<Form.Item/>
 				<Button onClick={() => this.onPressEnter()} className={'chat-input__button'}>{'Отправить'}</Button>
 			</Form>
@@ -48,11 +51,10 @@ class ChatButton extends React.Component {
 	}
 
 	onPressEnter(event, label) {
-		let message = this.props.form.getFieldsValue();
+		let message = this.props.form.getFieldValue('message');
 		this.props.form.resetFields();
-		console.log(message);
-		// this.props.dataChanged(message);
-		// this.socket.send({Hi: {Id: message}});
+		this.props.dataChanged(message);
+		this.socket.send({Hi: {Id: message}});
 	}
 
 	render() {
