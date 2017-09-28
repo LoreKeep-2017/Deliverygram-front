@@ -43,22 +43,29 @@ class MainView extends React.Component {
 	}
 
 	onClick(event) {
-		this.props.dataChanged(this.props.form.getFieldsValue().message);
-		this.props.form.resetFields();
+		const {
+			dataChanged,
+			form : {
+				getFieldValue,
+				resetFields
+			}
+		} = this.props
+		let message = getFieldValue('message');
+		dataChanged(message);
+		resetFields();
+		this.socket.send({Hi: {Id: message}});
 	}
 
 	getMessages() {
 		const {
 			state
 		} = this.props;
-		console.log(this.props.state);
 		let allMessages = [];
 		if (state) {
 			state.forEach(item => {
 				allMessages.push(<div>{item.message}</div>)
 			});
 		}
-		console.log(allMessages);
 		return allMessages;
 	}
 
@@ -119,7 +126,7 @@ class MainView extends React.Component {
 								<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
 								                placeholder={'Введите свое сообщение'}
 								                className={'operator-chat__input-form'}
-								                onPressEnter={(event) => console.log(event.target.value)}/>
+								                onPressEnter={(event) => console.log(event)}/>
 									)}
 								<Button onClick={() => this.onClick()}>{'Отправить'}</Button>
 							</Form.Item>
