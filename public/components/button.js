@@ -11,6 +11,7 @@ import Socket from '../models/socket'
 import {connect} from 'react-redux'
 import './button.less';
 import {changedData, receiveData, requestData} from './action';
+import StartChatForm from './createChatForm'
 
 class ChatButton extends React.Component {
 
@@ -30,24 +31,25 @@ class ChatButton extends React.Component {
 	}
 
 	getCard(messages) {
-		const {getFieldDecorator} = this.props.form;
-		let allMessages;
-		if (messages) {
-			allMessages = messages.map((item, position) => <div className={`chat-card__${item.place}-message`}>
-				<p className={`${item.place}-message`} key={position}>{item.message}</p>
-			</div>);
-		}
-		return (<Card title={'Чат'} bordered style={{width: '25vw'}}>
-			{allMessages}
-			<Form className={`chat-form`}>
-				<Form.Item/>
-				{getFieldDecorator('message', {})(<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
-				                                                   className={'chat-input__textarea'}
-				                                                   placeholder={'Введите свое сообщение'}/>)}
-				<Form.Item/>
-				<Button onClick={() => this.onPressEnter()} className={'chat-input__button'}>{'Отправить'}</Button>
-			</Form>
-		</Card>);
+		// const {getFieldDecorator} = this.props.form;
+		// let allMessages;
+		// if (messages) {
+		// 	allMessages = messages.map((item, position) => <div className={`chat-card__${item.place}-message`}>
+		// 		<p className={`${item.place}-message`} key={position}>{item.message}</p>
+		// 	</div>);
+		// }
+		return <StartChatForm/>
+		// return (<Card title={'Чат'} bordered style={{width: '25vw'}}>
+		// 	{allMessages}
+			{/*<Form className={`chat-form`}>*/}
+				{/*<Form.Item/>*/}
+				// {getFieldDecorator('message', {})(<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
+				//                                                    className={'chat-input__textarea'}
+				//                                                    placeholder={'Введите свое сообщение'}/>)}
+				{/*<Form.Item/>*/}
+				{/*<Button onClick={() => this.onPressEnter()} className={'chat-input__button'}>{'Отправить'}</Button>*/}
+			// </Form>
+		// </Card>);
 	}
 
 	onPressEnter(event, label) {

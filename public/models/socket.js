@@ -4,7 +4,7 @@
 export default class Socket{
 
 	constructor(dataRecieved){
-		this.socket = new WebSocket('ws://85.195.79.230:8000/api/ws');
+		this.socket = new WebSocket('ws://localhost:8000/api/ws');
 		
 		this.socket.onopen = () => {
 			console.log('Good conection');
