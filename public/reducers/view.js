@@ -3,9 +3,9 @@
 import {
 	DATA_CHANGED,
 	DATA_RECEIVE,
-	DATA_REQUEST
+	DATA_REQUEST,
+	RECIEVE_ALL_CLIENTS
 } from '../actions/action-types';
-
 
 const initialState = {
 	messages: []
@@ -38,6 +38,11 @@ const dataWorking = (state = initialState, action) => {
 			newState.messages = newState.messages.map(item => item);
 			return newState;
 		}
+		case RECIEVE_ALL_CLIENTS:
+			let {clients} = action.payload;
+			newState.clients = clients;
+			newState.clients = newState.clients.map(item => item);
+			return newState
 		default:
 			return newState;
 	}

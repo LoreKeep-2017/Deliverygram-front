@@ -12,7 +12,8 @@ import {
 import {connect} from 'react-redux';
 import Socket from '../models/socket';
 import {changedData} from '../components/action';
-
+import {recieveClients} from './action';
+import './main.less';
 
 const {
 	Header,
@@ -45,11 +46,11 @@ class MainView extends React.Component {
 	onClick(event) {
 		const {
 			dataChanged,
-			form : {
+			form: {
 				getFieldValue,
 				resetFields
 			}
-		} = this.props
+		} = this.props;
 		let message = getFieldValue('message');
 		dataChanged(message);
 		resetFields();
@@ -69,33 +70,27 @@ class MainView extends React.Component {
 		return allMessages;
 	}
 
-	settingMenuItem() {
-		let answer = (
-			<Menu.Item style={{
-				margin: 20,
-				backgroundColor: 'white',
-				height: 'auto',
-				width: '80%',
-				padding: '0px 0px 0px 0px'
-			}}>
-				<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>
-					<div>
-						<p style={{color: 'black', paddingLeft: '1em'}}>
-							{'Добрый день. Хотел бы вернуть деньги за свою...'}
-						</p>
-						<p style={{color: 'black', paddingLeft: '1em'}}>
-							{'Запрос поступил: 2 ч. назад'}
-						</p>
-					</div>
-				</Card>
-			</Menu.Item>)
-		let allMessages = [];
-		allMessages.push(answer);
-		allMessages.push(answer);
-		allMessages.push(answer);
-		allMessages.push(answer);
-		allMessages.push(answer);
-		return allMessages;
+	getClientsRequests() {
+		let {clients} = this.props;
+		return clients.map(item => <Menu.Item style={{
+			paddingLeft: 0,
+			padding: 0,
+			margin: '20px',
+			background: 'white',
+			height: 'auto',
+			width: '80%',
+		}}>
+			<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>
+				<div>
+					<p style={{color: 'black', paddingLeft: '1em'}}>
+						{}
+					</p>
+					<p style={{color: 'black', paddingLeft: '1em'}}>
+						{}
+					</p>
+				</div>
+			</Card>
+		</Menu.Item>)
 	}
 
 	render() {
@@ -107,7 +102,7 @@ class MainView extends React.Component {
 				<Sider width={300} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
 					<div className={'logo'}/>
 					<Menu theme={'dark'} mode={'inline'} defaultSelectedKeys={['4']}>
-						{this.settingMenuItem()}
+						{this.getClientsRequests()}
 					</Menu>
 				</Sider>
 				<Layout style={{marginLeft: 300}}>
@@ -123,11 +118,11 @@ class MainView extends React.Component {
 						<Form className={'operator-chat'}>
 							<Form.Item style={{width: '100%'}}>
 								{getFieldDecorator('message', {})(
-								<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
-								                placeholder={'Введите свое сообщение'}
-								                className={'operator-chat__input-form'}
-								                onPressEnter={(event) => console.log(event)}/>
-									)}
+									<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
+									                placeholder={'Введите свое сообщение'}
+									                className={'operator-chat__input-form'}
+									                onPressEnter={(event) => console.log(event)}/>
+								)}
 								<Button onClick={() => this.onClick()}>{'Отправить'}</Button>
 							</Form.Item>
 						</Form>
@@ -140,15 +135,19 @@ class MainView extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		state: state.messages
+		state: state.messages,
+		clients: state.clients
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-		dataChanged: (message) => dispatch(changedData(message)),
-		dataReceive: (message) => dispatch(receiveData(message)),
-		dataRequest: () => dispatch(requestData())
+		dispatchFunc: {
+			dataChanged: (message) => dispatch(changedData(message)),
+			dataReceive: (message) => dispatch(receiveData(message)),
+			dataRequest: () => dispatch(requestData()),
+			recieveClients: (clients) => dispatch(recieveClients(clients))
+		}
 	}
 }
 

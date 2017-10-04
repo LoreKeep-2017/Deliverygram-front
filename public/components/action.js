@@ -1,6 +1,7 @@
 'use strict';
 import {
-	DATA_CHANGED, DATA_RECEIVE,
+	DATA_CHANGED,
+	DATA_RECEIVE,
 	DATA_REQUEST
 } from '../actions/action-types';
 
