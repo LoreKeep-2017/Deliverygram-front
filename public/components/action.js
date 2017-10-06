@@ -1,20 +1,37 @@
 'use strict';
+
 import {
-	DATA_CHANGED, DATA_RECEIVE,
-	DATA_REQUEST
+	SWITCH_TO_START_FORM,
+	SWITCH_TO_CHAT_FORM,
+	ADD_TO_ROOM,
+	SEND_MESSAGE,
+	SWITCH_TO_BUTTON
 } from '../actions/action-types';
 
-export const requestData = () => ({
-	type: DATA_REQUEST,
-	payload: {}
+export const switchToButton = () => ({
+	type: SWITCH_TO_BUTTON
 })
 
-export const receiveData = (message) => ({
-	type: DATA_RECEIVE,
-	payload: {message}
+export const switchToStartForm = () => ({
+	type: SWITCH_TO_START_FORM
 })
 
-export const changedData = (message) => ({
-	type: DATA_CHANGED,
-	payload: {message}
+export const switchToChatFrom = (title, description) => ({
+	type: SWITCH_TO_CHAT_FORM,
+	payload: {title, description}
+})
+
+export const addToNewRoom = (data) => ({
+	type: ADD_TO_ROOM,
+	payload: {data}
+})
+
+export const messageSend = (data) => ({
+	type: SEND_MESSAGE,
+	payload: data
+})
+
+export const roomClosed = (data) => ({
+	type: ROOM_CLOSED,
+	payload: data
 })
