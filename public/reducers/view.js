@@ -2,7 +2,9 @@
 
 import {
 	RECEIVE_ALL_CLIENTS,
-	RECEIVE_MESSAGE
+	RECEIVE_MESSAGE,
+    SEND_MESSAGE,
+    ENTER_ROOM
 } from '../actions/action-types';
 
 const initialState = {
@@ -23,6 +25,24 @@ const dataWorking = (state = initialState, action) => {
 			let {messages} = action.payload;
 			newState.messages = messages;
 			return newState;
+        case SEND_MESSAGE:
+            const {
+                body,
+                room
+            } = action.payload;
+            let message = {
+                author: 'client',
+                body: body,
+                room: room
+            };
+            newState.messages.push(message);
+            return newState;
+        case ENTER_ROOM:
+            const {
+                rid
+            } = action.payload;
+            newState.rid = rid;
+            return newState;
 		default:
 			return newState;
 	}

@@ -11,7 +11,7 @@ import {
 } from 'antd';
 import {connect} from 'react-redux';
 import Socket from '../models/socket';
-import {receiveClients, sendMessage, closeChat, receiveMessages} from './action';
+import {receiveClients, sendMessage, closeChat, receiveMessages, enterRoom} from './action';
 import './main.less';
 
 const {
@@ -49,13 +49,14 @@ class MainView extends React.Component {
 			form: {
 				getFieldValue,
 				resetFields
-			}
+			},
+            rid
 		} = this.props;
 		let message = getFieldValue('message');
-		sendMessage(message);
+		sendMessage(message, rid);
 		resetFields();
 		this.socket.sendWithBody('sendMessage', {
-			room: 1,
+			room: rid,
 			body: message,
 			author: 'operator'
 		})
@@ -68,14 +69,14 @@ class MainView extends React.Component {
 		let allMessages = [];
 		if (messages) {
 			messages.forEach(item => {
-				allMessages.push(<div>{item.message}</div>)
+				allMessages.push(<div className={`${item.author}-message`}>{item.body}</div>)
 			});
 		}
 		return allMessages;
 	}
 
 	getClientsRequests() {
-		let {clients} = this.props;
+		let {clients, enterRoom} = this.props;
         console.log(clients);
         let allClients = [];
 		if (clients) {
@@ -89,7 +90,9 @@ class MainView extends React.Component {
 				width: '80%',
 			}}>
 				{/*<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>*/}
-                <Button onClick={() => { console.log('onClick'); this.socket.sendWithBody('enterRoom', {rid: clients.rooms[keys].id})}}>
+                <Button onClick={() => {
+                    enterRoom(clients.rooms[keys].id);
+                    this.socket.sendWithBody('enterRoom', {rid: clients.rooms[keys].id})}}>
 							{clients.rooms[keys].title}
 				{/*</Card>*/}
                 </Button>
@@ -101,11 +104,12 @@ class MainView extends React.Component {
 
 	onCloseChat() {
 		const {
-			closeChat
+			closeChat,
+            rid
 		} = this.props;
 		closeChat(room);
 		this.socket.sendWithBody('closeRoom', {
-			rid: 1
+			rid: rid
 		})
 	}
 
@@ -152,7 +156,8 @@ class MainView extends React.Component {
 const mapStateToProps = state => {
 	return {
 		messages: state.messages,
-		clients: state.clients
+		clients: state.clients,
+        rid: state.rid
 	}
 }
 
@@ -161,7 +166,8 @@ const mapDispatchToProps = dispatch => {
 			receiveClients: (clients) => dispatch(receiveClients(clients)),
 			sendMessage: (message) => dispatch(sendMessage(message)),
 			closeChat: (room) => dispatch(closeChat(room)),
-			receiveMessages: (messages) => dispatch(receiveMessages(messages))
+			receiveMessages: (messages) => dispatch(receiveMessages(messages)),
+            enterRoom: (rid) => dispatch(enterRoom(rid))
 	}
 }
 
