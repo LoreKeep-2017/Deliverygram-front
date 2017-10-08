@@ -3,7 +3,7 @@
 export default class Socket {
 
 	constructor({messageSend, addToNewRoom, roomClosed, title, message}) {
-		this.socket = new WebSocket('ws://localhost:8000/api/v1/client/');
+		this.socket = new WebSocket('ws://localhost:8080/api/v1/client');
 
 		this.socket.onopen = () => {
 			this.socket.send(this.createInitData(title, message));
@@ -41,7 +41,7 @@ export default class Socket {
 	createInitData(title, message) {
 		return JSON.stringify({
 			type: 'client',
-			action: 'addToRoom',
+			action: 'sendDescriptionRoom',
 			body: {
 				title: title,
 				description: message
