@@ -3,23 +3,42 @@
 
 export default class Socket{
 
-	constructor(dataRecieved){
+	constructor(receiveClients, receiveMessage){
 		this.socket = new WebSocket('ws://localhost:8000/api/ws');
 		
 		this.socket.onopen = () => {
-			console.log('Good conection');
+			this.sendWithoutBody('getAllRooms');
 		};
 
 		this.socket.onmessage = (message) => {
-			let recievedMessage = JSON.parse(message.data)
-			console.log(recievedMessage.ctrl.id);
-			console.log("Recieved message", JSON.parse(message.data));
-			dataRecieved(recievedMessage.ctrl.id); 
+			let receivedMessage = JSON.parse(message);
+			if (receivedMessage.code === 200){
+				switch(receivedMessage.action) {
+					case 'getAllRooms':
+						receiveClients(receivedMessage.body);
+						return;
+					case 'changeStatusRoom':
+						return;
+					case 'sendMessage':
+						receiveMessage(receivedMessage.body);
+						return;
+				}
+			}
 		}
 	}
 
-	send(data)
-	{
-		this.socket.send(JSON.stringify(data));
+	sendWithoutBody(action) {
+		this.socket.send(JSON.stringify({
+			'type': 'operator',
+			'action': action
+		}))
+	}
+
+	sendWithBody(action, body) {
+		this.socket.send(JSON.stringify({
+			'type': 'operator',
+			'action': action,
+			'body': body
+		}))
 	}
 }

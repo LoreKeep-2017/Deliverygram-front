@@ -1,10 +1,8 @@
 'use strict';
 
 import {
-	DATA_CHANGED,
-	DATA_RECEIVE,
-	DATA_REQUEST,
-	RECIEVE_ALL_CLIENTS
+	RECEIVE_ALL_CLIENTS,
+	RECEIVE_MESSAGE
 } from '../actions/action-types';
 
 const initialState = {
@@ -15,34 +13,16 @@ const dataWorking = (state = initialState, action) => {
 
 	let newState = Object.assign({}, state);
 	switch (action.type) {
-		case DATA_REQUEST:
-			return newState;
-
-		case DATA_RECEIVE:{
-			let { message } = action.payload;
-			let newMessage = {
-				message,
-				place: 'socket'
-			};
-			newState.messages.push(newMessage);
-			newState.messages = newState.messages.map(item => item);
-			return newState;
-		}
-		case DATA_CHANGED:{
-			let {message} = action.payload;
-			let newMessage = {
-				message,
-				place: 'web'
-			};
-			newState.messages.push(newMessage);
-			newState.messages = newState.messages.map(item => item);
-			return newState;
-		}
-		case RECIEVE_ALL_CLIENTS:
+		case RECEIVE_ALL_CLIENTS:
 			let {clients} = action.payload;
 			newState.clients = clients;
 			newState.clients = newState.clients.map(item => item);
-			return newState
+			return newState;
+		case RECEIVE_MESSAGE:
+			let {messages} = action.payload;
+			newState.messages = messages;
+			newState.mesages = newState.messages.map(item=> item);
+			return newState;
 		default:
 			return newState;
 	}

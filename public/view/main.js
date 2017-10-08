@@ -11,8 +11,7 @@ import {
 } from 'antd';
 import {connect} from 'react-redux';
 import Socket from '../models/socket';
-import {changedData} from '../components/action';
-import {recieveClients} from './action';
+import {receiveClients, sendMessage, closeChat, receiveMessages} from './action';
 import './main.less';
 
 const {
@@ -38,32 +37,37 @@ class MainView extends React.Component {
 
 	componentDidMount() {
 		const {
-			dataRecieved
+			receiveClients,
+			receiveMessages
 		} = this.props;
-		this.socket = new Socket(dataRecieved);
+		this.socket = new Socket(receiveClients, receiveMessages);
 	}
 
-	onClick(event) {
+	onClick() {
 		const {
-			dataChanged,
+			sendMessage,
 			form: {
 				getFieldValue,
 				resetFields
 			}
 		} = this.props;
 		let message = getFieldValue('message');
-		dataChanged(message);
+		sendMessage(message);
 		resetFields();
-		this.socket.send({Hi: {Id: message}});
+		this.socket.sendWithBody('sendMessage', {
+			room: 2,
+			body: message,
+			author: 'operator'
+		})
 	}
 
 	getMessages() {
 		const {
-			state
+			messages
 		} = this.props;
 		let allMessages = [];
-		if (state) {
-			state.forEach(item => {
+		if (messages) {
+			messages.forEach(item => {
 				allMessages.push(<div>{item.message}</div>)
 			});
 		}
@@ -72,25 +76,37 @@ class MainView extends React.Component {
 
 	getClientsRequests() {
 		let {clients} = this.props;
-		return clients.map(item => <Menu.Item style={{
-			paddingLeft: 0,
-			padding: 0,
-			margin: '20px',
-			background: 'white',
-			height: 'auto',
-			width: '80%',
-		}}>
-			<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>
-				<div>
-					<p style={{color: 'black', paddingLeft: '1em'}}>
-						{}
-					</p>
-					<p style={{color: 'black', paddingLeft: '1em'}}>
-						{}
-					</p>
-				</div>
-			</Card>
-		</Menu.Item>)
+		if (clients) {
+			return clients.map(item => <Menu.Item style={{
+				paddingLeft: 0,
+				padding: 0,
+				margin: '20px',
+				background: 'white',
+				height: 'auto',
+				width: '80%',
+			}}>
+				<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>
+					<div>
+						<p style={{color: 'black', paddingLeft: '1em'}}>
+							{}
+						</p>
+						<p style={{color: 'black', paddingLeft: '1em'}}>
+							{}
+						</p>
+					</div>
+				</Card>
+			</Menu.Item>)
+		}
+	}
+
+	onCloseChat() {
+		const {
+			closeChat
+		} = this.props;
+		closeChat(room);
+		this.socket.sendWithBody('closeRoom', {
+			rid: 1
+		})
 	}
 
 	render() {
@@ -102,12 +118,12 @@ class MainView extends React.Component {
 				<Sider width={300} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
 					<div className={'logo'}/>
 					<Menu theme={'dark'} mode={'inline'} defaultSelectedKeys={['4']}>
-						{this.getClientsRequests()}
+						{/*{this.getClientsRequests()}*/}
 					</Menu>
 				</Sider>
 				<Layout style={{marginLeft: 300}}>
 					<Header style={{background: '#fff', padding: 0, height: '10vh'}}>
-
+						<Button onClick={() => this.onCloseChat()}>{'Закрыть чат'}</Button>
 					</Header>
 					<Content className={'content'}>
 						<Card bordered className={'operator-messages'}>
@@ -135,7 +151,7 @@ class MainView extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		state: state.messages,
+		messages: state.messages,
 		clients: state.clients
 	}
 }
@@ -143,10 +159,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	return {
 		dispatchFunc: {
-			dataChanged: (message) => dispatch(changedData(message)),
-			dataReceive: (message) => dispatch(receiveData(message)),
-			dataRequest: () => dispatch(requestData()),
-			recieveClients: (clients) => dispatch(recieveClients(clients))
+			receiveClients: (clients) => dispatch(receiveClients(clients)),
+			sendMessage: (message) => dispatch(sendMessage(message)),
+			closeChat: (room) => dispatch(closeChat(room)),
+			receiveMessages: (messages) => dispatch(receiveMessages(messages))
 		}
 	}
 }
