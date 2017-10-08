@@ -4,14 +4,14 @@
 export default class Socket{
 
 	constructor(receiveClients, receiveMessage){
-		this.socket = new WebSocket('ws://localhost:8000/api/ws');
-		
+		this.socket = new WebSocket('ws://localhost:8080/api/v1/operator');
+
 		this.socket.onopen = () => {
-			this.sendWithoutBody('getAllRooms');
+			// sthis.sendWithoutBody('getAllRooms');
 		};
 
 		this.socket.onmessage = (message) => {
-			let receivedMessage = JSON.parse(message);
+			let receivedMessage = JSON.parse(message.data);
 			if (receivedMessage.code === 200){
 				switch(receivedMessage.action) {
 					case 'getAllRooms':

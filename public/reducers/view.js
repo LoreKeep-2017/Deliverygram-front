@@ -15,13 +15,13 @@ const dataWorking = (state = initialState, action) => {
 	switch (action.type) {
 		case RECEIVE_ALL_CLIENTS:
 			let {clients} = action.payload;
+            console.log(clients);
 			newState.clients = clients;
-			newState.clients = newState.clients.map(item => item);
+            console.log(newState);
 			return newState;
 		case RECEIVE_MESSAGE:
 			let {messages} = action.payload;
 			newState.messages = messages;
-			newState.mesages = newState.messages.map(item=> item);
 			return newState;
 		default:
 			return newState;

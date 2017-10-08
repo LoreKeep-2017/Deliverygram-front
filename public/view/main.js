@@ -55,7 +55,7 @@ class MainView extends React.Component {
 		sendMessage(message);
 		resetFields();
 		this.socket.sendWithBody('sendMessage', {
-			room: 2,
+			room: 1,
 			body: message,
 			author: 'operator'
 		})
@@ -76,27 +76,27 @@ class MainView extends React.Component {
 
 	getClientsRequests() {
 		let {clients} = this.props;
+        console.log(clients);
+        let allClients = [];
 		if (clients) {
-			return clients.map(item => <Menu.Item style={{
+			for (let keys in clients.rooms){
+                console.log(clients.rooms)
+                allClients.push(<Menu.Item style={{
 				paddingLeft: 0,
 				padding: 0,
 				margin: '20px',
-				background: 'white',
 				height: 'auto',
 				width: '80%',
 			}}>
-				<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>
-					<div>
-						<p style={{color: 'black', paddingLeft: '1em'}}>
-							{}
-						</p>
-						<p style={{color: 'black', paddingLeft: '1em'}}>
-							{}
-						</p>
-					</div>
-				</Card>
+				{/*<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>*/}
+                <Button onClick={() => { console.log('onClick'); this.socket.sendWithBody('enterRoom', {rid: clients.rooms[keys].id})}}>
+							{clients.rooms[keys].title}
+				{/*</Card>*/}
+                </Button>
 			</Menu.Item>)
 		}
+    }
+    return allClients;
 	}
 
 	onCloseChat() {
@@ -118,7 +118,7 @@ class MainView extends React.Component {
 				<Sider width={300} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
 					<div className={'logo'}/>
 					<Menu theme={'dark'} mode={'inline'} defaultSelectedKeys={['4']}>
-						{/*{this.getClientsRequests()}*/}
+						{this.getClientsRequests()}
 					</Menu>
 				</Sider>
 				<Layout style={{marginLeft: 300}}>
@@ -158,12 +158,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		dispatchFunc: {
 			receiveClients: (clients) => dispatch(receiveClients(clients)),
 			sendMessage: (message) => dispatch(sendMessage(message)),
 			closeChat: (room) => dispatch(closeChat(room)),
 			receiveMessages: (messages) => dispatch(receiveMessages(messages))
-		}
 	}
 }
 
