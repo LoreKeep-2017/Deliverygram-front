@@ -41,7 +41,7 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		}
 		case SEND_MESSAGE: {
-			const data = action.payload.data;
+			const data = action.payload;
 			newState.messages = data;
 			return newState;
 		}

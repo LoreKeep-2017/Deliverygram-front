@@ -43,11 +43,12 @@ class CreateChatFrom extends React.Component {
 			}
 		} = this.props;
 		let allMessages;
+        console.log(this.props);
 		if (messages) {
 			allMessages = messages.map((item, position) => {
                 console.log(item);
 				return (<div className={`chat-card__${item.place}-message`} key={`chat_message_${position}`}>
-					<p className={`${item.place}-message`} key={position}>{item.body}</p>
+					<p className={`${item.author}-message`} key={position}>{item.body}</p>
 				</div>)
 			})
 		}
