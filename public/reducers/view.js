@@ -4,7 +4,8 @@ import {
 	RECEIVE_ALL_CLIENTS,
 	RECEIVE_MESSAGE,
     SEND_MESSAGE,
-    ENTER_ROOM
+    ENTER_ROOM,
+    CHANGE_ROOM_STATUS
 } from '../actions/action-types';
 
 const initialState = {
@@ -17,15 +18,14 @@ const dataWorking = (state = initialState, action) => {
 	switch (action.type) {
 		case RECEIVE_ALL_CLIENTS:
 			let {clients} = action.payload;
-            console.log(clients);
 			newState.clients = clients;
-            console.log(newState);
 			return newState;
 		case RECEIVE_MESSAGE:
 			let {messages} = action.payload;
 			newState.messages = messages;
 			return newState;
         case SEND_MESSAGE:
+        {
             const {
                 body,
                 room
@@ -37,12 +37,21 @@ const dataWorking = (state = initialState, action) => {
             };
             newState.messages.push(message);
             return newState;
+        }
         case ENTER_ROOM:
             const {
                 rid
             } = action.payload;
             newState.rid = rid;
             return newState;
+        case CHANGE_ROOM_STATUS:
+        {
+            const {room} = action.payload;
+            delete newState.clients.rooms[room.id];
+            newState.clients.rooms[room.id] = room;
+            newState.messages = newState.messages.map(item => item);
+            return newState;
+        }
 		default:
 			return newState;
 	}

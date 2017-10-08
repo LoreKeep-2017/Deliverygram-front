@@ -5,7 +5,8 @@ import {
 	RECEIVE_ALL_CLIENTS,
     RECEIVE_MESSAGE,
 	SEND_MESSAGE,
-    ENTER_ROOM
+    ENTER_ROOM,
+    CHANGE_ROOM_STATUS
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -31,4 +32,9 @@ export const receiveMessages = (messages) => ({
 export const enterRoom = (rid) => ({
     type: ENTER_ROOM,
     payload: {rid}
+})
+
+export const changeRoomStatus = (room) => ({
+    type: CHANGE_ROOM_STATUS,
+    payload: {room}
 })

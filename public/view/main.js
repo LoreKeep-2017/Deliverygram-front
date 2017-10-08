@@ -11,7 +11,7 @@ import {
 } from 'antd';
 import {connect} from 'react-redux';
 import Socket from '../models/socket';
-import {receiveClients, sendMessage, closeChat, receiveMessages, enterRoom} from './action';
+import {receiveClients, sendMessage, closeChat, receiveMessages, enterRoom, changeRoomStatus} from './action';
 import './main.less';
 
 const {
@@ -38,9 +38,10 @@ class MainView extends React.Component {
 	componentDidMount() {
 		const {
 			receiveClients,
-			receiveMessages
+			receiveMessages,
+            changeRoomStatus
 		} = this.props;
-		this.socket = new Socket(receiveClients, receiveMessages);
+		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus);
 	}
 
 	onClick() {
@@ -77,11 +78,9 @@ class MainView extends React.Component {
 
 	getClientsRequests() {
 		let {clients, enterRoom} = this.props;
-        console.log(clients);
         let allClients = [];
 		if (clients) {
 			for (let keys in clients.rooms){
-                console.log(clients.rooms)
                 allClients.push(<Menu.Item style={{
 				paddingLeft: 0,
 				padding: 0,
@@ -92,7 +91,8 @@ class MainView extends React.Component {
 				{/*<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>*/}
                 <Button onClick={() => {
                     enterRoom(clients.rooms[keys].id);
-                    this.socket.sendWithBody('enterRoom', {rid: clients.rooms[keys].id})}}>
+                    this.socket.sendWithBody('enterRoom', {rid: clients.rooms[keys].id})
+                    this.socket.sendWithBody('getAllMessages', {rid: clients.rooms[keys].id})}}>
 							{clients.rooms[keys].title}
 				{/*</Card>*/}
                 </Button>
@@ -167,7 +167,8 @@ const mapDispatchToProps = dispatch => {
 			sendMessage: (message) => dispatch(sendMessage(message)),
 			closeChat: (room) => dispatch(closeChat(room)),
 			receiveMessages: (messages) => dispatch(receiveMessages(messages)),
-            enterRoom: (rid) => dispatch(enterRoom(rid))
+            enterRoom: (rid) => dispatch(enterRoom(rid)),
+            changeRoomStatus: (room) => dispatch(changeRoomStatus(room))
 	}
 }
 

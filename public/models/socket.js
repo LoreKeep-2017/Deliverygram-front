@@ -3,7 +3,7 @@
 
 export default class Socket{
 
-	constructor(receiveClients, receiveMessage){
+	constructor(receiveClients, receiveMessage, changeRoomStatus){
 		this.socket = new WebSocket('ws://localhost:8080/api/v1/operator');
 
 		this.socket.onopen = () => {
@@ -18,10 +18,14 @@ export default class Socket{
 						receiveClients(receivedMessage.body);
 						return;
 					case 'changeStatusRoom':
+                        changeRoomStatus(receivedMessage.body);
 						return;
 					case 'sendMessage':
 						receiveMessage(receivedMessage.body);
 						return;
+                    case 'getAllMessages':
+                        receiveMessage(receivedMessage.body);
+                        return;
 				}
 			}
 		}
