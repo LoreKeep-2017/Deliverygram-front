@@ -48,6 +48,8 @@ const dataWorking = (state = initialState, action) => {
 		case ROOM_CLOSED:
 			newState.position = 'startForm';
 			return newState;
+		case SWITCH_TO_BUTTON:
+			delete newState.position;
 		default:
 			return newState;
 	}

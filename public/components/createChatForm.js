@@ -11,7 +11,7 @@ import {
 import {connect} from 'react-redux'
 import './createChatForm.less'
 import './button.less'
-import {switchToChatFrom} from './action';
+import {closeStartForm, switchToChatFrom} from './action';
 
 class CreateChatForm extends React.Component {
 
@@ -27,6 +27,14 @@ class CreateChatForm extends React.Component {
 		switchToChatFrom(title, description);
 	}
 
+	close(){
+		const {
+			closeStartForm
+		} = this.props;
+		closeStartForm();
+
+	}
+
 	render() {
 		const {
 			getFieldDecorator
@@ -34,7 +42,7 @@ class CreateChatForm extends React.Component {
 		return (
 			<Row>
 				<div>
-					<Button icon={'close'}/>
+					<Button icon={'close'} onClick={() => this.close()}/>
 				</div>
 				<Card title={'Чат'} bordered style={{width: '25vw'}}>
 					<Form className={'createForm'}>
@@ -60,7 +68,8 @@ class CreateChatForm extends React.Component {
 const startChatForm = Form.create()(CreateChatForm);
 
 const mapDispatchToProps = dispatch => ({
-	switchToChatFrom: (issue, description) => dispatch(switchToChatFrom(issue, description))
+	switchToChatFrom: (issue, description) => dispatch(switchToChatFrom(issue, description)),
+	closeStartForm: () => dispatch(closeStartForm())
 })
 
 const StartChatForm = connect(

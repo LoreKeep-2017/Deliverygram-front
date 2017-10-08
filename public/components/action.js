@@ -35,3 +35,7 @@ export const roomClosed = (data) => ({
 	type: ROOM_CLOSED,
 	payload: data
 })
+
+export const closeStartForm = () => ({
+	type: SWITCH_TO_BUTTON
+})

@@ -30,7 +30,7 @@ class CreateChatFrom extends React.Component {
 			getFieldValue,
 			resetFields
 		} = this.props.form;
-		this.socket.sendData(getFieldValue('message'));
+		this.socket.sendMessage(getFieldValue('message'));
 		resetFields();
 	}
 
