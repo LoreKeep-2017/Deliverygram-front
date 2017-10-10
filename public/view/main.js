@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 import Socket from '../models/socket';
 import {receiveClients, sendMessage, closeChat, receiveMessages, enterRoom, changeRoomStatus} from './action';
 import './main.less';
+import MenuItems from '../components/menuItems';
 
 const {
 	Header,
@@ -39,7 +40,7 @@ class MainView extends React.Component {
 		const {
 			receiveClients,
 			receiveMessages,
-            changeRoomStatus
+			changeRoomStatus
 		} = this.props;
 		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus);
 	}
@@ -51,7 +52,7 @@ class MainView extends React.Component {
 				getFieldValue,
 				resetFields
 			},
-            rid
+			rid
 		} = this.props;
 		let message = getFieldValue('message');
 		sendMessage(message, rid);
@@ -76,36 +77,10 @@ class MainView extends React.Component {
 		return allMessages;
 	}
 
-	getClientsRequests() {
-		let {clients, enterRoom} = this.props;
-        let allClients = [];
-		if (clients) {
-			for (let keys in clients.rooms){
-                allClients.push(<Menu.Item style={{
-				paddingLeft: 0,
-				padding: 0,
-				margin: '20px',
-				height: 'auto',
-				width: '80%',
-			}}>
-				{/*<Card title={'Возврат средств'} style={{width: '100%', height: '100%'}}>*/}
-                <Button onClick={() => {
-                    enterRoom(clients.rooms[keys].id);
-                    this.socket.sendWithBody('enterRoom', {rid: clients.rooms[keys].id})
-                    this.socket.sendWithBody('getAllMessages', {rid: clients.rooms[keys].id})}}>
-							{clients.rooms[keys].title}
-				{/*</Card>*/}
-                </Button>
-			</Menu.Item>)
-		}
-    }
-    return allClients;
-	}
-
 	onCloseChat() {
 		const {
 			closeChat,
-            rid
+			rid
 		} = this.props;
 		closeChat(room);
 		this.socket.sendWithBody('closeRoom', {
@@ -119,13 +94,10 @@ class MainView extends React.Component {
 		} = this.props.form;
 		return (
 			<Layout>
-				<Sider width={300} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
-					<div className={'logo'}/>
-					<Menu theme={'dark'} mode={'inline'} defaultSelectedKeys={['4']}>
-						{this.getClientsRequests()}
-					</Menu>
+				<Sider width={500} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
+					<MenuItems/>
 				</Sider>
-				<Layout style={{marginLeft: 300}}>
+				<Layout style={{marginLeft: 500}}>
 					<Header style={{background: '#fff', padding: 0, height: '10vh'}}>
 						<Button onClick={() => this.onCloseChat()}>{'Закрыть чат'}</Button>
 					</Header>
@@ -157,18 +129,18 @@ const mapStateToProps = state => {
 	return {
 		messages: state.messages,
 		clients: state.clients,
-        rid: state.rid
+		rid: state.rid
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-			receiveClients: (clients) => dispatch(receiveClients(clients)),
-			sendMessage: (message) => dispatch(sendMessage(message)),
-			closeChat: (room) => dispatch(closeChat(room)),
-			receiveMessages: (messages) => dispatch(receiveMessages(messages)),
-            enterRoom: (rid) => dispatch(enterRoom(rid)),
-            changeRoomStatus: (room) => dispatch(changeRoomStatus(room))
+		receiveClients: (clients) => dispatch(receiveClients(clients)),
+		sendMessage: (message) => dispatch(sendMessage(message)),
+		closeChat: (room) => dispatch(closeChat(room)),
+		receiveMessages: (messages) => dispatch(receiveMessages(messages)),
+		enterRoom: (rid) => dispatch(enterRoom(rid)),
+		changeRoomStatus: (room) => dispatch(changeRoomStatus(room))
 	}
 }
 
