@@ -12,9 +12,11 @@ export default class Socket{
 
 		this.socket.onmessage = (message) => {
 			let receivedMessage = JSON.parse(message.data);
+			console.log(receivedMessage.action, receivedMessage.body);
 			if (receivedMessage.code === 200){
 				switch(receivedMessage.action) {
 					case 'getAllRooms':
+					case 'getRoomsByStatus':
 						receiveClients(receivedMessage.body);
 						return;
 					case 'changeStatusRoom':

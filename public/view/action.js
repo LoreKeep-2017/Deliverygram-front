@@ -3,10 +3,10 @@
 import {
 	CLOSE_CHAT,
 	RECEIVE_ALL_CLIENTS,
-    RECEIVE_MESSAGE,
+	RECEIVE_MESSAGE,
 	SEND_MESSAGE,
-    ENTER_ROOM,
-    CHANGE_ROOM_STATUS
+	ENTER_ROOM,
+	CHANGE_ROOM_STATUS, CHANGE_WATCHING_MESSAGES_STATUS
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -37,4 +37,9 @@ export const enterRoom = (rid) => ({
 export const changeRoomStatus = (room) => ({
     type: CHANGE_ROOM_STATUS,
     payload: {room}
+})
+
+export const changeMessagesByStatus = (status) => ({
+	type: CHANGE_WATCHING_MESSAGES_STATUS,
+	payload: {status}
 })

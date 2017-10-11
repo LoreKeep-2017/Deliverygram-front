@@ -3,9 +3,9 @@
 import {
 	RECEIVE_ALL_CLIENTS,
 	RECEIVE_MESSAGE,
-    SEND_MESSAGE,
-    ENTER_ROOM,
-    CHANGE_ROOM_STATUS
+	SEND_MESSAGE,
+	ENTER_ROOM,
+	CHANGE_ROOM_STATUS, CHANGE_WATCHING_MESSAGES_STATUS
 } from '../actions/action-types';
 
 const initialState = {
@@ -52,6 +52,12 @@ const dataWorking = (state = initialState, action) => {
             newState.messages = newState.messages.map(item => item);
             return newState;
         }
+		case CHANGE_WATCHING_MESSAGES_STATUS:{
+			const {status} = action.payload;
+			newState.activeStatus = status;
+			newState.messages = newState.messages.map(item => item);
+			return newState;
+		}
 		default:
 			return newState;
 	}

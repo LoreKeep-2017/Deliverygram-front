@@ -95,7 +95,7 @@ class MainView extends React.Component {
 		return (
 			<Layout>
 				<Sider width={500} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
-					<MenuItems/>
+					<MenuItems socket={this.socket}/>
 				</Sider>
 				<Layout style={{marginLeft: 500}}>
 					<Header style={{background: '#fff', padding: 0, height: '10vh'}}>
@@ -139,7 +139,6 @@ const mapDispatchToProps = dispatch => {
 		sendMessage: (message) => dispatch(sendMessage(message)),
 		closeChat: (room) => dispatch(closeChat(room)),
 		receiveMessages: (messages) => dispatch(receiveMessages(messages)),
-		enterRoom: (rid) => dispatch(enterRoom(rid)),
 		changeRoomStatus: (room) => dispatch(changeRoomStatus(room))
 	}
 }
