@@ -5,11 +5,14 @@ import {
 	RECEIVE_MESSAGE,
 	SEND_MESSAGE,
 	ENTER_ROOM,
-	CHANGE_ROOM_STATUS, CHANGE_WATCHING_MESSAGES_STATUS
+	CHANGE_ROOM_STATUS,
+	CHANGE_WATCHING_MESSAGES_STATUS,
+	SELECT_ROOM
 } from '../actions/action-types';
 
 const initialState = {
-	messages: []
+	messages: [],
+	newMessages: []
 }
 
 const dataWorking = (state = initialState, action) => {
@@ -22,42 +25,66 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case RECEIVE_MESSAGE:
 			let {messages} = action.payload;
-			newState.messages = messages;
+			if(messages.length > 0) {
+				if (messages[0].room !== newState.selectedRoom) {
+					let len = newState.messages[messages[0].room] ? newState.messages[messages[0].room].length : 0
+					newState.newMessages[messages[0].room] = messages.length - len;
+				}
+				 else if (messages[0].room) {
+					newState.messages[messages[0].room] = messages;
+					delete newState.newMessages[messages[0].room];
+				}
+			}
+			newState.messages = newState.messages.map(item => item);
 			return newState;
-        case SEND_MESSAGE:
-        {
-            const {
-                body,
-                room
-            } = action.payload;
-            let message = {
-                author: 'client',
-                body: body,
-                room: room
-            };
-            newState.messages.push(message);
-            return newState;
-        }
-        case ENTER_ROOM:
-            const {
-                rid
-            } = action.payload;
-            newState.rid = rid;
-            return newState;
-        case CHANGE_ROOM_STATUS:
-        {
-            const {room} = action.payload;
-            delete newState.clients.rooms[room.id];
-            newState.clients.rooms[room.id] = room;
-            newState.messages = newState.messages.map(item => item);
-            return newState;
-        }
-		case CHANGE_WATCHING_MESSAGES_STATUS:{
-			const {status} = action.payload;
-			newState.activeStatus = status;
+		case SEND_MESSAGE: {
+			const {
+				body,
+				room
+			} = action.payload;
+			let message = {
+				author: 'client',
+				body: body,
+				room: room
+			};
+			if (!newState.messages[room]) {
+				newState.messages[room] = [];
+			}
+			newState.messages[room].push(message);
+			return newState;
+		}
+		case ENTER_ROOM:
+			const {
+				rid
+			} = action.payload;
+			delete newState.selectedRoom;
+			newState.rid = rid;
+			return newState;
+		case CHANGE_ROOM_STATUS: {
+			const {room} = action.payload;
+			delete newState.clients.rooms[room.id];
+			if (room.status === newState.activeStatus) {
+				newState.clients.rooms[room.id] = room;
+			}
 			newState.messages = newState.messages.map(item => item);
 			return newState;
 		}
+		case CHANGE_WATCHING_MESSAGES_STATUS: {
+			const {status} = action.payload;
+			newState.activeStatus = status;
+			delete newState.selectedRoom;
+			delete newState.rid;
+			newState.messages = newState.messages.map(item => item);
+			return newState;
+		}
+		case SELECT_ROOM: {
+			const {
+				rid
+			} = action.payload;
+			newState.selectedRoom = rid;
+			return newState;
+		}
+
 		default:
 			return newState;
 	}

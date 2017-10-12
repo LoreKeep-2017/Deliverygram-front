@@ -9,20 +9,27 @@ import {
 	Col
 } from 'antd';
 import './menuItems.less';
-import {changeMessagesByStatus, enterRoom} from "../view/action";
+import {
+	changeMessagesByStatus,
+	enterRoom,
+	selectRoom} from '../../view/action';
 
 class MenuInit extends React.Component {
 
-	getInitials(nick){
+	getInitials(nick) {
 		return (nick.indexOf(' ') === -1 ) ? nick[0] + nick[1] : nick[0] + nick[nick.indexOf(' ') + 1];
 	}
 
 	getClientsRequests() {
-		let {clients, enterRoom} = this.props;
+		let {
+			clients,
+			newMessages
+		} = this.props;
 		let allClients = [];
 		if (clients) {
 			for (let keys in clients.rooms) {
-				allClients.push(<Menu.Item style={{
+				let newMessage = newMessages[keys] ? `+${newMessages[keys]}` : '';
+					allClients.push(<Menu.Item style={{
 					paddingLeft: 0,
 					padding: 0,
 					height: '9vh'
@@ -34,8 +41,13 @@ class MenuInit extends React.Component {
 							</div>
 						</Col>
 						<Col className={'client-row__content-col'}>
-								<h1>{clients.rooms[keys].client.nick}</h1>
-								<span className={'content-col__title'}>{clients.rooms[keys].title}</span>
+							<h1>{clients.rooms[keys].client.nick}</h1>
+							<span className={'content-col__title'}>{clients.rooms[keys].title}</span>
+						</Col>
+						<Col>
+							<span className={'client-row__new-messages-col'}>
+								{newMessage}
+							</span>
 						</Col>
 					</Row>
 				</Menu.Item>)
@@ -62,12 +74,12 @@ class MenuInit extends React.Component {
 		return menu;
 	}
 
-	changeMessages(event){
+	changeMessages(event) {
 		const {
 			changeMessagesByStatus,
 			socket
 		} = this.props;
-		switch (event.key){
+		switch (event.key) {
 			case 'mail':
 				changeMessagesByStatus('roomNew');
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomNew'});
@@ -83,21 +95,11 @@ class MenuInit extends React.Component {
 		}
 	}
 
-	changeToChat(event){
-		const{
-			enterRoom,
-			socket
-		} = this.props;
-		enterRoom(+event.key);
-		socket.sendWithBody('enterRoom', {rid: +event.key});
-		socket.sendWithBody('getAllMessages', {rid: +event.key});
-	}
-
-	getTitle(){
+	getTitle() {
 		const {
 			activeStatus
 		} = this.props;
-		switch (activeStatus){
+		switch (activeStatus) {
 			case 'roomNew':
 				return 'Новые';
 			case 'roomBusy':
@@ -108,6 +110,10 @@ class MenuInit extends React.Component {
 	}
 
 	render() {
+		const {
+			socket,
+			selectRoom,
+		} = this.props;
 		return (
 			<div className={'logo'} style={{display: 'flex'}}>
 				<div style={{background: 'white', width: 100, height: '100vh'}}>
@@ -120,7 +126,12 @@ class MenuInit extends React.Component {
 					<span className={'menu-title'}>
 						{this.getTitle()}
 					</span>
-					<Menu theme={'dark'} mode={'inline'} className={'client-menu'} onClick={(event) => this.changeToChat(event)}>
+					<Menu theme={'dark'} mode={'inline'}
+					      className={'client-menu'}
+					      onClick={(event) => {
+						      selectRoom(+event.key);
+						      socket.sendWithBody('getAllMessages', {rid: +event.key});
+					      }}>
 						{this.getClientsRequests()}
 					</Menu>
 				</div>
@@ -132,12 +143,15 @@ const mapStateToProps = state => ({
 	messages: state.messages,
 	clients: state.clients,
 	rid: state.rid,
-	activeStatus: state.activeStatus
+	activeStatus: state.activeStatus,
+	selectedRoom: state.selectedRoom,
+	newMessages: state.newMessages
 });
 
 const mapDispatchToProps = dispatch => ({
 	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
-	enterRoom: (rid) => dispatch(enterRoom(rid))
+	enterRoom: (rid) => dispatch(enterRoom(rid)),
+	selectRoom: (rid) => dispatch(selectRoom(rid))
 });
 
 const MenuItems = connect(

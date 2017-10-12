@@ -9,23 +9,43 @@
 	background-color: white;
 }
 
-.client-message {
-	padding: .6em;
-	margin-right: .8em;
-	margin-top: .4em;
-	margin-bottom: .4em;
-	width: 70%;
-	background-color: grey;
-	border-radius: 2em;
+.operator-message {
+	display: flex;
+	justify-content: flex-end;
+	word-break: break-all;
+	width: 100%;
+
+
+	.operator-message_position{
+		background: #BCAAA4;
+		padding: .6em;
+		margin-right: .8em;
+		margin-top: .4em;
+		margin-bottom: .4em;
+		max-width: 70%;
+		display: flex;
+		justify-content: flex-end;
+		border-radius: 1em;
+		font-size: 18px;
+	}
 }
 
-.operator-message {
-	padding: .5em;
-	margin-right: .8em;
-	margin-top: .4em;
-	margin-bottom: .4em;
-	width: 70%;
-	background-color: chartreuse;
+.client-message {
+	display: flex;
+	justify-content: flex-start;
+	word-break: break-all;
+	width: 100%;
+
+	.client-message_position{
+		background: #B0BEC5;
+		padding: .5em;
+		margin-right: .8em;
+		margin-top: .4em;
+		margin-bottom: .4em;
+		border-radius: 1em;
+		max-width: 70%;
+		font-size: 18px;
+	}
 }
 
 :global {
