@@ -2,11 +2,11 @@
 
 export default class Socket {
 
-	constructor({messageSend, addToNewRoom, roomClosed, title, message}) {
+	constructor({messageSend, addToNewRoom, roomClosed, initContent}) {
 		this.socket = new WebSocket('ws://localhost:8080/api/v1/client');
 
 		this.socket.onopen = () => {
-			this.socket.send(this.createInitData(title, message));
+			this.socket.send(this.createInitData(initContent));
 		};
 
 		this.socket.onmessage = (message) => {
@@ -38,14 +38,11 @@ export default class Socket {
 		}))
 	}
 
-	createInitData(title, message) {
+	createInitData(initContent) {
 		return JSON.stringify({
 			type: 'client',
 			action: 'sendDescriptionRoom',
-			body: {
-				title: title,
-				description: message
-			}
+			body: initContent
 
 		})
 	}

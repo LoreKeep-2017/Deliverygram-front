@@ -16,9 +16,9 @@ export const switchToStartForm = () => ({
 	type: SWITCH_TO_START_FORM
 })
 
-export const switchToChatFrom = (title, description) => ({
+export const switchToChatFrom = (title, description, nick) => ({
 	type: SWITCH_TO_CHAT_FORM,
-	payload: {title, description}
+	payload: {title, description, nick}
 })
 
 export const addToNewRoom = (data) => ({

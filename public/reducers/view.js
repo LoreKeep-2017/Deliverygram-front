@@ -25,12 +25,10 @@ const dataWorking = (state = initialState, action) => {
 			newState.position = 'startForm';
 			return newState;
 		case SWITCH_TO_CHAT_FORM:
-			let {title, description} = action.payload;
-			newState.messages.push({
-				place: 'web',
-				message: description
-			});
+			let {title, description, nick} = action.payload;
 			newState.title = title;
+			newState.description = description;
+			newState.nick = nick;
 			newState.position = 'chatForm';
 			return newState;
 		case ADD_TO_ROOM: {

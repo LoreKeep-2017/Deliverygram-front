@@ -20,9 +20,11 @@ class CreateChatFrom extends React.Component {
 			addToNewRoom,
 			roomClosed,
 			title,
-			message
+			description,
+			nick
 		} = this.props;
-		this.socket = new Socket({messageSend, addToNewRoom, roomClosed, title, message});
+		let initContent = {title, description, nick}
+		this.socket = new Socket({messageSend, addToNewRoom, roomClosed, initContent});
 	}
 
 	onClick() {
@@ -37,30 +39,31 @@ class CreateChatFrom extends React.Component {
 	render() {
 		const {
 			messages,
-			issue,
+			title,
 			form: {
 				getFieldDecorator
 			}
 		} = this.props;
 		let allMessages;
-        console.log(this.props);
 		if (messages) {
-			allMessages = messages.map((item, position) => {
-                console.log(item);
-				return (<div className={`chat-card__${item.place}-message`} key={`chat_message_${position}`}>
-					<p className={`${item.author}-message`} key={position}>{item.body}</p>
-				</div>)
-			})
+			allMessages = messages.map((item, position) => (
+				<div className={`chat-card__${item.author}-message`} key={`chat_message_${position}`}>
+					<div className={`${item.author}-message__position`}>
+						<p className={`${item.author}-message`} key={position}>{item.body}</p>
+					</div>
+				</div>
+			))
 		}
-		return (<Card title={issue} bordered style={{width: '25vw'}}>
+		return (<Card title={title} bordered style={{width: '25vw'}}>
 			{allMessages}
 			<Form className={`chat-form`}>
 				<Form.Item/>
 				{getFieldDecorator('message', {})(<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
 				                                                  className={'chat-input__textarea'}
-				                                                  placeholder={'Введите свое сообщение'}/>)}
+				                                                  placeholder={'Введите свое сообщение'}
+				                                                  onPressEnter={() => this.onClick()}
+				/>)}
 				<Form.Item/>
-				<Button onClick={() => this.onClick()} className={'chat-input__button'}>{'Отправить'}</Button>
 			</Form>
 		</Card>);
 	}
@@ -71,7 +74,9 @@ const FormChatForm = Form.create()(CreateChatFrom);
 const mapStateToProps = state => {
 	return {
 		messages: state.messages,
-		title: state.title
+		title: state.title,
+		nick: state.nick,
+		description: state.description
 	}
 }
 

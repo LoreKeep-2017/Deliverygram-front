@@ -31,23 +31,43 @@
 	justify-content: flex-end;
 }
 
-.client-message {
-	padding: .6em;
-	margin-right: .8em;
-	margin-top: .4em;
-	margin-bottom: .4em;
-	width: 70%;
-	background-color: grey;
-	border-radius: 2em;
+.chat-card__client-message {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+	word-break: break-all;
+
+	.client-message__position{
+		padding: .5em;
+		margin-right: .8em;
+		margin-top: .4em;
+		margin-bottom: .4em;
+		border-radius: 1em;
+		display: flex;
+		justify-content: flex-end;
+		max-width: 70%;
+		font-size: 18px;
+		background: #B0BEC5;
+	}
 }
 
-.operator-message {
-	padding: .5em;
-	margin-right: .8em;
-	margin-top: .4em;
-	margin-bottom: .4em;
-	width: 70%;
-	background-color: chartreuse;
+.chat-card__operator-message {
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+	word-break: break-all;
+
+	.operator-message__position{
+		display: flex;
+		justify-content: flex-start;
+		font-size: 18px;
+		border-radius: 1em;
+		padding: .6em;
+		margin-right: .8em;
+		margin-top: .4em;
+		margin-bottom: .4em;
+		background: #BCAAA4;
+	}
 }
 
 .chat-form {

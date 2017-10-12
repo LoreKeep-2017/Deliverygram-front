@@ -24,10 +24,11 @@ class CreateChatForm extends React.Component {
 		} = this.props;
 		const title = getFieldValue('title');
 		const description = getFieldValue('description');
-		switchToChatFrom(title, description);
+		const nick = getFieldValue('nick')
+		switchToChatFrom(title, description, nick);
 	}
 
-	close(){
+	close() {
 		const {
 			closeStartForm
 		} = this.props;
@@ -41,11 +42,15 @@ class CreateChatForm extends React.Component {
 		} = this.props.form;
 		return (
 			<Row>
-				<div>
+				<div style={{float: 'right'}}>
 					<Button icon={'close'} onClick={() => this.close()}/>
 				</div>
 				<Card title={'Чат'} bordered style={{width: '25vw'}}>
 					<Form className={'createForm'}>
+						<Form.Item label={'Как к вам можно обращаться'} labelCol={{span: 6}} wrapperCol={{span: 18}}>
+							{getFieldDecorator('nick', {})(<Input className={'chat-input__textarea'}
+							                                      placeholder={'Введите свое сообщение'}/>)}
+						</Form.Item>
 						<Form.Item label={'Введите проблему'} labelCol={{span: 6}} wrapperCol={{span: 18}}>
 							{getFieldDecorator('title', {})(<Input className={'chat-input__textarea'}
 							                                       placeholder={'Введите свое сообщение'}/>)}
@@ -68,7 +73,7 @@ class CreateChatForm extends React.Component {
 const startChatForm = Form.create()(CreateChatForm);
 
 const mapDispatchToProps = dispatch => ({
-	switchToChatFrom: (issue, description) => dispatch(switchToChatFrom(issue, description)),
+	switchToChatFrom: (issue, description, nick) => dispatch(switchToChatFrom(issue, description, nick)),
 	closeStartForm: () => dispatch(closeStartForm())
 })
 
