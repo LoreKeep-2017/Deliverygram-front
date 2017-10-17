@@ -4,7 +4,8 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const pkg = require('./package.json')
+const CompressionPlugin = require('compression-webpack-plugin');
+const pkg = require('./package.json');
 
 module.exports = {
 	entry : {
@@ -37,6 +38,7 @@ module.exports = {
 	},
 	plugins: [
 		new CleanWebpackPlugin('dist'),
+
 		new webpack.LoaderOptionsPlugin({
 			debug: true
 		}),
@@ -44,6 +46,27 @@ module.exports = {
 		new HtmlPlugin({
 			filename: 'index.html',
 			template: path.resolve(__dirname, 'public/index.html')
-		})
+		}),
+
+		new webpack.DefinePlugin({
+			cutCode: JSON.stringify(true)		
+		}),
+
+		new webpack.optimize.CommonsChunkPlugin({
+			name: 'vendor'		
+		}),
+
+		new webpack.optimize.DedupePlugin() ,
+		
+		new webpack.optimize.OccurrenceOrderPlugin(),
+		 		
+		new CompressionPlugin({
+			asset: '[path]',
+			algorithm: 'gzip',
+			test: /\.jsx?$/,
+			threshold: 10240,
+			minRatio: 0.8
+			
+		}),
 	]
 };
