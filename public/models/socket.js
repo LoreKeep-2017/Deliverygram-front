@@ -3,7 +3,7 @@
 export default class Socket {
 
 	constructor({messageSend, addToNewRoom, roomClosed, initContent}) {
-		this.socket = new WebSocket('ws://localhost:8080/api/v1/client');
+		this.socket = new WebSocket('ws://fin01.deliverygramm.park.bmstu.cloud:8080/api/v1/client');
 
 		this.socket.onopen = () => {
 			this.socket.send(this.createInitData(initContent));
