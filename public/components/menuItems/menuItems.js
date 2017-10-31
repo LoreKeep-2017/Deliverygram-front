@@ -17,6 +17,9 @@ import {
 class MenuInit extends React.Component {
 
 	getInitials(nick) {
+		if (nick.length === 1 ){
+			return nick;
+		}
 		return (nick.indexOf(' ') === -1 ) ? nick[0] + nick[1] : nick[0] + nick[nick.indexOf(' ') + 1];
 	}
 
@@ -116,13 +119,13 @@ class MenuInit extends React.Component {
 		} = this.props;
 		return (
 			<div className={'logo'} style={{display: 'flex'}}>
-				<div style={{background: 'white', width: 100, height: '100vh'}}>
+				<div style={{background: 'white', minWidth: '6vw', height: '100vh'}}>
 					<Menu theme={'light'} mode={'inline'}
 					      onSelect={(event) => this.changeMessages(event)}>
 						{this.getMainMenu()}
 					</Menu>
 				</div>
-				<div>
+				<div style={{width: '22vw'}}>
 					<span className={'menu-title'}>
 						{this.getTitle()}
 					</span>

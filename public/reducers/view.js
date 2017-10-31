@@ -7,7 +7,7 @@ import {
 	ENTER_ROOM,
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
-	SELECT_ROOM
+	SELECT_ROOM, GET_CHAT_INFO
 } from '../actions/action-types';
 
 const initialState = {
@@ -82,6 +82,13 @@ const dataWorking = (state = initialState, action) => {
 				rid
 			} = action.payload;
 			newState.selectedRoom = rid;
+			return newState;
+		}
+		case GET_CHAT_INFO:{
+			const {
+				getInfo
+			} = action.payload;
+			newState.getInfo = getInfo;
 			return newState;
 		}
 

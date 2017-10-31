@@ -7,14 +7,19 @@ import {
 	Card,
 	Form,
 	Input,
-	Button
+	Button,
+	Icon
 } from 'antd';
 import {connect} from 'react-redux';
 import Socket from '../models/socket';
-import {receiveClients, sendMessage, closeChat, receiveMessages, enterRoom, changeRoomStatus} from './action';
+import {
+	receiveClients, sendMessage, closeChat, receiveMessages, changeRoomStatus,
+	getExtraInfo
+} from './action';
 import './main.less';
 import MenuItems from '../components/menuItems/menuItems';
 import ChatContent from '../components/content/content';
+import MoreInfo from "../components/moreInfo/moreInfo";
 
 const {
 	Footer,
@@ -23,16 +28,10 @@ const {
 
 class MainView extends React.Component {
 
-	constructor() {
+	constructor(){
 		super();
-		this.state = {
-			collapsed: false,
-		};
-		this.toggle = () => {
-			this.setState({
-				collapsed: !this.state.collapsed,
-			});
-		}
+		this.state = {};
+		this.rightSiderClass = 'right-sider';
 	}
 
 	componentWillMount() {
@@ -44,16 +43,41 @@ class MainView extends React.Component {
 		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus);
 	}
 
+	componentWillUpdate(nextProps, nextState) {
+		const {
+			getInfo,
+			selectedRoom
+		} = nextProps;
+		if (selectedRoom && getInfo){
+			this.rightSiderClass += ` right-sider__content`
+		} else {
+			this.rightSiderClass = 'right-sider';
+		}
+	}
+
+
 	render() {
 		const {
-			getFieldDecorator
-		} = this.props.form;
+			form: {
+				getFieldDecorator
+			},
+			getExtraInfo
+		} = this.props;
 		return (
-			<Layout>
-				<Sider width={500} style={{overflow: 'auto', height: '100vh', position: 'fixed', left: 0}}>
+			<Layout style={{width: '100vw'}}>
+				<Sider className={'left-sider'} style={{maxWidth: 'none', minWidth: 'none'}}>
 					<MenuItems socket={this.socket}/>
 				</Sider>
 				<ChatContent socket={this.socket}/>
+				<Sider className={this.rightSiderClass}
+				       collapsible={true}
+					   ref={sider => this.rightSider = sider}
+					   reverseArrow={true}
+					   defaultCollapsed={true}
+					   trigger={<Icon type="menu-fold" style={{fontSize: 24}}/>}
+					   onCollapse={(collapsed, type) => getExtraInfo(!collapsed)}>
+					<MoreInfo/>
+				</Sider>
 			</Layout>
 		);
 	}
@@ -63,7 +87,9 @@ const mapStateToProps = state => {
 	return {
 		messages: state.messages,
 		clients: state.clients,
-		rid: state.rid
+		rid: state.rid,
+		getInfo: state.getInfo,
+		selectedRoom: state.selectedRoom
 	}
 }
 
@@ -73,7 +99,8 @@ const mapDispatchToProps = dispatch => {
 		sendMessage: (message) => dispatch(sendMessage(message)),
 		closeChat: (room) => dispatch(closeChat(room)),
 		receiveMessages: (messages) => dispatch(receiveMessages(messages)),
-		changeRoomStatus: (room) => dispatch(changeRoomStatus(room))
+		changeRoomStatus: (room) => dispatch(changeRoomStatus(room)),
+		getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo))
 	}
 }
 

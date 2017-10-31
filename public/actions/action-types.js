@@ -8,3 +8,4 @@ export const ENTER_ROOM = 'chat/ENTER_ROOM';
 export const CHANGE_ROOM_STATUS = 'chat/CHANGE_ROOM_STATUS';
 export const CHANGE_WATCHING_MESSAGES_STATUS = 'chat/CHANGE_WATCHING_MESSAGES_STATUS';
 export const SELECT_ROOM = 'chat/SELECT_ROOM';
+export const GET_CHAT_INFO = 'chat/GET_CHAT_INFO';

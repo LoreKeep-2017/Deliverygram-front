@@ -8,7 +8,7 @@ import {
 	ENTER_ROOM,
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
-	SELECT_ROOM
+	SELECT_ROOM, GET_CHAT_INFO
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -49,4 +49,8 @@ export const changeMessagesByStatus = (status) => ({
 export const selectRoom = (rid) => ({
 	type: SELECT_ROOM,
 	payload: {rid}
+})
+export const getExtraInfo = (getInfo) => ({
+	type: GET_CHAT_INFO,
+	payload: {getInfo}
 })

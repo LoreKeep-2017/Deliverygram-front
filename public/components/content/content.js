@@ -17,7 +17,7 @@ import {
 import ChatHeader from '../header/chatHeader'
 
 const {
-	Content
+	Content,
 } = Layout
 
 class CreateInitContent extends React.Component {
@@ -25,15 +25,16 @@ class CreateInitContent extends React.Component {
 	getMessages() {
 		const {
 			messages,
-			selectedRoom
+			selectedRoom,
+			clients
 		} = this.props;
 		let allMessages = [];
-		if (messages[selectedRoom]) {
-			messages[selectedRoom].forEach(item => {
+		if (clients && clients.rooms[selectedRoom] && clients.rooms[selectedRoom].messages) {
+			clients.rooms[selectedRoom].messages.forEach(item => {
 				allMessages.push(
 					<div className={`${item.author}-message`}>
 						<div className={`${item.author}-message_position`}>
-							{item.body}
+							{this.parseMessage(item.body)}
 						</div>
 					</div>)
 			});
@@ -41,17 +42,38 @@ class CreateInitContent extends React.Component {
 		return allMessages;
 	}
 
-	onClick() {
+
+	parseMessage(message) {
+		let parsed = [];
+		console.info(message);
+		while (message.indexOf('\n') > -1) {
+			let breakPosition = message.indexOf('\n');
+			parsed.push(message.substring(0, breakPosition));
+			message = message.substring(breakPosition + 1);
+		}
+		parsed.push(message);
+		parsed = parsed.map( item => (<p>{item}</p>))
+		console.log(parsed);
+		return parsed;
+	}
+
+	onClick(event) {
 		const {
 			sendMessage,
 			form: {
 				getFieldValue,
-				resetFields
+				resetFields,
+				setFieldsValue
 			},
 			selectedRoom,
 			socket
 		} = this.props;
 		let message = getFieldValue('message');
+		if (event.ctrlKey) {
+			message += '\n';
+			setFieldsValue({message})
+			return
+		}
 		sendMessage(message, selectedRoom);
 		resetFields();
 		socket.sendWithBody('sendMessage', {
@@ -77,7 +99,7 @@ class CreateInitContent extends React.Component {
 							<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
 							                placeholder={'Введите свое сообщение'}
 							                className={'operator-chat__input-form'}
-							                onPressEnter={() => this.onClick()}/>
+							                onPressEnter={(event) => this.onClick(event)}/>
 						)}
 					</Form.Item>
 				</Form>
@@ -87,7 +109,13 @@ class CreateInitContent extends React.Component {
 
 	render() {
 		return (
-			<Layout style={{marginLeft: 500}}>
+			<Layout style={{
+				marginLeft: '28vw',
+				paddingLeft: '5vw',
+				minWidth: '50vw',
+				paddingRight: '5vw',
+				marginRight: '5vw'
+			}}>
 				<ChatHeader socket={this.props.socket}/>
 				<Content className={'content'}>
 					<Card
@@ -109,7 +137,8 @@ const InitContent = Form.create()(CreateInitContent);
 const mapStateToProps = state => ({
 	messages: state.messages,
 	status: state.activeStatus,
-	selectedRoom: state.selectedRoom
+	selectedRoom: state.selectedRoom,
+	clients: state.clients
 })
 
 const mapDispatchToProps = dispatch => ({

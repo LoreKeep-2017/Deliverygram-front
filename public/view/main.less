@@ -3,6 +3,36 @@
 	color: white;
 }
 
+.left-sider{
+	width: 28vw !important;
+	overflow: auto;
+	height: 100vh;
+	position: fixed;
+	left: 0;
+	max-width: none !important;
+	min-width: 0 !important;
+}
+
+.ant-layout{
+	height: 100vh;
+}
+
+.right-sider{
+	width: 5vw !important;
+	height: 100vh;
+	background-color: black;
+	position: fixed;
+	right: 0;
+	max-width: none !important;
+	min-width: 0 !important;
+}
+
+.right-sider__content{
+	width: 25vw !important;
+	max-width: 25vw !important;
+	z-index: 5;
+}
+
 .icon {
 	width: 100vw;
 	height: 100px;
@@ -25,6 +55,7 @@
 		max-width: 70%;
 		display: flex;
 		justify-content: flex-end;
+		flex-direction: column;
 		border-radius: 1em;
 		font-size: 18px;
 	}

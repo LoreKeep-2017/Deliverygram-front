@@ -5,6 +5,7 @@ export default class Socket{
 
 	constructor(receiveClients, receiveMessage, changeRoomStatus){
 		this.socket = new WebSocket('ws://fin01.deliverygramm.park.bmstu.cloud:8080/api/v1/operator');
+		// this.socket = new WebSocket('ws://localhost:8080/api/v1/operator');
 
 		this.socket.onopen = () => {
 			// sthis.sendWithoutBody('getAllRooms');
