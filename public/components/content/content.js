@@ -71,8 +71,8 @@ class CreateInitContent extends React.Component {
 		let message = getFieldValue('message');
 		if (event.ctrlKey) {
 			message += '\n';
-			setFieldsValue({message})
-			return
+			setFieldsValue({message});
+			return;
 		}
 		sendMessage(message, selectedRoom);
 		resetFields();

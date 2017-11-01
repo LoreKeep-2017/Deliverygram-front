@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
+import {Link} from 'react-router-dom';
 import {
 	Layout,
 	Button,
@@ -52,10 +53,16 @@ class InitChatHeader extends React.Component {
 			let button;
 			switch (status) {
 				case 'roomNew':
-					button = <Button className={'action-button'} onClick={() => this.changeToChat()}>{'Забрать'}</Button>;
+					button = (
+						<Link to={`/active-messages/${selectedRoom}`}>
+							<Button className={'action-button'} onClick={() => this.changeToChat()}>
+								{'Забрать'}
+							</Button>
+						</Link>);
 					break;
 				case 'roomBusy':
-					button = <Button className={'action-button'}  onClick={() => this.onCloseChat()}>{'Закрыть'}</Button>;
+					button =
+						<Button className={'action-button'} onClick={() => this.onCloseChat()}>{'Закрыть'}</Button>;
 					break;
 			}
 			return (<Row className={'header'}>

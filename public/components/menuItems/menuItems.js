@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
+import {Link} from 'react-router-dom'
 import {
 	Menu,
 	Button,
@@ -12,12 +13,13 @@ import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
-	selectRoom} from '../../view/action';
+	selectRoom
+} from '../../view/action';
 
 class MenuInit extends React.Component {
 
 	getInitials(nick) {
-		if (nick.length === 1 ){
+		if (nick.length === 1) {
 			return nick;
 		}
 		return (nick.indexOf(' ') === -1 ) ? nick[0] + nick[1] : nick[0] + nick[nick.indexOf(' ') + 1];
@@ -26,34 +28,39 @@ class MenuInit extends React.Component {
 	getClientsRequests() {
 		let {
 			clients,
-			newMessages
+			newMessages,
+			path
 		} = this.props;
 		let allClients = [];
 		if (clients) {
 			for (let keys in clients.rooms) {
 				let newMessage = newMessages[keys] ? `+${newMessages[keys]}` : '';
-					allClients.push(<Menu.Item style={{
-					paddingLeft: 0,
-					padding: 0,
-					height: '9vh'
-				}} className={'client-menu-item'} key={clients.rooms[keys].id}>
-					<Row className={'client-menu-item__client-row'}>
-						<Col className={'client-row__avatar-div'}>
-							<div className={'client-row__avatar'}>
-								{this.getInitials(clients.rooms[keys].client.nick).toUpperCase()}
-							</div>
-						</Col>
-						<Col className={'client-row__content-col'}>
-							<h1>{clients.rooms[keys].client.nick}</h1>
-							<span className={'content-col__title'}>{clients.rooms[keys].title}</span>
-						</Col>
-						<Col>
+				allClients.push(
+					<Menu.Item style={{
+						paddingLeft: 0,
+						padding: 0,
+						height: '9vh'
+					}} className={'client-menu-item'} key={clients.rooms[keys].id}>
+						<Link to={`/${path}/${keys}`}>
+							<Row className={'client-menu-item__client-row'}>
+								<Col className={'client-row__avatar-div'}>
+									<div className={'client-row__avatar'}>
+										{this.getInitials(clients.rooms[keys].client.nick).toUpperCase()}
+									</div>
+								</Col>
+								<Col className={'client-row__content-col'}>
+									<h1>{clients.rooms[keys].client.nick}</h1>
+									<span className={'content-col__title'}>{clients.rooms[keys].title}</span>
+								</Col>
+								<Col>
 							<span className={'client-row__new-messages-col'}>
 								{newMessage}
 							</span>
-						</Col>
-					</Row>
-				</Menu.Item>)
+								</Col>
+							</Row>
+						</Link>
+					</Menu.Item>
+				)
 			}
 		}
 		return allClients;
@@ -63,16 +70,22 @@ class MenuInit extends React.Component {
 		let menu = [];
 		menu.push(
 			<Menu.Item key={'mail'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
-				<Button shape={'circle'} icon={'mail'} key={'mail-button'} size={'large'}/>
+				<Link to={'/new-messages'}>
+					<Button shape={'circle'} icon={'mail'} key={'mail-button'} size={'large'}/>
+				</Link>
 			</Menu.Item>);
 		menu.push(
 			<Menu.Item key={'exception'} className={'main-menu-item'}
 			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
-				<Button shape={'circle'} icon={'exception'} key={'exception-button'} size={'large'}/>
+				<Link to={'/active-messages'}>
+					<Button shape={'circle'} icon={'exception'} key={'exception-button'} size={'large'}/>
+				</Link>
 			</Menu.Item>);
 		menu.push(
 			<Menu.Item key={'inbox'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
-				<Button shape={'circle'} icon={'inbox'} key={'inbox-button'} size={'large'}/>
+				<Link to={'/closed-messages'}>
+					<Button shape={'circle'} icon={'inbox'} key={'inbox-button'} size={'large'}/>
+				</Link>
 			</Menu.Item>);
 		return menu;
 	}
