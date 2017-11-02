@@ -6,11 +6,12 @@
 }
 
 .menu-title{
-  margin-top: 1vh;
+  display: block;
+  margin-top: .6em;
   font-size: 3em;
   color: white;
-  margin-left: 2vw;
-  margin-bottom: 3vh;
+  margin-left: .6em;
+  margin-bottom: .6em;
 }
 
 .client-menu {
@@ -28,12 +29,13 @@
     .client-menu-item__client-row {
       display: flex;
       flex-direction: row;
-      height: 9vh;
+      height: 10vh;
       width: 80%;
 
       .client-row__avatar-div {
         display: flex;
         width: 10vh;
+        margin-left: 3vw;
         justify-content: flex-end;
         align-items: center;
 
@@ -55,12 +57,17 @@
       .client-row__content-col{
         display: flex;
         flex-direction: column;
+        justify-content: center;
         margin-left: 2vw;
 
+        h1{
+          margin-bottom: -.3em;
+        }
 
         .content-col__title{
           color: white;
           font-size: 1.5em;
+          margin-top: -.3em;
         }
       }
 

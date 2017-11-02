@@ -7,8 +7,11 @@ export default class Socket{
 		// this.socket = new WebSocket('ws://fin01.deliverygramm.park.bmstu.cloud:8080/api/v1/operator');
 		this.socket = new WebSocket('ws://localhost:8080/api/v1/operator');
 
+		this.queue = [];
 		this.socket.onopen = () => {
-			// sthis.sendWithoutBody('getAllRooms');
+			this.queue.forEach(body => {
+				this.socket.send(body)
+			})
 		};
 
 		this.socket.onmessage = (message) => {
@@ -35,6 +38,13 @@ export default class Socket{
 	}
 
 	sendWithoutBody(action) {
+		if (this.socket.readyState !== 1){
+			this.queue.push(JSON.stringify({
+				'type': 'operator',
+				'action': action
+			}))
+			return;
+		}
 		this.socket.send(JSON.stringify({
 			'type': 'operator',
 			'action': action
@@ -42,6 +52,14 @@ export default class Socket{
 	}
 
 	sendWithBody(action, body) {
+		if (this.socket.readyState !== 1){
+			this.queue.push(JSON.stringify({
+				'type': 'operator',
+				'action': action,
+				'body': body
+			}))
+			return;
+		}
 		this.socket.send(JSON.stringify({
 			'type': 'operator',
 			'action': action,

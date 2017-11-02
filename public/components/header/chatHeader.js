@@ -28,7 +28,7 @@ class InitChatHeader extends React.Component {
 			selectedRoom
 		} = this.props;
 		enterRoom(selectedRoom);
-		socket.sendWithBody('enterRoom', {rid: selectedRoom});
+		socket.sendWithBody('enterRoom', {rid: +selectedRoom});
 	}
 
 	onCloseChat() {
@@ -39,7 +39,7 @@ class InitChatHeader extends React.Component {
 		} = this.props;
 		closeChat(selectedRoom);
 		socket.sendWithBody('closeRoom', {
-			rid: selectedRoom
+			rid: +selectedRoom
 		})
 	}
 
@@ -49,7 +49,7 @@ class InitChatHeader extends React.Component {
 			clients,
 			selectedRoom
 		} = this.props;
-		if (selectedRoom) {
+		if (selectedRoom && clients && clients.rooms) {
 			let button;
 			switch (status) {
 				case 'roomNew':
@@ -67,8 +67,8 @@ class InitChatHeader extends React.Component {
 			}
 			return (<Row className={'header'}>
 				<div className={'header__info'}>
-					<div className={'info__author'}>{`${clients.rooms[selectedRoom].client.nick}`}</div>
-					<div className={'info__title'}>{`${clients.rooms[selectedRoom].title}`}</div>
+					<span className={'info__author'}>{`${clients.rooms[selectedRoom].client.nick}`}</span>
+					<span className={'info__title'}>{`${clients.rooms[selectedRoom].title}`}</span>
 					{/*<div className={'info__description'}>{`Описание: ${clients.rooms[selectedRoom].description}`}</div>*/}
 				</div>
 				<div className={'header__actions'}>

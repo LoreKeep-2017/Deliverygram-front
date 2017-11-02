@@ -25,6 +25,20 @@ class MenuInit extends React.Component {
 		return (nick.indexOf(' ') === -1 ) ? nick[0] + nick[1] : nick[0] + nick[nick.indexOf(' ') + 1];
 	}
 
+	componentDidMount() {
+		const {
+			activeStatus,
+			selectedRoom,
+			socket
+		} = this.props;
+		if (activeStatus){
+			socket.sendWithBody('getRoomsByStatus', {type: activeStatus});
+		}
+		if (selectedRoom){
+			socket.sendWithBody('getAllMessages', {rid: +selectedRoom});
+		}
+	}
+
 	getClientsRequests() {
 		let {
 			clients,
@@ -40,7 +54,7 @@ class MenuInit extends React.Component {
 						paddingLeft: 0,
 						padding: 0,
 						height: '9vh'
-					}} className={'client-menu-item'} key={clients.rooms[keys].id}>
+					}} className={'client-menu-item'} key={clients.rooms[keys].id.toString()}>
 						<Link to={`/${path}/${keys}`}>
 							<Row className={'client-menu-item__client-row'}>
 								<Col className={'client-row__avatar-div'}>
@@ -69,20 +83,20 @@ class MenuInit extends React.Component {
 	getMainMenu() {
 		let menu = [];
 		menu.push(
-			<Menu.Item key={'mail'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
+			<Menu.Item key={'new-messages'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
 				<Link to={'/new-messages'}>
 					<Button shape={'circle'} icon={'mail'} key={'mail-button'} size={'large'}/>
 				</Link>
 			</Menu.Item>);
 		menu.push(
-			<Menu.Item key={'exception'} className={'main-menu-item'}
+			<Menu.Item key={'active-messages'} className={'main-menu-item'}
 			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
 				<Link to={'/active-messages'}>
 					<Button shape={'circle'} icon={'exception'} key={'exception-button'} size={'large'}/>
 				</Link>
 			</Menu.Item>);
 		menu.push(
-			<Menu.Item key={'inbox'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
+			<Menu.Item key={'closed-messages'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
 				<Link to={'/closed-messages'}>
 					<Button shape={'circle'} icon={'inbox'} key={'inbox-button'} size={'large'}/>
 				</Link>
@@ -92,20 +106,16 @@ class MenuInit extends React.Component {
 
 	changeMessages(event) {
 		const {
-			changeMessagesByStatus,
 			socket
 		} = this.props;
 		switch (event.key) {
-			case 'mail':
-				changeMessagesByStatus('roomNew');
+			case 'new-messages':
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomNew'});
 				break;
-			case 'exception':
-				changeMessagesByStatus('roomBusy');
+			case 'active-messages':
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomBusy'});
 				break;
-			case 'inbox':
-				changeMessagesByStatus('roomClose');
+			case 'closed-messages':
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomClose'});
 				break;
 		}
@@ -129,11 +139,14 @@ class MenuInit extends React.Component {
 		const {
 			socket,
 			selectRoom,
+			path,
+			match = {params: {}}
 		} = this.props;
 		return (
 			<div className={'logo'} style={{display: 'flex'}}>
 				<div style={{background: 'white', minWidth: '6vw', height: '100vh'}}>
 					<Menu theme={'light'} mode={'inline'}
+					      selectedKeys={[path]}
 					      onSelect={(event) => this.changeMessages(event)}>
 						{this.getMainMenu()}
 					</Menu>
@@ -144,6 +157,7 @@ class MenuInit extends React.Component {
 					</span>
 					<Menu theme={'dark'} mode={'inline'}
 					      className={'client-menu'}
+					      selectedKeys={[match.params.id]}
 					      onClick={(event) => {
 						      selectRoom(+event.key);
 						      socket.sendWithBody('getAllMessages', {rid: +event.key});

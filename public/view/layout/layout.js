@@ -43,9 +43,16 @@ class InitLayout extends React.Component {
 		const {
 			receiveClients,
 			receiveMessages,
-			changeRoomStatus
+			changeRoomStatus,
+			selectedRoom,
+			getInfo
 		} = this.props;
 		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus);
+		if (selectedRoom && getInfo) {
+			this.rightSiderClass += ` right-sider__content`
+		} else {
+			this.rightSiderClass = 'right-sider';
+		}
 	}
 
 	componentWillUpdate(nextProps, nextState) {
@@ -67,8 +74,10 @@ class InitLayout extends React.Component {
 				getFieldDecorator
 			},
 			getExtraInfo,
+			getInfo = false,
 			path,
-			selectedRoom
+			selectedRoom,
+			match
 		} = this.props;
 		let {
 			url
@@ -79,14 +88,13 @@ class InitLayout extends React.Component {
 		return (
 			<Layout style={{width: '100vw'}}>
 				<Sider className={'left-sider'} style={{maxWidth: 'none', minWidth: 'none'}}>
-					<MenuItems socket={this.socket} path={path}/>
+					<MenuItems socket={this.socket} path={path} match={match}/>
 				</Sider>
 				<ChatContent socket={this.socket}/>
 				<Sider className={this.rightSiderClass}
 				       collapsible={true}
-				       ref={sider => this.rightSider = sider}
 				       reverseArrow={true}
-				       defaultCollapsed={true}
+				       defaultCollapsed={!getInfo}
 				       trigger={
 					       <Link to={url}>
 						       <Icon type="menu-fold" style={{fontSize: 24}}/>

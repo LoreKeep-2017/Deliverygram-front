@@ -30,9 +30,9 @@ class CreateInitContent extends React.Component {
 		} = this.props;
 		let allMessages = [];
 		if (clients && clients.rooms[selectedRoom] && clients.rooms[selectedRoom].messages) {
-			clients.rooms[selectedRoom].messages.forEach(item => {
+			clients.rooms[selectedRoom].messages.forEach((item, position) => {
 				allMessages.push(
-					<div className={`${item.author}-message`}>
+					<div className={`${item.author}-message`} key={`message_${position}`}>
 						<div className={`${item.author}-message_position`}>
 							{this.parseMessage(item.body)}
 						</div>
@@ -45,15 +45,13 @@ class CreateInitContent extends React.Component {
 
 	parseMessage(message) {
 		let parsed = [];
-		console.info(message);
 		while (message.indexOf('\n') > -1) {
 			let breakPosition = message.indexOf('\n');
 			parsed.push(message.substring(0, breakPosition));
 			message = message.substring(breakPosition + 1);
 		}
 		parsed.push(message);
-		parsed = parsed.map( item => (<p>{item}</p>))
-		console.log(parsed);
+		parsed = parsed.map((item, position) => (<p key={`message__row_${position}`}>{item}</p>))
 		return parsed;
 	}
 
@@ -69,15 +67,15 @@ class CreateInitContent extends React.Component {
 			socket
 		} = this.props;
 		let message = getFieldValue('message');
+		resetFields(['message']);
 		if (event.ctrlKey) {
 			message += '\n';
 			setFieldsValue({message});
 			return;
 		}
 		sendMessage(message, selectedRoom);
-		resetFields();
 		socket.sendWithBody('sendMessage', {
-			room: selectedRoom,
+			room: +selectedRoom,
 			body: message,
 			author: 'operator'
 		})
@@ -95,11 +93,15 @@ class CreateInitContent extends React.Component {
 			return (
 				<Form className={'operator-chat'}>
 					<Form.Item style={{width: '100%'}}>
-						{getFieldDecorator('message', {})(
+						{getFieldDecorator('message', {initialValue: ''})(
 							<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
 							                placeholder={'Введите свое сообщение'}
 							                className={'operator-chat__input-form'}
-							                onPressEnter={(event) => this.onClick(event)}/>
+							                onPressEnter={(event) => {
+								                event.preventDefault();
+								                this.onClick(event)
+							                }
+							                }/>
 						)}
 					</Form.Item>
 				</Form>
@@ -120,6 +122,10 @@ class CreateInitContent extends React.Component {
 				<Content className={'content'}>
 					<Card
 						bordered
+						ref={card => {
+							if (card)
+								card.container.scrollTop = card.container.scrollHeight
+						}}
 						className={'operator-messages'}>
 						<div>
 							{this.getMessages()}
