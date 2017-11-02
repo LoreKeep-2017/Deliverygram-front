@@ -27,13 +27,32 @@ class CreateChatFrom extends React.Component {
 		this.socket = new Socket({messageSend, addToNewRoom, roomClosed, initContent});
 	}
 
-	onClick() {
+	onClick(event) {
 		const {
 			getFieldValue,
-			resetFields
+			resetFields,
+			setFieldsValue
 		} = this.props.form;
-		this.socket.sendMessage(getFieldValue('message'));
+		let message = getFieldValue('message');
+		if (event.ctrlKey) {
+			message += '\n';
+			setFieldsValue({message});
+			return;
+		}
 		resetFields();
+		this.socket.sendMessage(message);
+	}
+
+	parseMessage(message) {
+		let parsed = [];
+		while (message.indexOf('\n') > -1) {
+			let breakPosition = message.indexOf('\n');
+			parsed.push(message.substring(0, breakPosition));
+			message = message.substring(breakPosition + 1);
+		}
+		parsed.push(message);
+		parsed = parsed.map((item, position) => (<p key={`message__row_${position}`}>{item}</p>))
+		return parsed;
 	}
 
 	render() {
@@ -49,20 +68,30 @@ class CreateChatFrom extends React.Component {
 			allMessages = messages.map((item, position) => (
 				<div className={`chat-card__${item.author}-message`} key={`chat_message_${position}`}>
 					<div className={`${item.author}-message__position`}>
-						<p className={`${item.author}-message`} key={position}>{item.body}</p>
+						<p className={`${item.author}-message`} key={position}>{this.parseMessage(item.body)}</p>
 					</div>
 				</div>
 			))
 		}
 		return (<Card title={title} bordered style={{width: '25vw'}}>
-			{allMessages}
+			<Card className={'card-content'}
+			      ref={card => {
+				      if (card)
+					      card.container.scrollTop = card.container.scrollHeight
+			      }}>
+				{allMessages}
+			</Card>
 			<Form className={`chat-form`}>
 				<Form.Item/>
-				{getFieldDecorator('message', {})(<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
-				                                                  className={'chat-input__textarea'}
-				                                                  placeholder={'Введите свое сообщение'}
-				                                                  onPressEnter={() => this.onClick()}
-				/>)}
+				{getFieldDecorator('message', {})(
+					<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
+					                className={'chat-input__textarea'}
+					                placeholder={'Введите свое сообщение'}
+					                onPressEnter={(event) => {
+						                event.preventDefault();
+						                this.onClick(event);
+					                }}
+					/>)}
 				<Form.Item/>
 			</Form>
 		</Card>);
