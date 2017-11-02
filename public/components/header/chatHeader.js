@@ -49,7 +49,7 @@ class InitChatHeader extends React.Component {
 			clients,
 			selectedRoom
 		} = this.props;
-		if (selectedRoom && clients && clients.rooms) {
+		if (selectedRoom && clients && clients.rooms && clients.rooms[selectedRoom] && clients.rooms[selectedRoom].client) {
 			let button;
 			switch (status) {
 				case 'roomNew':

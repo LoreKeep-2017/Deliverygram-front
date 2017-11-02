@@ -13,6 +13,7 @@ import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
+	getExtraInfo,
 	selectRoom
 } from '../../view/action';
 
@@ -106,16 +107,20 @@ class MenuInit extends React.Component {
 
 	changeMessages(event) {
 		const {
-			socket
+			socket,
+			getExtraInfo
 		} = this.props;
 		switch (event.key) {
 			case 'new-messages':
+				getExtraInfo(false);
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomNew'});
 				break;
 			case 'active-messages':
+				getExtraInfo(false);
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomBusy'});
 				break;
 			case 'closed-messages':
+				getExtraInfo(false);
 				socket.sendWithBody('getRoomsByStatus', {type: 'roomClose'});
 				break;
 		}
@@ -140,6 +145,7 @@ class MenuInit extends React.Component {
 			socket,
 			selectRoom,
 			path,
+			getExtraInfo,
 			match = {params: {}}
 		} = this.props;
 		return (
@@ -160,6 +166,7 @@ class MenuInit extends React.Component {
 					      selectedKeys={[match.params.id]}
 					      onClick={(event) => {
 						      selectRoom(+event.key);
+						      getExtraInfo(false);
 						      socket.sendWithBody('getAllMessages', {rid: +event.key});
 					      }}>
 						{this.getClientsRequests()}
@@ -181,7 +188,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 	enterRoom: (rid) => dispatch(enterRoom(rid)),
-	selectRoom: (rid) => dispatch(selectRoom(rid))
+	selectRoom: (rid) => dispatch(selectRoom(rid)),
+	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo))
 });
 
 const MenuItems = connect(

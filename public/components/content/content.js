@@ -38,8 +38,19 @@ class CreateInitContent extends React.Component {
 						</div>
 					</div>)
 			});
+			return (
+				<Card
+					bordered
+					ref={card => {
+						if (card)
+							card.container.scrollTop = card.container.scrollHeight
+					}}
+					className={'operator-messages'}>
+					<div>
+						{allMessages}
+					</div>
+				</Card>)
 		}
-		return allMessages;
 	}
 
 
@@ -120,17 +131,7 @@ class CreateInitContent extends React.Component {
 			}}>
 				<ChatHeader socket={this.props.socket}/>
 				<Content className={'content'}>
-					<Card
-						bordered
-						ref={card => {
-							if (card)
-								card.container.scrollTop = card.container.scrollHeight
-						}}
-						className={'operator-messages'}>
-						<div>
-							{this.getMessages()}
-						</div>
-					</Card>
+					{this.getMessages()}
 					{this.getChatForm()}
 				</Content>
 			</Layout>

@@ -13,7 +13,7 @@ class moreInfoInit extends React.Component {
 			selectedRoom,
 			getInfo
 		} = this.props;
-		if (selectedRoom && getInfo && clients) {
+		if (selectedRoom && getInfo && clients && clients.rooms && clients.rooms[selectedRoom]) {
 			return (
 				<div className={'moreInfo__content right-sider-content'}>
 					<div>{`Автор: ${clients.rooms[selectedRoom].client.nick}`}</div>

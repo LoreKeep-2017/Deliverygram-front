@@ -15,7 +15,11 @@ import {
 } from 'antd';
 import Socket from '../../models/socket';
 import {
-	receiveClients, sendMessage, closeChat, receiveMessages, changeRoomStatus,
+	receiveClients,
+	sendMessage,
+	closeChat,
+	receiveMessages,
+	changeRoomStatus,
 	getExtraInfo
 } from '../action';
 import '../main/main.less';
@@ -33,9 +37,6 @@ class InitLayout extends React.Component {
 
 	constructor() {
 		super();
-		this.state = {
-			url: ''
-		};
 		this.rightSiderClass = 'right-sider';
 	}
 
@@ -79,11 +80,25 @@ class InitLayout extends React.Component {
 			selectedRoom,
 			match
 		} = this.props;
-		let {
-			url
-		} = this.state;
-		if (path && selectedRoom && !url) {
-			url = `/${path}/${selectedRoom}/info`;
+		let url, sider;
+		if (path && selectedRoom) {
+			if (!getInfo) {
+				url = `/${path}/${selectedRoom}/info`;
+			} else {
+				url = `/${path}/${selectedRoom}`;
+			}
+			sider = (
+				<Sider className={this.rightSiderClass}
+				       collapsible={true}
+				       defaultCollapsed={!getInfo}
+				       trigger={null}>
+					<Link to={url} onClick={(collapsed) => getExtraInfo(!collapsed)}>
+						<div className={'right_sider__trigger'}>
+							<Icon type={getInfo ? 'menu-unfold' : 'menu-fold'} style={{fontSize: 24}}/>
+						</div>
+					</Link>
+					<MoreInfo/>
+				</Sider>)
 		}
 		return (
 			<Layout style={{width: '100vw'}}>
@@ -91,24 +106,7 @@ class InitLayout extends React.Component {
 					<MenuItems socket={this.socket} path={path} match={match}/>
 				</Sider>
 				<ChatContent socket={this.socket}/>
-				<Sider className={this.rightSiderClass}
-				       collapsible={true}
-				       reverseArrow={true}
-				       defaultCollapsed={!getInfo}
-				       trigger={
-					       <Link to={url}>
-						       <Icon type="menu-fold" style={{fontSize: 24}}/>
-					       </Link>}
-				       onCollapse={(collapsed, type) => {
-					       getExtraInfo(!collapsed)
-					       if (collapsed) {
-						       this.setState({url: `/${path}/${selectedRoom}/info`});
-					       } else {
-						       this.setState({url: `/${path}/${selectedRoom}`});
-					       }
-				       }}>
-					<MoreInfo/>
-				</Sider>
+				{sider}
 			</Layout>
 		);
 	}
