@@ -15,7 +15,7 @@ import ChatForm from './chatForm'
 
 class ChatButton extends React.Component {
 
-	onClick(event, label) {
+	onClick() {
 		this.props.switchToStartForm();
 	}
 
@@ -40,11 +40,13 @@ class ChatButton extends React.Component {
 					return <h1>{'Sorry, there is some problem'}</h1>
 			}
 		}
-		return (<Button
-			onClick={() => this.onClick()}
-			size='large'
-			className={'start-button'}
-		>{'Начать чат'}</Button>)
+		return (
+			<Button
+				onClick={() => this.onClick()}
+				size='large'
+				className={'start-button'}>
+				{'Начать чат'}
+			</Button>)
 	}
 }
 

@@ -11,11 +11,11 @@ import {
 import {connect} from 'react-redux'
 import './createChatForm.less'
 import './button.less'
-import {closeStartForm, switchToChatFrom} from './action';
+import {closeStartForm, restorePrevChat, switchToChatFrom} from './action';
 
 class CreateChatForm extends React.Component {
 
-	onClick() {
+	goToChatForm() {
 		const {
 			switchToChatFrom,
 			form: {
@@ -28,12 +28,18 @@ class CreateChatForm extends React.Component {
 		switchToChatFrom(title, description, nick);
 	}
 
+	getPrevChat() {
+		const {
+			restorePrevChat
+		} = this.props;
+		restorePrevChat();
+	}
+
 	close() {
 		const {
 			closeStartForm
 		} = this.props;
-		closeStartForm();
-
+		closeStartForm('startForm');
 	}
 
 	render() {
@@ -41,11 +47,11 @@ class CreateChatForm extends React.Component {
 			getFieldDecorator
 		} = this.props.form;
 		return (
-			<Row>
+			<Row style={{width: '25vw'}}>
 				<div style={{float: 'right'}}>
-					<Button icon={'close'} onClick={() => this.close()}/>
+					<Button icon={'minus'} className={'closeButton'} onClick={() => this.close()}/>
 				</div>
-				<Card title={'Чат'} bordered style={{width: '25vw'}}>
+				<Card title={'Чат'} bordered>
 					<Form className={'createForm'}>
 						<Form.Item label={'Как к вам можно обращаться'} labelCol={{span: 6}} wrapperCol={{span: 18}}>
 							{getFieldDecorator('nick', {})(<Input className={'chat-input__textarea'}
@@ -60,8 +66,16 @@ class CreateChatForm extends React.Component {
 							                                                      className={'chat-input__textarea'}
 							                                                      placeholder={'Введите свое сообщение'}/>)}
 						</Form.Item>
+						<Row>
+							<span>{'или востановить'}</span>
+							<Button className={''}
+							        onClick={() => {
+							        	this.getPrevChat();
+							        }}>{'предыдущую'}</Button>
+							<span>{'переписку'}</span>
+						</Row>
 						<Form.Item>
-							<Button onClick={() => this.onClick()}
+							<Button onClick={() => this.goToChatForm()}
 							        className={'chat-input__button'}>{'Отправить'}</Button>
 						</Form.Item>
 					</Form>
@@ -74,7 +88,8 @@ const startChatForm = Form.create()(CreateChatForm);
 
 const mapDispatchToProps = dispatch => ({
 	switchToChatFrom: (issue, description, nick) => dispatch(switchToChatFrom(issue, description, nick)),
-	closeStartForm: () => dispatch(closeStartForm())
+	closeStartForm: (lastPosition) => dispatch(closeStartForm(lastPosition)),
+	restorePrevChat: () => dispatch(restorePrevChat()),
 })
 
 const StartChatForm = connect(
