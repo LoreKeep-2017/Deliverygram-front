@@ -20,6 +20,8 @@ import {
 class MenuInit extends React.Component {
 
 	getInitials(nick) {
+		if (!nick)
+			return '';
 		if (nick.length === 1) {
 			return nick;
 		}
@@ -32,10 +34,10 @@ class MenuInit extends React.Component {
 			selectedRoom,
 			socket
 		} = this.props;
-		if (activeStatus){
+		if (activeStatus) {
 			socket.sendWithBody('getRoomsByStatus', {type: activeStatus});
 		}
-		if (selectedRoom){
+		if (selectedRoom) {
 			socket.sendWithBody('getAllMessages', {rid: +selectedRoom});
 		}
 	}
@@ -56,7 +58,7 @@ class MenuInit extends React.Component {
 						padding: 0,
 						height: '9vh'
 					}} className={'client-menu-item'} key={clients.rooms[keys].id.toString()}>
-						<Link to={`/${path}/${keys}`}>
+						<Link to={`/${path}/${keys}`} className={'client-menu-item__href'}>
 							<Row className={'client-menu-item__client-row'}>
 								<Col className={'client-row__avatar-div'}>
 									<div className={'client-row__avatar'}>
@@ -84,7 +86,8 @@ class MenuInit extends React.Component {
 	getMainMenu() {
 		let menu = [];
 		menu.push(
-			<Menu.Item key={'new-messages'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
+			<Menu.Item key={'new-messages'} className={'main-menu-item'}
+			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
 				<Link to={'/new-messages'}>
 					<Button shape={'circle'} icon={'mail'} key={'mail-button'} size={'large'}/>
 				</Link>
@@ -97,7 +100,8 @@ class MenuInit extends React.Component {
 				</Link>
 			</Menu.Item>);
 		menu.push(
-			<Menu.Item key={'closed-messages'} className={'main-menu-item'} style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
+			<Menu.Item key={'closed-messages'} className={'main-menu-item'}
+			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
 				<Link to={'/closed-messages'}>
 					<Button shape={'circle'} icon={'inbox'} key={'inbox-button'} size={'large'}/>
 				</Link>

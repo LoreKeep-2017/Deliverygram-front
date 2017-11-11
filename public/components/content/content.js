@@ -24,7 +24,6 @@ class CreateInitContent extends React.Component {
 
 	getMessages() {
 		const {
-			messages,
 			selectedRoom,
 			clients
 		} = this.props;

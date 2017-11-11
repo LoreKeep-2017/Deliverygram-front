@@ -2,83 +2,139 @@
 
 import React from 'react'
 import {connect} from 'react-redux';
-import {Route, Switch, withRouter} from 'react-router-dom'
+import {Route, Switch, withRouter, Redirect} from 'react-router-dom'
 import ChatLayout from '../layout/layout'
+import Login from "../login/login";
+import {axiosGet} from "../../models/axios";
 import {
-	changeMessagesByStatus,
-	getExtraInfo,
-	selectRoom
-} from '../action';
+	checkAuthFailed,
+	loginFailed,
+	loginSuccess
+} from "../action";
+import {
+	Spin,
+	Col
+} from 'antd';
+import '../login/login.less';
 
 class MainView extends React.Component {
 
+	componentDidMount() {
+		const {
+			checkAuthFailed,
+			loginSuccess
+		} = this.props;
+		axiosGet({path: '/loggedin/'})
+			.then(response => {
+				loginSuccess({id: 1});
+			})
+			.catch(error => {
+				checkAuthFailed();
+			});
+	}
+
 	render() {
 		const {
-			changeMessagesByStatus,
-			selectRoom,
-			getExtraInfo
+			operatorId,
+			lastUrl = '/new-messages',
+			checkedAuth
 		} = this.props;
+		if (!checkedAuth) {
+			return (
+				<div className={'body-div'}>
+					<Col className={'content'}>
+						<Spin size={'large'}/>
+					</Col>
+				</div>)
+		}
 		return (
 			<Switch>
-				<Route exact path={'/'} render={(props) => {
-					return <ChatLayout/>
+				<Route exact path={'/'} render={props => {
+					return operatorId ? <Redirect to={'/new-messages'}/> : <Redirect to={'/signin'} push/>;
 				}}/>
-				<Route exact path={'/new-messages'} render={(props) => {
-					changeMessagesByStatus('roomNew');
-					return <ChatLayout path={'new-messages'}/>
+				<Route exact path={'/signin'} render={props => {
+					return operatorId ? <Redirect to={lastUrl} push/> : <Login prevState={props.location.state}/>;
 				}}/>
-				<Route exact path={'/new-messages/:id'} render={(props) => {
-					changeMessagesByStatus('roomNew');
-					selectRoom(props.match.params.id);
-					return <ChatLayout path={'new-messages'} match={props.match}/>
+				<Route exact path={'/new-messages'} render={props => {
+					return !operatorId ? <Redirect to={{
+						pathname: '/signin',
+						state: {url: props.match.url}
+					}}/> : <ChatLayout path={'new-messages'} match={props.match} status={'roomNew'}/>
 				}}/>
-				<Route exact path={'/new-messages/:id/info'} render={(props) => {
-					changeMessagesByStatus('roomNew');
-					selectRoom(props.match.params.id);
-					getExtraInfo(true);
-					return <ChatLayout path={'new-messages'} match={props.match}/>
+				<Route exact path={'/new-messages/:id'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'new-messages'} match={props.match} status={'roomNew'}/>
 				}}/>
-				<Route exact path={'/active-messages'} render={(props) => {
-					changeMessagesByStatus('roomBusy');
-					return <ChatLayout path={'active-messages'} match={props.match}/>
+				<Route exact path={'/new-messages/:id/info'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'new-messages'} match={props.match} status={'roomNew'}/>
 				}}/>
-				<Route exact path={'/active-messages/:id'} render={(props) => {
-					changeMessagesByStatus('roomBusy');
-					selectRoom(props.match.params.id);
-					return <ChatLayout path={'active-messages'} match={props.match}/>
+				<Route exact path={'/active-messages'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
 				}}/>
-				<Route exact path={'/active-messages/:id/info'} render={(props) => {
-					changeMessagesByStatus('roomBusy');
-					selectRoom(props.match.params.id);
-					getExtraInfo(true);
-					return <ChatLayout path={'active-messages'} match={props.match}/>
+				<Route exact path={'/active-messages/:id'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
 				}}/>
-				<Route exact path={'/closed-messages'} render={(props) => {
-					changeMessagesByStatus('roomClose');
-					return <ChatLayout path={'closed-messages'}/>
+				<Route exact path={'/active-messages/:id/info'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
 				}}/>
-				<Route exact path={'/closed-messages/:id'} render={(props) => {
-					changeMessagesByStatus('roomClose');
-					selectRoom(props.match.params.id);
-					return <ChatLayout path={'closed-messages'} match={props.match}/>
+				<Route exact path={'/closed-messages'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
 				}}/>
-				<Route exact path={'/closed-messages/:id/info'} render={(props) => {
-					changeMessagesByStatus('roomClose');
-					selectRoom(props.match.params.id);
-					getExtraInfo(true);
-					return <ChatLayout path={'closed-messages'} match={props.match}/>
+				<Route exact path={'/closed-messages/:id'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
+				}}/>
+				<Route exact path={'/closed-messages/:id/info'} render={props => {
+					return !operatorId ? <Redirect to={{
+							pathname: '/signin',
+							state: {url: props.match.url}
+						}}/> :
+						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
 				}}/>
 			</Switch>
 		);
 	}
 }
 
-const mapDispatchToProps = dispatch => ({
-	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
-	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
-	selectRoom: (rid) => dispatch(selectRoom(rid))
+const mapStateToProps = state => ({
+	operatorId: state.operatorId,
+	lastUrl: state.lastUrl,
+	checkedAuth: state.checkedAuth
 });
 
+const mapDispatchToProps = dispatch => ({
+	checkAuthFailed: () => dispatch(checkAuthFailed()),
+	loginSuccess: (data) => dispatch(loginSuccess(data)),
+	loginFailed: () => dispatch(loginFailed()),
+})
+
 export default withRouter(connect(
-	(state) => ({}), mapDispatchToProps
+	mapStateToProps,
+	mapDispatchToProps
 )(MainView));

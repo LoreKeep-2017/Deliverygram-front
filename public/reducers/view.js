@@ -7,7 +7,7 @@ import {
 	ENTER_ROOM,
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
-	SELECT_ROOM, GET_CHAT_INFO
+	SELECT_ROOM, GET_CHAT_INFO, LOGIN_SUCCESS, SAVE_LAST_URL, CHECK_AUTH_FAILED, LOGIN_PENDING
 } from '../actions/action-types';
 
 const initialState = {
@@ -27,7 +27,7 @@ const dataWorking = (state = initialState, action) => {
 			let {messages} = action.payload;
 			if(messages.length > 0) {
 				if (messages[0].room !== newState.selectedRoom) {
-					let len = newState.messages[messages[0].room] ? newState.messages[messages[0].room].length : 0
+					let len = newState.messages[messages[0].room] ? newState.messages[messages[0].room].length : 0;
 					newState.newMessages[messages[0].room] = messages.length - len;
 				}
 				 else if (messages[0].room) {
@@ -91,7 +91,25 @@ const dataWorking = (state = initialState, action) => {
 			newState.getInfo = getInfo;
 			return newState;
 		}
-
+		case LOGIN_SUCCESS:
+			const {
+				id
+			} = action.payload.data;
+			newState.operatorId = id;
+			newState.checkedAuth = true;
+			delete newState.signRedirect;
+			delete newState.pending;
+			return newState;
+		case CHECK_AUTH_FAILED:
+			newState.checkedAuth = true;
+			newState.signRedirect = true;
+			return newState;
+		case LOGIN_PENDING:
+			newState.pending = true;
+			return newState;
+		case SAVE_LAST_URL:
+			newState.lastUrl = action.payload.url;
+			return newState;
 		default:
 			return newState;
 	}

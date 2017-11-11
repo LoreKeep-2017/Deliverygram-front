@@ -69,7 +69,7 @@ module.exports = {
 		new webpack.optimize.DedupePlugin() ,
 
 		new webpack.optimize.OccurrenceOrderPlugin(),
-
+		//
 		// new webpack.optimize.UglifyJsPlugin({
 		// 	beautify: false,
 		// 	comments: false,
@@ -83,13 +83,13 @@ module.exports = {
 		// 		unsafe      : true
 		// 	}
 		// }),
-		//
-		// new CompressionPlugin({
-		// 	asset: '[path]',
-		// 	algorithm: 'gzip',
-		// 	test: /\.jsx?$/,
-		// 	threshold: 10240,
-		// 	minRatio: 0.8
-		// })
+
+		new CompressionPlugin({
+			asset: '[path]',
+			algorithm: 'gzip',
+			test: /\.jsx?$/,
+			threshold: 10240,
+			minRatio: 0.8
+		})
 	]
 };

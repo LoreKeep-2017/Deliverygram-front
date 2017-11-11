@@ -20,7 +20,7 @@ import {
 	closeChat,
 	receiveMessages,
 	changeRoomStatus,
-	getExtraInfo
+	getExtraInfo, changeMessagesByStatus, selectRoom
 } from '../action';
 import '../main/main.less';
 import MenuItems from '../../components/menuItems/menuItems';
@@ -40,15 +40,33 @@ class InitLayout extends React.Component {
 		this.rightSiderClass = 'right-sider';
 	}
 
+	componentDidMount() {
+		const {
+			match,
+			status,
+			changeMessagesByStatus,
+			getExtraInfo,
+			selectRoom
+		} = this.props;
+		changeMessagesByStatus(status);
+		if (match.path.indexOf('info') > -1) {
+			getExtraInfo(true)
+		}
+		if (match.path.indexOf(':id') > -1) {
+			selectRoom(match.params.id);
+		}
+	}
+
 	componentWillMount() {
 		const {
 			receiveClients,
 			receiveMessages,
 			changeRoomStatus,
 			selectedRoom,
-			getInfo
+			getInfo,
+			operatorId
 		} = this.props;
-		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus);
+		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus, operatorId);
 		if (selectedRoom && getInfo) {
 			this.rightSiderClass += ` right-sider__content`
 		} else {
@@ -68,6 +86,24 @@ class InitLayout extends React.Component {
 		}
 	}
 
+	componentDidUpdate(prevProps, prevState) {
+		const {
+			changeMessagesByStatus,
+			getExtraInfo,
+			selectRoom,
+			match,
+			status
+		} = this.props;
+		if (status !== prevProps.status)
+			changeMessagesByStatus(status);
+		if (match.path.indexOf('info') > -1) {
+			getExtraInfo(true)
+		}
+		if (match.path.indexOf(':id') > -1) {
+			selectRoom(match.params.id);
+		}
+	}
+
 
 	render() {
 		const {
@@ -78,9 +114,14 @@ class InitLayout extends React.Component {
 			getInfo = false,
 			path,
 			selectedRoom,
-			match
+			match,
+			signRedirect
 		} = this.props;
 		let url, sider;
+		console.info(signRedirect);
+		if (signRedirect){
+			return <Redirect to={'/signin'}/>
+		}
 		if (path && selectedRoom) {
 			if (!getInfo) {
 				url = `/${path}/${selectedRoom}/info`;
@@ -118,7 +159,9 @@ const mapStateToProps = state => {
 		clients: state.clients,
 		rid: state.rid,
 		getInfo: state.getInfo,
-		selectedRoom: state.selectedRoom
+		selectedRoom: state.selectedRoom,
+		operatorId: state.operatorId,
+		signRedirect: state.signRedirect
 	}
 }
 
@@ -129,7 +172,9 @@ const mapDispatchToProps = dispatch => {
 		closeChat: (room) => dispatch(closeChat(room)),
 		receiveMessages: (messages) => dispatch(receiveMessages(messages)),
 		changeRoomStatus: (room) => dispatch(changeRoomStatus(room)),
-		getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo))
+		getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
+		changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
+		selectRoom: (rid) => dispatch(selectRoom(rid))
 	}
 }
 

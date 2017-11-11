@@ -8,7 +8,13 @@ import {
 	ENTER_ROOM,
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
-	SELECT_ROOM, GET_CHAT_INFO
+	SELECT_ROOM,
+	GET_CHAT_INFO,
+	LOGIN_PENDING,
+	LOGIN_FAILED,
+	LOGIN_SUCCESS,
+	SAVE_LAST_URL,
+	CHECK_AUTH_FAILED
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -53,4 +59,26 @@ export const selectRoom = (rid) => ({
 export const getExtraInfo = (getInfo) => ({
 	type: GET_CHAT_INFO,
 	payload: {getInfo}
+})
+
+export const loginPending = () => ({
+	type: LOGIN_PENDING
+})
+
+export const loginSuccess = (data) => ({
+	type: LOGIN_SUCCESS,
+	payload: {data}
+})
+
+export const loginFailed = () => ({
+	type: LOGIN_FAILED
+})
+
+export const saveUrl = (url) => ({
+	type: SAVE_LAST_URL,
+	payload: {url}
+})
+
+export const checkAuthFailed = () => ({
+	type: CHECK_AUTH_FAILED
 })

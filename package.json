@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "wscat": "wscat -c ws://fin01.deliverygramm.park.bmstu.cloud"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   "homepage": "https://github.com/LoreKeep-2017/Deliverygram-front#readme",
   "dependencies": {
     "antd": "^2.13.0",
+    "axios": "^0.17.0",
     "react": "^15.6.1",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
