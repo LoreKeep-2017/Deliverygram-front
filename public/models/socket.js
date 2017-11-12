@@ -46,6 +46,7 @@ export default class Socket {
 			'type': 'operator',
 			'action': action
 		};
+		console.info(action, this.socket.readyState);
 		if (this.socket.readyState !== 1) {
 			this.queue.push(JSON.stringify(jsonBody));
 			return;
@@ -59,7 +60,8 @@ export default class Socket {
 			'action': action,
 			'body': body
 		};
-		if (this.socket.readyState === 0) {
+		console.info(action, this.socket.readyState);
+		if (this.socket.readyState !== 1) {
 			this.queue.push(JSON.stringify(jsonBody));
 			return;
 		}

@@ -48,10 +48,16 @@ class InitLayout extends React.Component {
 			selectRoom
 		} = this.props;
 		changeMessagesByStatus(status);
+		this.socket.sendWithBody('getRoomsByStatus', {
+			type: status
+		});
 		if (match.path.indexOf('info') > -1) {
 			getExtraInfo(true)
 		}
 		if (match.path.indexOf(':id') > -1) {
+			this.socket.sendWithBody('getAllMessages', {
+				rid: match.params.id
+			});
 			selectRoom(match.params.id);
 		}
 	}
@@ -160,7 +166,7 @@ const mapStateToProps = state => {
 		getInfo: state.getInfo,
 		selectedRoom: state.selectedRoom,
 		operatorId: state.operatorId,
-		signRedirect: state.loginStatuses.signRedirect
+		signRedirect: state.loginStatuses.signRedirect,
 	}
 }
 
