@@ -25,11 +25,12 @@ class CreateInitContent extends React.Component {
 	getMessages() {
 		const {
 			selectedRoom,
-			clients
+			clients,
+			messages
 		} = this.props;
 		let allMessages = [];
-		if (clients && clients.rooms[selectedRoom] && clients.rooms[selectedRoom].messages) {
-			clients.rooms[selectedRoom].messages.forEach((item, position) => {
+		if (messages[selectedRoom] && messages[selectedRoom][0].room === +selectedRoom) {
+			messages[selectedRoom].forEach((item, position) => {
 				allMessages.push(
 					<div className={`${item.author}-message`} key={`message_${position}`}>
 						<div className={`${item.author}-message_position`}>
@@ -120,6 +121,9 @@ class CreateInitContent extends React.Component {
 	}
 
 	render() {
+		const {
+			status
+		} = this.props;
 		return (
 			<Layout style={{
 				marginLeft: '28vw',

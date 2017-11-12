@@ -26,9 +26,10 @@ class MainView extends React.Component {
 		} = this.props;
 		axiosGet({path: '/loggedin/'})
 			.then(response => {
-				loginSuccess({id: 1});
+				loginSuccess(response);
 			})
 			.catch(error => {
+				console.info(error);
 				checkAuthFailed();
 			});
 	}
@@ -125,7 +126,7 @@ class MainView extends React.Component {
 const mapStateToProps = state => ({
 	operatorId: state.operatorId,
 	lastUrl: state.lastUrl,
-	checkedAuth: state.checkedAuth
+	checkedAuth: state.loginStatuses.checkedAuth
 });
 
 const mapDispatchToProps = dispatch => ({

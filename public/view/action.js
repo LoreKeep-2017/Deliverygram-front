@@ -14,7 +14,9 @@ import {
 	LOGIN_FAILED,
 	LOGIN_SUCCESS,
 	SAVE_LAST_URL,
-	CHECK_AUTH_FAILED
+	CHECK_AUTH_FAILED,
+	LOGOUT_SUCCESS,
+	LOGOUT_FAILED, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -61,6 +63,16 @@ export const getExtraInfo = (getInfo) => ({
 	payload: {getInfo}
 })
 
+export const chooseNewOperator = (choose) => ({
+	type: CHOOSE_NEW_OPERATOR,
+	payload: {choose}
+})
+
+export const receiveOperators = (operators) => ({
+	type: RECEIVE_OPERATORS,
+	payload: {operators}
+})
+
 export const loginPending = () => ({
 	type: LOGIN_PENDING
 })
@@ -82,3 +94,13 @@ export const saveUrl = (url) => ({
 export const checkAuthFailed = () => ({
 	type: CHECK_AUTH_FAILED
 })
+
+export const logoutSuccess = () => ({
+	type: LOGOUT_SUCCESS
+})
+
+export const logoutFailed = () => ({
+	type: LOGOUT_FAILED
+})
+
+

@@ -3,7 +3,7 @@
 
 import React from 'react'
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
 import {
 	Layout,
 	Menu,
@@ -20,13 +20,12 @@ import {
 	closeChat,
 	receiveMessages,
 	changeRoomStatus,
-	getExtraInfo, changeMessagesByStatus, selectRoom
+	getExtraInfo, changeMessagesByStatus, selectRoom, receiveOperators
 } from '../action';
 import '../main/main.less';
 import MenuItems from '../../components/menuItems/menuItems';
 import ChatContent from '../../components/content/content';
 import MoreInfo from "../../components/moreInfo/moreInfo";
-
 
 const {
 	Footer,
@@ -61,12 +60,13 @@ class InitLayout extends React.Component {
 		const {
 			receiveClients,
 			receiveMessages,
+			receiveOperators,
 			changeRoomStatus,
 			selectedRoom,
 			getInfo,
 			operatorId
 		} = this.props;
-		this.socket = new Socket(receiveClients, receiveMessages, changeRoomStatus, operatorId);
+		this.socket = new Socket({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorId});
 		if (selectedRoom && getInfo) {
 			this.rightSiderClass += ` right-sider__content`
 		} else {
@@ -118,8 +118,7 @@ class InitLayout extends React.Component {
 			signRedirect
 		} = this.props;
 		let url, sider;
-		console.info(signRedirect);
-		if (signRedirect){
+		if (signRedirect) {
 			return <Redirect to={'/signin'}/>
 		}
 		if (path && selectedRoom) {
@@ -138,7 +137,7 @@ class InitLayout extends React.Component {
 							<Icon type={getInfo ? 'menu-unfold' : 'menu-fold'} style={{fontSize: 24}}/>
 						</div>
 					</Link>
-					<MoreInfo/>
+					<MoreInfo socket={this.socket}/>
 				</Sider>)
 		}
 		return (
@@ -161,7 +160,7 @@ const mapStateToProps = state => {
 		getInfo: state.getInfo,
 		selectedRoom: state.selectedRoom,
 		operatorId: state.operatorId,
-		signRedirect: state.signRedirect
+		signRedirect: state.loginStatuses.signRedirect
 	}
 }
 
@@ -174,7 +173,8 @@ const mapDispatchToProps = dispatch => {
 		changeRoomStatus: (room) => dispatch(changeRoomStatus(room)),
 		getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 		changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
-		selectRoom: (rid) => dispatch(selectRoom(rid))
+		selectRoom: (rid) => dispatch(selectRoom(rid)),
+		receiveOperators: (operators) => dispatch(receiveOperators(operators))
 	}
 }
 

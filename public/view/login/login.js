@@ -101,7 +101,7 @@ class LoginInit extends React.Component {
 const LoginForm = Form.create()(LoginInit);
 
 const mapStateToProps = state => ({
-	pending: state.pending
+	pending: state.loginStatuses.pending
 })
 
 const mapDispatchToProps = dispatch => ({

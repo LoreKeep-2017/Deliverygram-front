@@ -5,13 +5,66 @@
   height: 12vh;
 }
 
-.menu-title{
+.menu-title {
   display: block;
   margin-top: .6em;
   font-size: 3em;
   color: white;
   margin-left: .6em;
   margin-bottom: .6em;
+}
+
+.user-info {
+  display: flex;
+  background-color: white;
+  height: 7vh;
+  width: 28vw;
+
+  .user-info__group-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6vw;
+    height: calc(100% + 2px);
+    font-size: 24px;
+    border-right: 1px solid grey;
+    border-bottom: 2px solid grey;
+  }
+
+  .user-info__info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22vw;
+    height: 100%;
+
+    .user-info__user-icon {
+      font-size: 24px;
+      margin-right: 4px;
+    }
+
+    .user-info__user-info {
+      margin-left: 4px;
+      font-size: 16px;
+      margin-right: 4px;
+    }
+
+    .user-info__exit-icon {
+      margin-left: 4px;
+      font-size: 18px;
+    }
+  }
+
+}
+
+:global{
+
+  .ant-popover-inner-content{
+    .ant-btn{
+      border: none;
+      font-size: 18px;
+    }
+  }
 }
 
 .client-menu {
@@ -26,7 +79,7 @@
     justify-content: center;
     margin: 2vh 0;
 
-    .client-menu-item__href{
+    .client-menu-item__href {
       width: 100%;
     }
 
@@ -58,24 +111,24 @@
         }
       }
 
-      .client-row__content-col{
+      .client-row__content-col {
         display: flex;
         flex-direction: column;
         justify-content: center;
         margin-left: 2vw;
 
-        h1{
+        h1 {
           margin-bottom: -.3em;
         }
 
-        .content-col__title{
+        .content-col__title {
           color: white;
           font-size: 1.5em;
           margin-top: -.3em;
         }
       }
 
-      .client-row__new-messages-col{
+      .client-row__new-messages-col {
         color: white;
         font-size: 2em;
         display: flex;

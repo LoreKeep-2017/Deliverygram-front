@@ -1,4 +1,4 @@
-.moreInfo__content{
+.moreInfo__content {
   color: white;
   margin-top: 20vh;
   display: flex;
@@ -7,15 +7,33 @@
   font-size: 18px;
 }
 
-:global{
-  .ant-layout-sider-trigger{
+.moreInfo__operator {
+  color: white;
+  margin-top: 15vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1vw;
+  font-size: 18px;
+
+  .moreInfo__operator-button {
+    align-self: flex-end;
+    width: 12vw;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+:global {
+  .ant-layout-sider-trigger {
     top: 30px;
     width: 58px;
   }
 
 }
 
-.right-sider-content{
+.right-sider-content {
   width: 25vw !important;
   height: 100vh;
   background-color: black;
@@ -23,4 +41,52 @@
   right: 0;
   max-width: none !important;
   min-width: 0 !important;
+}
+
+.operator-info {
+  display: flex;
+  width: 25vh;
+  color: white;
+  margin-top: 15vh;
+  padding: 0 1vw;
+
+  .operator-info__select {
+    width: 15.5vw !important;
+    font-size: 16px;
+    margin-right: .5vw;
+  }
+
+  .operator-info__button {
+    width: 7vw !important;
+    height: auto;
+    font-size: 16px;
+    margin-left: .5vw;
+    margin-right: .5vw;
+
+    .ant-form-item-control-wrapper {
+      width: 100% !important;
+
+      .ant-form-item-control {
+        width: 100% !important;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  :global {
+    .ant-select-selection {
+      width: 100% !important;
+
+      .ant-select-selection__rendered {
+        width: 100% !important;
+
+        .ant-select-selection-selected-value {
+          width: 100% !important;
+        }
+      }
+    }
+  }
 }

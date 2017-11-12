@@ -7,15 +7,18 @@ import {
 	Menu,
 	Button,
 	Row,
-	Col
+	Col,
+	Icon,
+	Popover
 } from 'antd';
 import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
-	getExtraInfo,
+	getExtraInfo, logoutFailed, logoutSuccess,
 	selectRoom
 } from '../../view/action';
+import {axiosGet} from "../../models/axios";
 
 class MenuInit extends React.Component {
 
@@ -83,6 +86,14 @@ class MenuInit extends React.Component {
 		return allClients;
 	}
 
+	getPopoverContent() {
+		return (
+			<Button onClick={() => this.logout()}>
+				{'Выход'}
+			</Button>
+		)
+	}
+
 	getMainMenu() {
 		let menu = [];
 		menu.push(
@@ -144,6 +155,21 @@ class MenuInit extends React.Component {
 		}
 	}
 
+	logout() {
+		const {
+			logoutSuccess,
+			logoutFailed
+		} = this.props;
+		axiosGet({path: '/logout/'})
+			.then(response => {
+				logoutSuccess();
+			})
+			.catch(error => {
+				console.info(error);
+				logoutFailed();
+			});
+	}
+
 	render() {
 		const {
 			socket,
@@ -153,28 +179,43 @@ class MenuInit extends React.Component {
 			match = {params: {}}
 		} = this.props;
 		return (
-			<div className={'logo'} style={{display: 'flex'}}>
-				<div style={{background: 'white', minWidth: '6vw', height: '100vh'}}>
-					<Menu theme={'light'} mode={'inline'}
-					      selectedKeys={[path]}
-					      onSelect={(event) => this.changeMessages(event)}>
-						{this.getMainMenu()}
-					</Menu>
-				</div>
-				<div style={{width: '22vw'}}>
+			<div>
+				<Row className={'user-info'}>
+						<div className={'user-info__group-icon'}>
+							<Icon type="database"/>
+						</div>
+						<div className={'user-info__info'}>
+							<Icon type={'user'} className={'user-info__user-icon'}/>
+							<span className={'user-info__user-info'}>{'OLOLOO OLOLOLO OLOLOLOL'}</span>
+							<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
+								<Icon type="down" />
+							</Popover>
+
+						</div>
+					</Row>
+				<div className={'logo'} style={{display: 'flex'}}>
+					<div style={{background: 'white', minWidth: '6vw', height: '90vh', marginTop: '2px'}}>
+						<Menu theme={'light'} mode={'inline'}
+						      selectedKeys={[path]}
+						      onSelect={(event) => this.changeMessages(event)}>
+							{this.getMainMenu()}
+						</Menu>
+					</div>
+					<div style={{width: '22vw'}}>
 					<span className={'menu-title'}>
 						{this.getTitle()}
 					</span>
-					<Menu theme={'dark'} mode={'inline'}
-					      className={'client-menu'}
-					      selectedKeys={[match.params.id]}
-					      onClick={(event) => {
-						      selectRoom(+event.key);
-						      getExtraInfo(false);
-						      socket.sendWithBody('getAllMessages', {rid: +event.key});
-					      }}>
-						{this.getClientsRequests()}
-					</Menu>
+						<Menu theme={'dark'} mode={'inline'}
+						      className={'client-menu'}
+						      selectedKeys={[match.params.id]}
+						      onClick={(event) => {
+							      selectRoom(+event.key);
+							      getExtraInfo(false);
+							      socket.sendWithBody('getAllMessages', {rid: +event.key});
+						      }}>
+							{this.getClientsRequests()}
+						</Menu>
+					</div>
 				</div>
 			</div>)
 	}
@@ -193,7 +234,9 @@ const mapDispatchToProps = dispatch => ({
 	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 	enterRoom: (rid) => dispatch(enterRoom(rid)),
 	selectRoom: (rid) => dispatch(selectRoom(rid)),
-	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo))
+	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
+	logoutSuccess: () => dispatch(logoutSuccess()),
+	logoutFailed: () => dispatch(logoutFailed())
 });
 
 const MenuItems = connect(

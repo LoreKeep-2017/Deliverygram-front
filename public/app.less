@@ -18,16 +18,17 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-end;
+  height: 90vh;
 
-    .ant-card{
-      background: none;
-      height: 80vh;
-      overflow-y: scroll;
-      overflow-x: hidden;
-    }
+  .ant-card {
+    background: none;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
-.operator-messages{
+.operator-messages {
   display: flex;
   flex-direction: column-reverse;
 }
@@ -36,7 +37,7 @@
   margin-top: .5em;
 }
 
-.ant-form-item-control{
+.ant-form-item-control {
   display: flex;
   align-items: stretch;
   min-height: 100%;

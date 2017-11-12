@@ -7,16 +7,18 @@ import {
 	ENTER_ROOM,
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
-	SELECT_ROOM, GET_CHAT_INFO, LOGIN_SUCCESS, SAVE_LAST_URL, CHECK_AUTH_FAILED, LOGIN_PENDING
+	SELECT_ROOM, GET_CHAT_INFO, LOGIN_SUCCESS, SAVE_LAST_URL, CHECK_AUTH_FAILED, LOGIN_PENDING, LOGIN_FAILED,
+	LOGOUT_SUCCESS, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS
 } from '../actions/action-types';
 
 const initialState = {
 	messages: [],
-	newMessages: []
+	newMessages: [],
+	loginStatuses: {}
 }
 
 const dataWorking = (state = initialState, action) => {
-
+	console.info(action);
 	let newState = Object.assign({}, state);
 	switch (action.type) {
 		case RECEIVE_ALL_CLIENTS:
@@ -25,12 +27,12 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case RECEIVE_MESSAGE:
 			let {messages} = action.payload;
-			if(messages.length > 0) {
-				if (messages[0].room !== newState.selectedRoom) {
+			if (messages.length > 0) {
+				if (messages[0].room !== +newState.selectedRoom) {
 					let len = newState.messages[messages[0].room] ? newState.messages[messages[0].room].length : 0;
 					newState.newMessages[messages[0].room] = messages.length - len;
 				}
-				 else if (messages[0].room) {
+				else if (messages[0].room) {
 					newState.messages[messages[0].room] = messages;
 					delete newState.newMessages[messages[0].room];
 				}
@@ -62,7 +64,9 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case CHANGE_ROOM_STATUS: {
 			const {room} = action.payload;
-			delete newState.clients.rooms[room.id];
+			if (newState.clients && newState.clients.rooms) {
+				delete newState.clients.rooms[room.id];
+			}
 			if (room.status === newState.activeStatus) {
 				newState.clients.rooms[room.id] = room;
 			}
@@ -84,31 +88,48 @@ const dataWorking = (state = initialState, action) => {
 			newState.selectedRoom = rid;
 			return newState;
 		}
-		case GET_CHAT_INFO:{
+		case GET_CHAT_INFO: {
 			const {
 				getInfo
 			} = action.payload;
 			newState.getInfo = getInfo;
 			return newState;
 		}
+		case CHOOSE_NEW_OPERATOR:
+			const {
+				choose
+			} = action.payload;
+			newState.chooseOperator = choose;
+			return newState;
+		case RECEIVE_OPERATORS:
+			newState.operators = action.payload.operators;
+			return newState;
 		case LOGIN_SUCCESS:
 			const {
 				id
 			} = action.payload.data;
 			newState.operatorId = id;
-			newState.checkedAuth = true;
-			delete newState.signRedirect;
-			delete newState.pending;
+			newState.loginStatuses.checkedAuth = true;
+			delete newState.loginStatuses.signRedirect;
+			delete newState.loginStatuses.pending;
 			return newState;
 		case CHECK_AUTH_FAILED:
-			newState.checkedAuth = true;
-			newState.signRedirect = true;
+		case LOGIN_FAILED:
+			newState.loginStatuses.checkedAuth = true;
+			newState.loginStatuses.signRedirect = true;
+			delete newState.loginStatuses.pending;
 			return newState;
 		case LOGIN_PENDING:
-			newState.pending = true;
+			newState.loginStatuses.pending = true;
 			return newState;
 		case SAVE_LAST_URL:
 			newState.lastUrl = action.payload.url;
+			return newState;
+		case LOGOUT_SUCCESS:
+			delete newState.loginStatuses.signRedirect;
+			delete newState.loginStatuses.pending;
+			delete newState.operatorId
+			newState.loginStatuses.checkedAuth = true;
 			return newState;
 		default:
 			return newState;

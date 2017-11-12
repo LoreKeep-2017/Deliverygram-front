@@ -3,13 +3,13 @@
 
 export default class Socket {
 
-	constructor(receiveClients, receiveMessage, changeRoomStatus, operatorId) {
-		// this.socket = new WebSocket('ws://fin01.deliverygramm.park.bmstu.cloud:8080/api/v1/operator');
+	constructor({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorId}) {
 		this.socket = new WebSocket('ws://139.59.139.151/api/v1/operator');
 
 		this.queue = [];
 		this.socket.onopen = () => {
 			this.sendWithBody('sendId', {id: operatorId});
+			console.info(this.queue);
 			this.queue.forEach(body => {
 				this.socket.send(body)
 			})
@@ -28,10 +28,13 @@ export default class Socket {
 						changeRoomStatus(receivedMessage.body);
 						return;
 					case 'sendMessage':
-						receiveMessage(receivedMessage.body);
+						receiveMessages(receivedMessage.body);
 						return;
 					case 'getAllMessages':
-						receiveMessage(receivedMessage.body);
+						receiveMessages(receivedMessage.body);
+						return;
+					case 'getOperators':
+						receiveOperators(receivedMessage.body)
 						return;
 				}
 			}
