@@ -3,12 +3,12 @@
 
 export default class Socket {
 
-	constructor({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorId}) {
+	constructor({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorInfo}) {
 		this.socket = new WebSocket('ws://139.59.139.151/api/v1/operator');
 
 		this.queue = [];
 		this.socket.onopen = () => {
-			this.sendWithBody('sendId', {id: operatorId});
+			this.sendWithBody('sendId', operatorInfo);
 			console.info(this.queue);
 			this.queue.forEach(body => {
 				this.socket.send(body)

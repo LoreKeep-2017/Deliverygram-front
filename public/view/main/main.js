@@ -36,7 +36,7 @@ class MainView extends React.Component {
 
 	render() {
 		const {
-			operatorId,
+			operatorInfo,
 			lastUrl = '/new-messages',
 			checkedAuth
 		} = this.props;
@@ -51,68 +51,68 @@ class MainView extends React.Component {
 		return (
 			<Switch>
 				<Route exact path={'/'} render={props => {
-					return operatorId ? <Redirect to={'/new-messages'}/> : <Redirect to={'/signin'} push/>;
+					return operatorInfo ? <Redirect to={'/new-messages'}/> : <Redirect to={'/signin'} push/>;
 				}}/>
 				<Route exact path={'/signin'} render={props => {
-					return operatorId ? <Redirect to={lastUrl} push/> : <Login prevState={props.location.state}/>;
+					return operatorInfo ? <Redirect to={lastUrl} push/> : <Login prevState={props.location.state}/>;
 				}}/>
 				<Route exact path={'/new-messages'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 						pathname: '/signin',
 						state: {url: props.match.url}
 					}}/> : <ChatLayout path={'new-messages'} match={props.match} status={'roomNew'}/>
 				}}/>
 				<Route exact path={'/new-messages/:id'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'new-messages'} match={props.match} status={'roomNew'}/>
 				}}/>
 				<Route exact path={'/new-messages/:id/info'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'new-messages'} match={props.match} status={'roomNew'}/>
 				}}/>
 				<Route exact path={'/active-messages'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
 				}}/>
 				<Route exact path={'/active-messages/:id'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
 				}}/>
 				<Route exact path={'/active-messages/:id/info'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
 				}}/>
 				<Route exact path={'/closed-messages'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
 				}}/>
 				<Route exact path={'/closed-messages/:id'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
 						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
 				}}/>
 				<Route exact path={'/closed-messages/:id/info'} render={props => {
-					return !operatorId ? <Redirect to={{
+					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
@@ -124,7 +124,7 @@ class MainView extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	operatorId: state.operatorId,
+	operatorInfo: state.operatorInfo,
 	lastUrl: state.lastUrl,
 	checkedAuth: state.loginStatuses.checkedAuth
 });

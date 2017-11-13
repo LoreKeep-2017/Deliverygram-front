@@ -181,9 +181,7 @@ class MenuInit extends React.Component {
 		return (
 			<div>
 				<Row className={'user-info'}>
-						<div className={'user-info__group-icon'}>
-							<Icon type="database"/>
-						</div>
+						<div className={'user-info__group-icon'}/>
 						<div className={'user-info__info'}>
 							<Icon type={'user'} className={'user-info__user-icon'}/>
 							<span className={'user-info__user-info'}>{'OLOLOO OLOLOLO OLOLOLOL'}</span>

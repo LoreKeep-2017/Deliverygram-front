@@ -106,9 +106,10 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case LOGIN_SUCCESS:
 			const {
-				id
-			} = action.payload.data;
-			newState.operatorId = id;
+				data
+			} = action.payload;
+			console.info(action.payload)
+			newState.operatorInfo = data;
 			newState.loginStatuses.checkedAuth = true;
 			delete newState.loginStatuses.signRedirect;
 			delete newState.loginStatuses.pending;

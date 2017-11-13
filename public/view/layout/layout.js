@@ -56,7 +56,7 @@ class InitLayout extends React.Component {
 		}
 		if (match.path.indexOf(':id') > -1) {
 			this.socket.sendWithBody('getAllMessages', {
-				rid: match.params.id
+				rid: +match.params.id
 			});
 			selectRoom(match.params.id);
 		}
@@ -70,9 +70,9 @@ class InitLayout extends React.Component {
 			changeRoomStatus,
 			selectedRoom,
 			getInfo,
-			operatorId
+			operatorInfo
 		} = this.props;
-		this.socket = new Socket({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorId});
+		this.socket = new Socket({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorInfo});
 		if (selectedRoom && getInfo) {
 			this.rightSiderClass += ` right-sider__content`
 		} else {
@@ -165,7 +165,7 @@ const mapStateToProps = state => {
 		rid: state.rid,
 		getInfo: state.getInfo,
 		selectedRoom: state.selectedRoom,
-		operatorId: state.operatorId,
+		operatorInfo: state.operatorInfo,
 		signRedirect: state.loginStatuses.signRedirect,
 	}
 }

@@ -79,7 +79,7 @@ class moreInfoInit extends React.Component {
 		if(clients.rooms && clients.rooms[selectedRoom]) {
 			socket.sendWithBody('changeOperator', {
 				to: +newOper,
-				rid: clients.rooms[selectedRoom].operator.id
+				rid: +selectedRoom
 			})
 		}
 	}
