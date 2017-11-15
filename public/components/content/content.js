@@ -105,7 +105,7 @@ class CreateInitContent extends React.Component {
 				getFieldDecorator
 			}
 		} = this.props;
-		if (status === 'roomBusy' && selectedRoom) {
+		if ((status === 'roomBusy' || status === 'roomClose')&& selectedRoom) {
 			return (
 				<Form className={'operator-chat'}>
 					<Form.Item style={{width: '100%'}}>

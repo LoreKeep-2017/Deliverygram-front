@@ -16,7 +16,7 @@ import {
 	SAVE_LAST_URL,
 	CHECK_AUTH_FAILED,
 	LOGOUT_SUCCESS,
-	LOGOUT_FAILED, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS
+	LOGOUT_FAILED, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS, CANCEL_OPERATOR_CHANGE, REDIRECT_DONE
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -66,6 +66,14 @@ export const getExtraInfo = (getInfo) => ({
 export const chooseNewOperator = (choose) => ({
 	type: CHOOSE_NEW_OPERATOR,
 	payload: {choose}
+})
+
+export const cancelOperatorChange = () => ({
+	type: CANCEL_OPERATOR_CHANGE
+})
+
+export const redirectDone = () => ({
+	type: REDIRECT_DONE
 })
 
 export const receiveOperators = (operators) => ({

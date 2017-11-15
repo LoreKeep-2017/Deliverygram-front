@@ -3,18 +3,24 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import './moreinfo.less'
-import {Redirect} from 'react-router-dom'
 import {
 	Row,
 	Button,
 	Select,
 	Form
 } from 'antd';
-import {chooseNewOperator, getExtraInfo} from "../../view/action";
+import {cancelOperatorChange, chooseNewOperator, getExtraInfo} from "../../view/action";
 import moment from "moment";
 
 
 class moreInfoInit extends React.Component {
+
+	constructor() {
+		super();
+		this.state = {
+			disabled: true
+		}
+	}
 
 	changeOperator() {
 		const {
@@ -24,36 +30,43 @@ class moreInfoInit extends React.Component {
 			socket,
 			selectedRoom,
 			operators,
-			getExtraInfo,
 			form: {
 				getFieldDecorator
-			}
+			},
+			cancelOperatorChange
 		} = this.props;
 		if (clients.rooms && clients.rooms[selectedRoom]) {
 			if (chooseOperator && operators) {
-				let options = [];
-				options = operators.map(item => <Select.Option value={`${item.id}`}
-				                                               key={`operator_${item.id}`}>{item.fio}</Select.Option>)
+				let options = operators.map(item => {
+					if (clients.rooms[selectedRoom].operator.fio !== item.fio) {
+						return <Select.Option value={`${item.id}`}
+						                      key={`operator_${item.id}`}>{item.fio}</Select.Option>
+					}
+				});
 				return (
 					<Form className={'right-sider-content operator-info'}>
 						<Form.Item className={'operator-info__select'}>
 							{getFieldDecorator('newOperator', {initialValue: `${clients.rooms[selectedRoom].operator.id}`})(
 								<Select className={'operator-info__select'}
-								        dropdownMatchSelectWidth={false}>
+								        dropdownMatchSelectWidth={false}
+								        onSelect={() => this.setState({disabled: false})}>
 									{options}
 								</Select>
 							)}
 						</Form.Item>
-						<Form.Item className={'operator-info__button'}>
-							<Button onClick={() => {
-								this.sendToNewOperator();
-								getExtraInfo(false);
-								chooseNewOperator(false);
-							}}
-							        htmlType={'submit'}>
-									{'Сменить'}
-							</Button>
-						</Form.Item>
+						<div className={'operator-change__control-buttons'}>
+							<Form.Item className={'operator-info__button'}>
+								{this.getChangeButton()}
+							</Form.Item>
+							<Form.Item className={'operator-info__button'}>
+								<Button onClick={() => {
+									this.setState({disabled: true});
+									cancelOperatorChange()
+								}}>
+									{'Отмена'}
+								</Button>
+							</Form.Item>
+						</div>
 					</Form>
 
 				)
@@ -73,6 +86,33 @@ class moreInfoInit extends React.Component {
 		return <div/>
 	}
 
+	getChangeButton() {
+		if (this.state.disabled) {
+			return (
+				<Button disabled>
+					{'Сменить'}
+				</Button>
+			)
+		} else {
+			return (
+				<Button onClick={() => this.onChangeOperator()}
+				        htmlType={'submit'}>
+					{'Сменить'}
+				</Button>
+			)
+		}
+	}
+
+	onChangeOperator() {
+		const {
+			getExtraInfo,
+			chooseNewOperator
+		} = this.props;
+		this.sendToNewOperator();
+		getExtraInfo(false);
+		chooseNewOperator(false);
+	}
+
 	sendToNewOperator() {
 		const {
 			chooseNewOperator,
@@ -85,7 +125,7 @@ class moreInfoInit extends React.Component {
 		} = this.props;
 		chooseNewOperator(false);
 		let newOper = getFieldValue('newOperator');
-		if(clients.rooms && clients.rooms[selectedRoom]) {
+		if (clients.rooms && clients.rooms[selectedRoom]) {
 			socket.sendWithBody('changeOperator', {
 				to: +newOper,
 				rid: +selectedRoom
@@ -151,7 +191,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
 	chooseNewOperator: (choose) => dispatch(chooseNewOperator(choose)),
-	getExtraInfo: (status) => dispatch(getExtraInfo(status))
+	getExtraInfo: (status) => dispatch(getExtraInfo(status)),
+	cancelOperatorChange: () => dispatch(cancelOperatorChange())
 });
 
 const MoreInfo = connect(

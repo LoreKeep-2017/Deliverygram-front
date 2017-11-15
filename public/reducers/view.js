@@ -8,7 +8,7 @@ import {
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
 	SELECT_ROOM, GET_CHAT_INFO, LOGIN_SUCCESS, SAVE_LAST_URL, CHECK_AUTH_FAILED, LOGIN_PENDING, LOGIN_FAILED,
-	LOGOUT_SUCCESS, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS
+	LOGOUT_SUCCESS, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS, CANCEL_OPERATOR_CHANGE, REDIRECT_DONE
 } from '../actions/action-types';
 
 const initialState = {
@@ -107,7 +107,9 @@ const dataWorking = (state = initialState, action) => {
 				delete newState.selectedRoom;
 				newState.redirectFromInfo = true;
 			}
-			console.info(newState);
+			return newState;
+		case CANCEL_OPERATOR_CHANGE:
+			delete newState.chooseOperator;
 			return newState;
 		case RECEIVE_OPERATORS:
 			newState.operators = action.payload.operators;
@@ -116,7 +118,6 @@ const dataWorking = (state = initialState, action) => {
 			const {
 				data
 			} = action.payload;
-			console.info(action.payload)
 			newState.operatorInfo = data;
 			newState.loginStatuses.checkedAuth = true;
 			delete newState.loginStatuses.signRedirect;
@@ -139,6 +140,9 @@ const dataWorking = (state = initialState, action) => {
 			delete newState.loginStatuses.pending;
 			delete newState.operatorInfo;
 			newState.loginStatuses.checkedAuth = true;
+			return newState;
+		case REDIRECT_DONE:
+			delete newState.redirectFromInfo;
 			return newState;
 		default:
 			return newState;

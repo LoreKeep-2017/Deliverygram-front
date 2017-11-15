@@ -20,7 +20,7 @@ import {
 	closeChat,
 	receiveMessages,
 	changeRoomStatus,
-	getExtraInfo, changeMessagesByStatus, selectRoom, receiveOperators
+	getExtraInfo, changeMessagesByStatus, selectRoom, receiveOperators, redirectDone
 } from '../action';
 import '../main/main.less';
 import MenuItems from '../../components/menuItems/menuItems';
@@ -101,6 +101,9 @@ class InitLayout extends React.Component {
 			status,
 			redirectFromInfo
 		} = this.props;
+		if (redirectFromInfo){
+			return;
+		}
 		if (status !== prevProps.status)
 			changeMessagesByStatus(status);
 		if (match.path.indexOf('info') > -1) {
@@ -123,13 +126,15 @@ class InitLayout extends React.Component {
 			selectedRoom,
 			match,
 			signRedirect,
-			redirectFromInfo
+			redirectFromInfo,
+			redirectDone
 		} = this.props;
 		let url, sider;
 		if (signRedirect) {
 			return <Redirect to={'/signin'}/>
 		}
 		if (redirectFromInfo){
+			redirectDone();
 			return <Redirect to={'/active-messages'}/>
 		}
 		if (path && selectedRoom) {
@@ -186,7 +191,8 @@ const mapDispatchToProps = dispatch => {
 		getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 		changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 		selectRoom: (rid) => dispatch(selectRoom(rid)),
-		receiveOperators: (operators) => dispatch(receiveOperators(operators))
+		receiveOperators: (operators) => dispatch(receiveOperators(operators)),
+		redirectDone: () => dispatch(redirectDone())
 	}
 }
 
