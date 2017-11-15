@@ -5,14 +5,17 @@ import {
 	ROOM_CLOSED,
 	SEND_MESSAGE,
 	SWITCH_TO_CHAT_FORM,
-	SWITCH_TO_START_FORM,
 	SWITCH_TO_BUTTON,
-	SEND_CLIENT_MESSAGE, GET_MESSAGES_FROM_STORE, RESTORE_LAST_CHAT
+	SEND_CLIENT_MESSAGE,
+	GET_MESSAGES_FROM_STORE,
+	RESTORE_LAST_CHAT,
+	SEND_GREETING_MESSAGE,
+	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME
 } from '../actions/action-types';
 
 const initialState = {
 	messages: [],
-	restore:false
+	restore: false,
 }
 
 const dataWorking = (state = initialState, action) => {
@@ -24,6 +27,7 @@ const dataWorking = (state = initialState, action) => {
 			const {lastPosition} = action.payload;
 			delete newState.position;
 			delete newState.restore;
+			delete newState.nickname;
 			if (lastPosition !== 'restoreChat') {
 				newState.lastPosition = lastPosition;
 			} else {
@@ -31,15 +35,9 @@ const dataWorking = (state = initialState, action) => {
 				newState.messages = [];
 			}
 			return newState;
-		case SWITCH_TO_START_FORM:
-			newState.position = newState.lastPosition || 'startForm';
-			return newState;
 		case SWITCH_TO_CHAT_FORM:
-			let {title, description, nick} = action.payload;
-			newState.title = title;
-			newState.description = description;
-			newState.nick = nick;
 			newState.position = 'chatForm';
+			delete newState.newMessages;
 			return newState;
 		case RESTORE_LAST_CHAT:
 			newState.position = 'chatForm';
@@ -55,22 +53,45 @@ const dataWorking = (state = initialState, action) => {
 		case SEND_MESSAGE: {
 			const {data} = action.payload;
 			newState.messages = data;
+			if (!newState.rid && data[0]){
+				newState.rid = data[0].room;
+			}
+			if (!newState.position) {
+				newState.newMessages = newState.newMessages || 0;
+				++newState.newMessages;
+			}
+			newState.messages.unshift(newState.greetingMessage);
 			return newState;
 		}
 		case SEND_CLIENT_MESSAGE:
 			newState.messages = newState.messages.map(item => item);
 			return newState;
-		case ROOM_CLOSED:
-			newState.position = 'startForm';
-			return newState;
 		case GET_MESSAGES_FROM_STORE: {
-			const {messages, title} = action.payload;
+			const {messages} = action.payload;
+			newState.localMessages = messages;
 			newState.messages = messages;
-			newState.title = title;
-			newState.loaded = true;
-			console.log(action.payload, newState);
+			newState.rid = messages[0].room;
+			newState.messages.unshift(newState.greetingMessage);
+			newState.restore = true;
+			console.info(newState);
 			return newState;
 		}
+		case SEND_GREETING_MESSAGE:
+			const {
+				message
+			} = action.payload;
+			delete newState.messages;
+			newState.messages = [];
+			newState.greetingMessage = message;
+			newState.messages.push(message);
+			newState.showGreeting = true;
+			return newState;
+		case ASK_NICKNAME:
+			newState.nickname = true;
+			return newState;
+		case CLOSE_NICKNAME:
+			delete newState.nickname;
+			return newState;
 		default:
 			return newState;
 	}

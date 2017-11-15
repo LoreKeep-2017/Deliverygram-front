@@ -6,32 +6,30 @@ import {
 	Card,
 	Button,
 	Row,
-	Input,
-	Popconfirm
+	Input
 } from 'antd'
-import {connect} from 'react-redux'
-import {addToNewRoom, closeStartForm, getMessagesFromStore, messageSend, roomClosed, sendClientMessage} from './action';
+import {connect} from 'react-redux';
+import moment from 'moment';
+import {
+	addToNewRoom,
+	askNickname,
+	closeNickname,
+	closeStartForm,
+	getMessagesFromStore,
+	messageSend,
+	roomClosed,
+	sendClientMessage,
+	sendGreetingMessage
+} from './action';
 import Socket from '../models/socket'
 import localforage from 'localforage';
-import './createChatForm.less'
+import './chatForm.less';
 
 class CreateChatFrom extends React.Component {
 
 	componentDidMount() {
-		const {
-			messageSend,
-			addToNewRoom,
-			roomClosed,
-			title,
-			description,
-			nick,
-			restore
-		} = this.props;
-		let initContent = {title, description, nick}
-		if (!restore) {
-			localforage.clear().then((value) => localforage.setItem('title', title));
-		}
-		this.socket = new Socket({messageSend, addToNewRoom, roomClosed, initContent});
+		this.restorePrev();
+		localforage.clear();
 	}
 
 	close(position) {
@@ -42,12 +40,20 @@ class CreateChatFrom extends React.Component {
 	}
 
 	onClick(event) {
+		event.preventDefault();
 		const {
-			getFieldValue,
-			resetFields,
-			setFieldsValue
-
-		} = this.props.form;
+			form: {
+				getFieldValue,
+				resetFields,
+				setFieldsValue
+			},
+			messageSend,
+			addToNewRoom,
+			roomClosed,
+			restore,
+			rid,
+			askNickname
+		} = this.props;
 		let message = getFieldValue('message');
 		if (event.ctrlKey) {
 			message += '\n';
@@ -55,8 +61,23 @@ class CreateChatFrom extends React.Component {
 			return;
 		}
 		resetFields();
-		this.setMessagesToStore(message);
-		this.socket.sendMessage(message);
+		if (!this.socket) {
+			this.socket = new Socket({messageSend, addToNewRoom, roomClosed, message, restore, rid});
+			if (restore) {
+				this.socket.sendWithBody('sendMessage', {
+					author: 'client',
+					body: message
+				});
+			} else {
+				askNickname();
+			}
+
+		} else {
+			this.socket.sendWithBody('sendMessage', {
+				author: 'client',
+				body: message
+			});
+		}
 	}
 
 	parseMessage(message) {
@@ -69,19 +90,6 @@ class CreateChatFrom extends React.Component {
 		parsed.push(message);
 		parsed = parsed.map((item, position) => (<Row key={`message__row_${position}`}>{item}</Row>))
 		return parsed;
-	}
-
-	setMessagesToStore(message) {
-		let messages;
-		localforage.getItem('message').then(value => {
-			messages = value || [];
-			messages.push({
-				author: 'client',
-				body: message
-			});
-			localforage.setItem('message', messages)
-				.then(value => console.info(value));
-		})
 	}
 
 	getMessages() {
@@ -102,69 +110,76 @@ class CreateChatFrom extends React.Component {
 	restorePrev() {
 		const {
 			getMessagesFromStore,
-			loaded
+			sendGreetingMessage
 		} = this.props;
-		if (!loaded) {
-			localforage.getItem('message').then(messages => {
-				localforage.getItem('title').then(title => {
-					console.info(title);
-					getMessagesFromStore(messages, title)
+		localforage.getItem('message').then(messages => {
+			localforage.getItem('greeting')
+				.then(value => {
+					if (value && value.greetingMessage) {
+						sendGreetingMessage({
+							author: 'operator',
+							body: value.greetingMessage,
+							time: moment()
+						})
+					}
+					if (messages) {
+						getMessagesFromStore(messages)
+					}
 				})
-			})
-		}
+		})
+	}
+
+	getNickname() {
+		const {
+			form: {
+				getFieldValue
+			},
+			closeNickname
+		} = this.props;
+		let nickname = getFieldValue('nickname');
+		this.socket.sendWithBody('sendNickname', {nickname});
+		closeNickname();
 	}
 
 	render() {
 		const {
-			title,
-			restore,
 			form: {
 				getFieldDecorator
-			}
+			},
+			nickname,
+			closeNickname
 		} = this.props;
-		let {
-			messages
-		} = this.props;
-		if (restore) {
-			this.restorePrev();
-			return (
-				<Row style={{width: '25vw'}}>
-					<div style={{float: 'right'}}>
-						<Button icon={'minus'} className={'closeButton'} onClick={() => this.close('restoreChat')}/>
+		let nickInput;
+		if (nickname) {
+			nickInput = (
+				<Card className={'nickname-card'}>
+					<div className={'nickname-title'}>
+						{'Как к вам можно обращаться: '}
+						<Button icon={'close'} size={'small'} className={'close-nickname-button'} onClick={() => closeNickname()}/>
 					</div>
-					<Card title={title} bordered>
-						<Card className={'card-content'}
-						      ref={card => {
-							      if (card)
-								      card.container.scrollTop = card.container.scrollHeight
-						      }}>
-							{this.getMessages()}
-						</Card>
-					</Card>
-				</Row>)
-		}
-		let allMessages;
-		if (messages) {
-			allMessages = this.getMessages();
+					<Form className={'nickname-form'}>
+						<Form.Item/>
+						{getFieldDecorator('nickname', {})(
+							<Input onPressEnter={(event) => this.getNickname()}
+							/>)}
+						<Form.Item/>
+					</Form>
+				</Card>
+			)
 		}
 		return (
-			<Row style={{width: '25vw'}}>
-				<Row style={{float: 'right'}}>
-					<Row className={'closeOption'}>
-					<Button icon={'minus'} className={'closeButton'} onClick={() => this.close()}/>
-					<Popconfirm title="Вы уверены, что хотите закончить диалог?" onConfirm={() => this.close()}
-					            okText="Yes" cancelText="No">
-						<Button icon={'close'} className={'closeButton'}/>
-					</Popconfirm>
-					</Row>
+			<Row className={'messandger-area'}>
+				<Row className={'close-option'}>
+					<Button icon={'close'} className={'closeButton'} onClick={() => this.close()}/>
 				</Row>
-				<Card title={title} bordered>
+				<Card title={'Напишите ваше сообщение'} bordered>
+					{nickInput}
 					<Card className={'card-content'}
 					      ref={card => {
 						      if (card)
 							      card.container.scrollTop = card.container.scrollHeight
 					      }}>
-						{allMessages}
+						{this.getMessages()}
 					</Card>
 					<Form className={`chat-form`}>
 						<Form.Item/>
@@ -172,10 +187,7 @@ class CreateChatFrom extends React.Component {
 							<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
 							                className={'chat-input__textarea'}
 							                placeholder={'Введите свое сообщение'}
-							                onPressEnter={(event) => {
-								                event.preventDefault();
-								                this.onClick(event);
-							                }}
+							                onPressEnter={(event) => this.onClick(event)}
 							/>)}
 						<Form.Item/>
 					</Form>
@@ -186,16 +198,15 @@ class CreateChatFrom extends React.Component {
 
 const FormChatForm = Form.create()(CreateChatFrom);
 
-const mapStateToProps = state => {
-	return {
-		messages: state.messages,
-		title: state.title,
-		nick: state.nick,
-		description: state.description,
-		restore: state.restore,
-		loaded: state.loaded
-	}
-}
+const mapStateToProps = state => ({
+	messages: state.messages,
+	nick: state.nick,
+	description: state.description,
+	restore: state.restore,
+	showGreeting: state.showGreeting,
+	rid: state.rid,
+	nickname: state.nickname
+});
 
 const mapDispatchToProps = dispatch => {
 	return {
@@ -203,8 +214,11 @@ const mapDispatchToProps = dispatch => {
 		messageSend: (data) => dispatch(messageSend(data)),
 		roomClosed: (data) => dispatch(roomClosed(data)),
 		sendClientMessage: () => dispatch(sendClientMessage()),
-		getMessagesFromStore: (messages, title) => dispatch(getMessagesFromStore(messages, title)),
+		getMessagesFromStore: (messages) => dispatch(getMessagesFromStore(messages)),
 		closeStartForm: (lastPosition) => dispatch(closeStartForm(lastPosition)),
+		sendGreetingMessage: (message) => dispatch(sendGreetingMessage(message)),
+		askNickname: () => dispatch(askNickname()),
+		closeNickname: () => dispatch(closeNickname())
 	}
 }
 

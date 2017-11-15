@@ -1,12 +1,20 @@
 'use strict';
 
+import localforage from 'localforage';
+
 export default class Socket {
 
-	constructor({messageSend, addToNewRoom, roomClosed, initContent}) {
-		this.socket = new WebSocket('ws://localhost:8080/api/v1/client');
+	constructor({messageSend, addToNewRoom, roomClosed, message, restore, rid}) {
+		this.socket = new WebSocket('ws://139.59.139.151/api/v1/client');
+		this.queue = [];
 
 		this.socket.onopen = () => {
-			this.socket.send(this.createInitData(initContent));
+			if (!restore) {
+				this.socket.send(this.createInitData(message));
+			} else {
+				this.socket.send(this.createRestoreData(rid))
+			}
+			this.queue.forEach(item => this.socket.send(item));
 		};
 
 		this.socket.onmessage = (message) => {
@@ -17,7 +25,10 @@ export default class Socket {
 						addToNewRoom(recievedMessage.body);
 						return;
 					case 'sendMessage':
-						messageSend(recievedMessage.body);
+						localforage.setItem('message', recievedMessage.body)
+							.then( response =>
+								messageSend(recievedMessage.body)
+							);
 						return;
 					case 'roomClosed':
 						roomClosed(recievedMessage.body);
@@ -27,22 +38,39 @@ export default class Socket {
 		}
 	}
 
-	sendMessage(message) {
-		this.socket.send(JSON.stringify({
-			type: 'client',
-			action: 'sendMessage',
-			body: {
-				author: 'client',
-				body: message
-			}
-		}))
+	sendWithBody(action, body) {
+		let jsonBody = {
+			'type': 'client',
+			'action': action,
+			'body': body
+		};
+		console.info(action, this.socket.readyState);
+		if (this.socket.readyState !== 1) {
+			this.queue.push(JSON.stringify(jsonBody));
+			return;
+		}
+		this.socket.send(JSON.stringify(jsonBody));
 	}
 
 	createInitData(initContent) {
 		return JSON.stringify({
 			type: 'client',
-			action: 'sendDescriptionRoom',
-			body: initContent
+			action: 'sendFirstMessage',
+			body: {
+				author: 'client',
+				body: initContent
+			}
+
+		})
+	}
+
+	createRestoreData(rid){
+		return JSON.stringify({
+			type: 'client',
+			action: 'restoreRoom',
+			body: {
+				rid
+			}
 
 		})
 	}

@@ -74,13 +74,13 @@ module.exports = {
 		// 	}
 		// }),
 
-		// new CompressionPlugin({
-		// 	asset: '[path]',
-		// 	algorithm: 'gzip',
-		// 	test: /\.jsx?$/,
-		// 	threshold: 10240,
-		// 	minRatio: 0.8
-		//
-		// }),
+		new CompressionPlugin({
+			asset: '[path]',
+			algorithm: 'gzip',
+			test: /\.jsx?$/,
+			threshold: 10240,
+			minRatio: 0.8
+
+		}),
 	]
 };

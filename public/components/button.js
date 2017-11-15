@@ -3,39 +3,59 @@
 import React from 'react'
 import {
 	Button,
-	Card,
-	Input,
 	Form
 } from 'antd'
 import {connect} from 'react-redux'
 import './button.less';
-import {switchToStartForm} from './action';
-import StartChatForm from './createChatForm'
+import axios from 'axios';
+import localforage from 'localforage';
+import {receiveGreetingMessage, sendGreetingMessage, switchToChatFrom} from './action';
 import ChatForm from './chatForm'
+import moment from "moment";
 
 class ChatButton extends React.Component {
 
-	onClick() {
-		this.props.switchToStartForm();
+	componentDidMount() {
+		const {
+			receiveGreetingMessage,
+			sendGreetingMessage
+		} = this.props;
+		axios.get('http://139.59.139.151/greating/')
+			.then(response => {
+				receiveGreetingMessage();
+				localforage.setItem('greeting', {greetingMessage: response.data.greating});
+				console.info('ololol')
+				sendGreetingMessage({
+					author: 'operator',
+					body: response.data.greating,
+					time: moment()
+				})
+			})
+			.catch(error => localforage.getItem('greeting')
+				.then(response => {
+					if (response) {
+						localforage.setItem('greeting', {greetingMessage: 'Здравствуйте! Чем мы можем вам помочь?'})
+					}
+				}))
 	}
 
-	onPressEnter(event, label) {
-		let message = this.props.form.getFieldValue('message');
-		this.props.form.resetFields();
-		this.props.dataChanged(message);
-		this.socket.send({Hi: {Id: message}});
+	onClick() {
+		this.props.switchToChatFrom();
 	}
 
 	render() {
 		const {
-			position
+			position,
+			newMessages
 		} = this.props;
+		let notification;
+		if (newMessages) {
+			notification = `+${newMessages}`;
+		}
 		if (position) {
 			switch (position) {
-				case 'startForm':
-					return <StartChatForm/>
 				case 'chatForm':
-					return <ChatForm/>
+					return <ChatForm/>;
 				default :
 					return <h1>{'Sorry, there is some problem'}</h1>
 			}
@@ -44,23 +64,28 @@ class ChatButton extends React.Component {
 			<Button
 				onClick={() => this.onClick()}
 				size='large'
-				className={'start-button'}>
-				{'Начать чат'}
+				className={'start-button'}
+				icon={'mail'}>
+				{notification}
 			</Button>)
 	}
 }
 
-const FormButton = Form.create()(ChatButton)
+const FormButton = Form.create()(ChatButton);
 
 const mapStateToProps = (state) => {
 	return {
-		position: state.position
+		position: state.position,
+		newMessages: state.newMessages
 	}
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		switchToStartForm: () => dispatch(switchToStartForm())
+		switchToChatFrom: () => dispatch(switchToChatFrom()),
+		receiveGreetingMessage: () => dispatch(receiveGreetingMessage()),
+		sendGreetingMessage: (message) => dispatch(sendGreetingMessage(message))
+
 	}
 };
 
