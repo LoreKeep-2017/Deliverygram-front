@@ -14,7 +14,7 @@ import {
 	addToNewRoom,
 	askNickname,
 	closeNickname,
-	closeStartForm,
+	closeStartForm, getExtraMessages,
 	getMessagesFromStore,
 	messageSend,
 	roomClosed,
@@ -23,7 +23,9 @@ import {
 } from './action';
 import Socket from '../models/socket'
 import localforage from 'localforage';
+import axios from 'axios';
 import './chatForm.less';
+import _ from 'lodash';
 
 class CreateChatFrom extends React.Component {
 
@@ -111,7 +113,8 @@ class CreateChatFrom extends React.Component {
 	restorePrev() {
 		const {
 			getMessagesFromStore,
-			sendGreetingMessage
+			sendGreetingMessage,
+			getExtraMessages
 		} = this.props;
 		localforage.getItem('message').then(messages => {
 			localforage.getItem('greeting')
@@ -120,11 +123,24 @@ class CreateChatFrom extends React.Component {
 						sendGreetingMessage({
 							author: 'operator',
 							body: value.greetingMessage,
-							time: moment()
+							time: moment().unix()
 						})
 					}
 					if (messages) {
-						getMessagesFromStore(messages)
+						getMessagesFromStore(messages);
+						console.info(messages);
+						if (messages[1].room) {
+							axios.get(`http://139.59.139.151/diff/?id=${messages[1].room}&size=${messages.length - 1}`)
+								.then(response => {
+									if (response.data.body) {
+										messages = _.concat(messages, response.data.body);
+										console.log(messages);
+										localforage.setItem('message', messages).then(item =>
+											getExtraMessages(response.data.body)
+										)
+									}
+								})
+						}
 					}
 				})
 		})
@@ -156,7 +172,8 @@ class CreateChatFrom extends React.Component {
 				<Card className={'nickname-card'}>
 					<div className={'nickname-title'}>
 						{'Как к вам можно обращаться: '}
-						<Button icon={'close'} size={'small'} className={'close-nickname-button'} onClick={() => closeNickname()}/>
+						<Button icon={'close'} size={'small'} className={'close-nickname-button'}
+						        onClick={() => closeNickname()}/>
 					</div>
 					<Form className={'nickname-form'}>
 						<Form.Item/>
@@ -219,7 +236,8 @@ const mapDispatchToProps = dispatch => {
 		closeStartForm: (lastPosition) => dispatch(closeStartForm(lastPosition)),
 		sendGreetingMessage: (message) => dispatch(sendGreetingMessage(message)),
 		askNickname: () => dispatch(askNickname()),
-		closeNickname: () => dispatch(closeNickname())
+		closeNickname: () => dispatch(closeNickname()),
+		getExtraMessages: (messages) => dispatch(getExtraMessages(messages))
 	}
 }
 

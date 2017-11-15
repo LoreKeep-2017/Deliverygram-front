@@ -10,7 +10,7 @@ export default class App extends React.Component{
 	render(){
 		return (
 			<LocaleProvider locale={ruRU}>
-				<FullButton/>
+				<FullButton style={{zIndex: 100}}/>
 			</LocaleProvider>
 		)
 	}

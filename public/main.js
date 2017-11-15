@@ -12,4 +12,4 @@ const store = createStore(dataWorking);
 ReactDOM.render(
 	<Provider store={store}>
 		<App/>
-	</Provider>, document.body);
+	</Provider>, document.getElementsByClassName('bug-report bug-report-trigger')[0]);

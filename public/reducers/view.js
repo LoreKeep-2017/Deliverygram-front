@@ -10,8 +10,9 @@ import {
 	GET_MESSAGES_FROM_STORE,
 	RESTORE_LAST_CHAT,
 	SEND_GREETING_MESSAGE,
-	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME
+	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES
 } from '../actions/action-types';
+import _ from 'lodash';
 
 const initialState = {
 	messages: [],
@@ -91,6 +92,13 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case CLOSE_NICKNAME:
 			delete newState.nickname;
+			return newState;
+		case GET_EXTRA_MESSAGES:
+			const {
+				messages
+			} = action.payload;
+			newState.messages = _.concat(newState.messages, messages);
+			console.info(newState);
 			return newState;
 		default:
 			return newState;

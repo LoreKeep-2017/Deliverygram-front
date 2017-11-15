@@ -20,7 +20,7 @@ class ChatButton extends React.Component {
 			receiveGreetingMessage,
 			sendGreetingMessage
 		} = this.props;
-		axios.get('http://139.59.139.151/greating/')
+		axios.get('http://139.59.139.151/greating/',  { crossdomain: true })
 			.then(response => {
 				receiveGreetingMessage();
 				localforage.setItem('greeting', {greetingMessage: response.data.greating});
@@ -28,7 +28,7 @@ class ChatButton extends React.Component {
 				sendGreetingMessage({
 					author: 'operator',
 					body: response.data.greating,
-					time: moment()
+					time: moment().unix()
 				})
 			})
 			.catch(error => localforage.getItem('greeting')

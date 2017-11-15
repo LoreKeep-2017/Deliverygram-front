@@ -10,7 +10,7 @@ import {
 	RESTORE_LAST_CHAT,
 	GET_MESSAGES_FROM_STORE,
 	SEND_GREETING_MESSAGE,
-	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME
+	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES
 } from '../actions/action-types';
 
 
@@ -66,4 +66,9 @@ export const askNickname = () => ({
 
 export const closeNickname = () => ({
 	type: CLOSE_NICKNAME
+})
+
+export const getExtraMessages = (messages) => ({
+	type: GET_EXTRA_MESSAGES,
+	payload: {messages}
 })
