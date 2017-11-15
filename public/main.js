@@ -12,4 +12,4 @@ const store = createStore(dataWorking);
 ReactDOM.render(
 	<Provider store={store}>
 		<App/>
-	</Provider>, document.getElementById('root'));
+	</Provider>, document.body);

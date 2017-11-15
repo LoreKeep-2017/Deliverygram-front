@@ -29,7 +29,6 @@ class CreateChatFrom extends React.Component {
 
 	componentDidMount() {
 		this.restorePrev();
-		localforage.clear();
 	}
 
 	close(position) {
@@ -102,6 +101,8 @@ class CreateChatFrom extends React.Component {
 					<div className={`${item.author}-message__position`}>
 						<p className={`${item.author}-message`} key={position}>{this.parseMessage(item.body)}</p>
 					</div>
+					<p className={'message__time'}
+					   key={`message_${position}-time__${item.time}`}>{moment(item.time).format('HH:MM')}</p>
 				</div>
 			))
 		}
