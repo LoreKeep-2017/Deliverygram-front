@@ -93,6 +93,7 @@ const dataWorking = (state = initialState, action) => {
 				getInfo
 			} = action.payload;
 			newState.getInfo = getInfo;
+			newState.redirectFromInfo = false;
 			return newState;
 		}
 		case CHOOSE_NEW_OPERATOR:
@@ -100,6 +101,13 @@ const dataWorking = (state = initialState, action) => {
 				choose
 			} = action.payload;
 			newState.chooseOperator = choose;
+			newState.redirectFromInfo = false;
+			if (!choose){
+				delete newState.rid;
+				delete newState.selectedRoom;
+				newState.redirectFromInfo = true;
+			}
+			console.info(newState);
 			return newState;
 		case RECEIVE_OPERATORS:
 			newState.operators = action.payload.operators;
@@ -129,7 +137,7 @@ const dataWorking = (state = initialState, action) => {
 		case LOGOUT_SUCCESS:
 			delete newState.loginStatuses.signRedirect;
 			delete newState.loginStatuses.pending;
-			delete newState.operatorId
+			delete newState.operatorInfo;
 			newState.loginStatuses.checkedAuth = true;
 			return newState;
 		default:

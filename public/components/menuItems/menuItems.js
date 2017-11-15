@@ -176,7 +176,8 @@ class MenuInit extends React.Component {
 			selectRoom,
 			path,
 			getExtraInfo,
-			match = {params: {}}
+			match = {params: {}},
+			operatorInfo
 		} = this.props;
 		return (
 			<div>
@@ -184,15 +185,15 @@ class MenuInit extends React.Component {
 						<div className={'user-info__group-icon'}/>
 						<div className={'user-info__info'}>
 							<Icon type={'user'} className={'user-info__user-icon'}/>
-							<span className={'user-info__user-info'}>{'OLOLOO OLOLOLO OLOLOLOL'}</span>
+							<span className={'user-info__user-info'}>{operatorInfo.fio}</span>
 							<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
 								<Icon type="down" />
 							</Popover>
 
 						</div>
 					</Row>
-				<div className={'logo'} style={{display: 'flex'}}>
-					<div style={{background: 'white', minWidth: '6vw', height: '90vh', marginTop: '2px'}}>
+				<div className={'logo'}>
+					<div style={{background: 'white', minWidth: '6vw', height: '93vh', marginTop: '2px'}}>
 						<Menu theme={'light'} mode={'inline'}
 						      selectedKeys={[path]}
 						      onSelect={(event) => this.changeMessages(event)}>
@@ -225,7 +226,8 @@ const mapStateToProps = state => ({
 	rid: state.rid,
 	activeStatus: state.activeStatus,
 	selectedRoom: state.selectedRoom,
-	newMessages: state.newMessages
+	newMessages: state.newMessages,
+	operatorInfo: state.operatorInfo
 });
 
 const mapDispatchToProps = dispatch => ({

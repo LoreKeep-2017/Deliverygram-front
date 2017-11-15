@@ -3,13 +3,15 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import './moreinfo.less'
+import {Redirect} from 'react-router-dom'
 import {
 	Row,
 	Button,
 	Select,
 	Form
 } from 'antd';
-import {chooseNewOperator} from "../../view/action";
+import {chooseNewOperator, getExtraInfo} from "../../view/action";
+import moment from "moment";
 
 
 class moreInfoInit extends React.Component {
@@ -22,6 +24,7 @@ class moreInfoInit extends React.Component {
 			socket,
 			selectedRoom,
 			operators,
+			getExtraInfo,
 			form: {
 				getFieldDecorator
 			}
@@ -42,7 +45,11 @@ class moreInfoInit extends React.Component {
 							)}
 						</Form.Item>
 						<Form.Item className={'operator-info__button'}>
-							<Button onClick={() => this.sendToNewOperator()}
+							<Button onClick={() => {
+								this.sendToNewOperator();
+								getExtraInfo(false);
+								chooseNewOperator(false);
+							}}
 							        htmlType={'submit'}>
 									{'Сменить'}
 							</Button>
@@ -51,15 +58,17 @@ class moreInfoInit extends React.Component {
 
 				)
 			}
-			return (
-				<Row className={'moreInfo__operator right-sider-content'}>
-					<div>{`Оператор:  ${clients.rooms[selectedRoom].operator.fio}`}</div>
-					<Button className={'moreInfo__operator-button'} onClick={() => {
-						chooseNewOperator(true);
-						socket.sendWithoutBody('getOperators')
-					}}>{'Сменить оператора'}</Button>
-				</Row>
-			)
+			if (clients.rooms[selectedRoom].operator) {
+				return (
+					<Row className={'moreInfo__operator right-sider-content'}>
+						<div>{`Оператор:  ${clients.rooms[selectedRoom].operator.fio}`}</div>
+						<Button className={'moreInfo__operator-button'} onClick={() => {
+							chooseNewOperator(true);
+							socket.sendWithoutBody('getOperators')
+						}}>{'Сменить оператора'}</Button>
+					</Row>
+				)
+			}
 		}
 		return <div/>
 	}
@@ -84,6 +93,16 @@ class moreInfoInit extends React.Component {
 		}
 	}
 
+	getTitle(status) {
+		switch (status) {
+			case 'roomNew':
+				return 'Новая';
+			case 'roomBusy':
+				return 'В обработке';
+			case 'roomClose':
+				return 'Закрытая'
+		}
+	}
 
 	getInfo() {
 		const {
@@ -99,8 +118,8 @@ class moreInfoInit extends React.Component {
 					<div className={'moreInfo__content right-sider-content'}>
 						<div>{`Автор: ${clients.rooms[selectedRoom].client.nick}`}</div>
 						<div>{`Проблема: ${clients.rooms[selectedRoom].title}`}</div>
-						<div>{`Время обращения:  ${clients.rooms[selectedRoom].time}`}</div>
-						<div>{`Статус:  ${clients.rooms[selectedRoom].status}`}</div>
+						<div>{`Время обращения:  ${moment(clients.rooms[selectedRoom].time).format('HH:MM DD.MM.YYYY')}`}</div>
+						<div>{`Статус:  ${this.getTitle(clients.rooms[selectedRoom].status)}`}</div>
 						<div>{`Подробное описание проблемы:  ${clients.rooms[selectedRoom].description}`}</div>
 					</div>
 				</div>
@@ -131,7 +150,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	chooseNewOperator: (choose) => dispatch(chooseNewOperator(choose))
+	chooseNewOperator: (choose) => dispatch(chooseNewOperator(choose)),
+	getExtraInfo: (status) => dispatch(getExtraInfo(status))
 });
 
 const MoreInfo = connect(

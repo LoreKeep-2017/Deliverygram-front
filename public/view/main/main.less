@@ -66,29 +66,38 @@
 
 .operator-message {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+  padding-right: 8px;
   word-break: break-all;
   width: 100%;
 
   .operator-message_position {
     background: #BCAAA4;
     padding: .6em;
-    margin-right: .8em;
+    margin-left: .8em;
     margin-top: .4em;
     margin-bottom: .4em;
     max-width: 70%;
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
-    border-radius: 1em;
+    border-radius: .5em;
     font-size: 18px;
+  }
+
+  .message__time{
+    margin-bottom: 8px;
+    font-size: 1.2em;
   }
 }
 
 .client-message {
   display: flex;
   justify-content: flex-start;
+  align-items: flex-end;
   word-break: break-all;
+  padding-left: 8px;
   width: 100%;
 
   .client-message_position {
@@ -97,9 +106,14 @@
     margin-right: .8em;
     margin-top: .4em;
     margin-bottom: .4em;
-    border-radius: 1em;
+    border-radius: .5em;
     max-width: 70%;
     font-size: 18px;
+  }
+
+  .message__time{
+    margin-bottom: 8px;
+    font-size: 1.2em;
   }
 }
 

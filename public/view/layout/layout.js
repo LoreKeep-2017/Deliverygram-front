@@ -98,7 +98,8 @@ class InitLayout extends React.Component {
 			getExtraInfo,
 			selectRoom,
 			match,
-			status
+			status,
+			redirectFromInfo
 		} = this.props;
 		if (status !== prevProps.status)
 			changeMessagesByStatus(status);
@@ -121,11 +122,15 @@ class InitLayout extends React.Component {
 			path,
 			selectedRoom,
 			match,
-			signRedirect
+			signRedirect,
+			redirectFromInfo
 		} = this.props;
 		let url, sider;
 		if (signRedirect) {
 			return <Redirect to={'/signin'}/>
+		}
+		if (redirectFromInfo){
+			return <Redirect to={'/active-messages'}/>
 		}
 		if (path && selectedRoom) {
 			if (!getInfo) {
@@ -167,6 +172,7 @@ const mapStateToProps = state => {
 		selectedRoom: state.selectedRoom,
 		operatorInfo: state.operatorInfo,
 		signRedirect: state.loginStatuses.signRedirect,
+		redirectFromInfo: state.redirectFromInfo
 	}
 }
 

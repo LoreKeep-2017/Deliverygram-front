@@ -4,7 +4,6 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {
 	Layout,
-	Button,
 	Card,
 	Form,
 	Input
@@ -15,10 +14,11 @@ import {
 	sendMessage
 } from '../../view/action';
 import ChatHeader from '../header/chatHeader'
+import moment from 'moment';
 
 const {
 	Content,
-} = Layout
+} = Layout;
 
 class CreateInitContent extends React.Component {
 
@@ -36,6 +36,8 @@ class CreateInitContent extends React.Component {
 						<div className={`${item.author}-message_position`}>
 							{this.parseMessage(item.body)}
 						</div>
+						<p className={'message__time'}
+						   key={`message_${position}-time__${item.time}`}>{moment(item.time).format('HH:MM')}</p>
 					</div>)
 			});
 			return (
@@ -62,7 +64,10 @@ class CreateInitContent extends React.Component {
 			message = message.substring(breakPosition + 1);
 		}
 		parsed.push(message);
-		parsed = parsed.map((item, position) => (<p key={`message__row_${position}`}>{item}</p>))
+		parsed = parsed.map((item, position) => (
+			<div>
+				<p key={`message__row_${position}`}>{item}</p>
+			</div>))
 		return parsed;
 	}
 
