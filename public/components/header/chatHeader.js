@@ -60,16 +60,11 @@ class InitChatHeader extends React.Component {
 							</Button>
 						</Link>);
 					break;
-				case 'roomBusy':
-					button =
-						<Button className={'action-button'} onClick={() => this.onCloseChat()}>{'Закрыть'}</Button>;
-					break;
 			}
 			return (<Row className={'header'}>
 				<div className={'header__info'}>
 					<span className={'info__author'}>{`${clients.rooms[selectedRoom].client.nick}`}</span>
-					<span className={'info__title'}>{`${clients.rooms[selectedRoom].title}`}</span>
-					{/*<div className={'info__description'}>{`Описание: ${clients.rooms[selectedRoom].description}`}</div>*/}
+					<span className={'info__title'}>{`${clients.rooms[selectedRoom].description}`}</span>
 				</div>
 				<div className={'header__actions'}>
 					{button}

@@ -25,10 +25,10 @@ class CreateInitContent extends React.Component {
 	getMessages() {
 		const {
 			selectedRoom,
-			clients,
 			messages
 		} = this.props;
 		let allMessages = [];
+		console.info(messages);
 		if (messages[selectedRoom] && messages[selectedRoom][0].room === +selectedRoom) {
 			messages[selectedRoom].forEach((item, position) => {
 				allMessages.push(
@@ -37,7 +37,7 @@ class CreateInitContent extends React.Component {
 							{this.parseMessage(item.body)}
 						</div>
 						<p className={'message__time'}
-						   key={`message_${position}-time__${item.time}`}>{moment(item.time).format('HH:MM')}</p>
+						   key={`message_${position}-time__${item.time}`}>{moment(item.time, 'X').format('HH:MM')}</p>
 					</div>)
 			});
 			return (
@@ -65,13 +65,14 @@ class CreateInitContent extends React.Component {
 		}
 		parsed.push(message);
 		parsed = parsed.map((item, position) => (
-			<div>
+			<div key={`parsed__message_${position}`}>
 				<p key={`message__row_${position}`}>{item}</p>
 			</div>))
 		return parsed;
 	}
 
 	onClick(event) {
+		event.preventDefault();
 		const {
 			sendMessage,
 			form: {
@@ -105,7 +106,7 @@ class CreateInitContent extends React.Component {
 				getFieldDecorator
 			}
 		} = this.props;
-		if ((status === 'roomBusy' || status === 'roomClose')&& selectedRoom) {
+		if (status !== 'roomNew' && selectedRoom) {
 			return (
 				<Form className={'operator-chat'}>
 					<Form.Item style={{width: '100%'}}>
@@ -113,11 +114,7 @@ class CreateInitContent extends React.Component {
 							<Input.TextArea autosize={{minRows: 3, maxRows: 5}}
 							                placeholder={'Введите свое сообщение'}
 							                className={'operator-chat__input-form'}
-							                onPressEnter={(event) => {
-								                event.preventDefault();
-								                this.onClick(event)
-							                }
-							                }/>
+							                onPressEnter={(event) => this.onClick(event)}/>
 						)}
 					</Form.Item>
 				</Form>

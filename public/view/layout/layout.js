@@ -6,11 +6,7 @@ import {connect} from 'react-redux';
 import {Link, Redirect} from 'react-router-dom';
 import {
 	Layout,
-	Menu,
-	Card,
 	Form,
-	Input,
-	Button,
 	Icon
 } from 'antd';
 import Socket from '../../models/socket';
@@ -20,7 +16,11 @@ import {
 	closeChat,
 	receiveMessages,
 	changeRoomStatus,
-	getExtraInfo, changeMessagesByStatus, selectRoom, receiveOperators, redirectDone
+	getExtraInfo,
+	changeMessagesByStatus,
+	selectRoom,
+	receiveOperators,
+	redirectDone, updateInfo
 } from '../action';
 import '../main/main.less';
 import MenuItems from '../../components/menuItems/menuItems';
@@ -70,9 +70,10 @@ class InitLayout extends React.Component {
 			changeRoomStatus,
 			selectedRoom,
 			getInfo,
-			operatorInfo
+			operatorInfo,
+			updateInfo
 		} = this.props;
-		this.socket = new Socket({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorInfo});
+		this.socket = new Socket({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, updateInfo, operatorInfo});
 		if (selectedRoom && getInfo) {
 			this.rightSiderClass += ` right-sider__content`
 		} else {
@@ -192,7 +193,8 @@ const mapDispatchToProps = dispatch => {
 		changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 		selectRoom: (rid) => dispatch(selectRoom(rid)),
 		receiveOperators: (operators) => dispatch(receiveOperators(operators)),
-		redirectDone: () => dispatch(redirectDone())
+		redirectDone: () => dispatch(redirectDone()),
+		updateInfo: (body) => dispatch(updateInfo(body))
 	}
 }
 

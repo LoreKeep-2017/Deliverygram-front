@@ -10,9 +10,13 @@ import App from './app';
 
 const store = createStore(dataWorking);
 
+let main = document.createElement('main');
+main.classList = 'main-content';
+document.body.appendChild(main);
+
 ReactDOM.render(
 	<Provider store={store}>
 		<BrowserRouter>
 			<App/>
 		</BrowserRouter>
-	</Provider>, document.getElementById('root'));
+	</Provider>, document.getElementsByClassName('main-content')[0]);

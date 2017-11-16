@@ -9,8 +9,8 @@ import {
 	Select,
 	Form
 } from 'antd';
-import {cancelOperatorChange, chooseNewOperator, getExtraInfo} from "../../view/action";
-import moment from "moment";
+import {cancelOperatorChange, chooseNewOperator, getExtraInfo} from '../../view/action';
+import moment from 'moment';
 
 
 class moreInfoInit extends React.Component {
@@ -33,9 +33,10 @@ class moreInfoInit extends React.Component {
 			form: {
 				getFieldDecorator
 			},
-			cancelOperatorChange
+			cancelOperatorChange,
+			activeStatus
 		} = this.props;
-		if (clients.rooms && clients.rooms[selectedRoom]) {
+		if (clients.rooms && clients.rooms[selectedRoom] && activeStatus !== 'roomNew') {
 			if (chooseOperator && operators) {
 				let options = operators.map(item => {
 					if (clients.rooms[selectedRoom].operator.fio !== item.fio) {
@@ -137,10 +138,10 @@ class moreInfoInit extends React.Component {
 		switch (status) {
 			case 'roomNew':
 				return 'Новая';
-			case 'roomBusy':
+			case 'roomRecieved':
 				return 'В обработке';
-			case 'roomClose':
-				return 'Закрытая'
+			case 'roomSend':
+				return 'В ожидании';
 		}
 	}
 
@@ -153,12 +154,11 @@ class moreInfoInit extends React.Component {
 		if (selectedRoom && getInfo && clients && clients.rooms && clients.rooms[selectedRoom]) {
 			return (
 				<div>
-					<Row style={{fontSize: '24px', color: 'white'}}>{'Подробная информация о проблеме'}</Row>
+					<div style={{fontSize: '24px', color: 'white'}}>{'Подробная информация о проблеме'}</div>
 					{this.changeOperator()}
 					<div className={'moreInfo__content right-sider-content'}>
 						<div>{`Автор: ${clients.rooms[selectedRoom].client.nick}`}</div>
-						<div>{`Проблема: ${clients.rooms[selectedRoom].title}`}</div>
-						<div>{`Время обращения:  ${moment(clients.rooms[selectedRoom].time).format('HH:MM DD.MM.YYYY')}`}</div>
+						<div>{`Время обращения:  ${moment(clients.rooms[selectedRoom].time, 'X').format('HH:MM DD.MM.YYYY')}`}</div>
 						<div>{`Статус:  ${this.getTitle(clients.rooms[selectedRoom].status)}`}</div>
 						<div>{`Подробное описание проблемы:  ${clients.rooms[selectedRoom].description}`}</div>
 					</div>
@@ -186,7 +186,8 @@ const mapStateToProps = state => ({
 	selectedRoom: state.selectedRoom,
 	getInfo: state.getInfo,
 	chooseOperator: state.chooseOperator,
-	operators: state.operators
+	operators: state.operators,
+	activeStatus: state.activeStatus
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -8,7 +8,8 @@ import {
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
 	SELECT_ROOM, GET_CHAT_INFO, LOGIN_SUCCESS, SAVE_LAST_URL, CHECK_AUTH_FAILED, LOGIN_PENDING, LOGIN_FAILED,
-	LOGOUT_SUCCESS, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS, CANCEL_OPERATOR_CHANGE, REDIRECT_DONE
+	LOGOUT_SUCCESS, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS, CANCEL_OPERATOR_CHANGE, REDIRECT_DONE, REMOVE_SENDED_FLAG,
+	UPDATE_INFO
 } from '../actions/action-types';
 
 const initialState = {
@@ -37,6 +38,8 @@ const dataWorking = (state = initialState, action) => {
 					delete newState.newMessages[messages[0].room];
 				}
 			}
+			console.info(action, newState);
+			newState.clients.rooms[messages[0].room].lastMessage = newState.messages[messages[0].room][newState.messages[messages[0].room] - 1];
 			newState.messages = newState.messages.map(item => item);
 			return newState;
 		case SEND_MESSAGE: {
@@ -53,6 +56,10 @@ const dataWorking = (state = initialState, action) => {
 				newState.messages[room] = [];
 			}
 			newState.messages[room].push(message);
+			newState.sended = true;
+			if (newState.clients.rooms[room]) {
+				newState.clients.rooms[room].lastMessage = newState.messages[room][newState.messages[room] - 1];
+			}
 			return newState;
 		}
 		case ENTER_ROOM:
@@ -71,6 +78,15 @@ const dataWorking = (state = initialState, action) => {
 				newState.clients.rooms[room.id] = room;
 			}
 			newState.messages = newState.messages.map(item => item);
+			return newState;
+		}
+		case UPDATE_INFO: {
+			console.log(action.payload);
+			const {
+				nickname,
+				rid
+			} = action.payload;
+			newState.clients.rooms[rid].client.nick = nickname;
 			return newState;
 		}
 		case CHANGE_WATCHING_MESSAGES_STATUS: {
@@ -143,6 +159,9 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case REDIRECT_DONE:
 			delete newState.redirectFromInfo;
+			return newState;
+		case REMOVE_SENDED_FLAG:
+			delete newState.sended;
 			return newState;
 		default:
 			return newState;

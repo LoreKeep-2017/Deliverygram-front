@@ -3,13 +3,12 @@
 
 export default class Socket {
 
-	constructor({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, operatorInfo}) {
+	constructor({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, updateInfo, operatorInfo}) {
 		this.socket = new WebSocket('ws://139.59.139.151/api/v1/operator');
 
 		this.queue = [];
 		this.socket.onopen = () => {
 			this.sendWithBody('sendId', operatorInfo);
-			console.info(this.queue);
 			this.queue.forEach(body => {
 				this.socket.send(body)
 			})
@@ -34,7 +33,10 @@ export default class Socket {
 						receiveMessages(receivedMessage.body);
 						return;
 					case 'getOperators':
-						receiveOperators(receivedMessage.body)
+						receiveOperators(receivedMessage.body);
+						return;
+					case 'updateInfo':
+						updateInfo(receivedMessage.body);
 						return;
 				}
 			}
@@ -46,7 +48,6 @@ export default class Socket {
 			'type': 'operator',
 			'action': action
 		};
-		console.info(action, this.socket.readyState);
 		if (this.socket.readyState !== 1) {
 			this.queue.push(JSON.stringify(jsonBody));
 			return;
@@ -60,7 +61,6 @@ export default class Socket {
 			'action': action,
 			'body': body
 		};
-		console.info(action, this.socket.readyState);
 		if (this.socket.readyState !== 1) {
 			this.queue.push(JSON.stringify(jsonBody));
 			return;

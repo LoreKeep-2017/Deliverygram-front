@@ -15,12 +15,19 @@ import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
-	getExtraInfo, logoutFailed, logoutSuccess,
+	getExtraInfo, logoutFailed, logoutSuccess, removeSendedFlag,
 	selectRoom
 } from '../../view/action';
 import {axiosGet} from "../../models/axios";
 
 class MenuInit extends React.Component {
+
+	constructor() {
+		super();
+		this.state = {
+			selectedRoom: -1
+		}
+	}
 
 	getInitials(nick) {
 		if (!nick)
@@ -35,13 +42,27 @@ class MenuInit extends React.Component {
 		const {
 			activeStatus,
 			selectedRoom,
-			socket
+			socket,
+			match,
 		} = this.props;
 		if (activeStatus) {
 			socket.sendWithBody('getRoomsByStatus', {type: activeStatus});
 		}
 		if (selectedRoom) {
 			socket.sendWithBody('getAllMessages', {rid: +selectedRoom});
+		}
+		if (selectedRoom && activeStatus === 'roomRecieved' && this.state.selectedRoom !== +selectedRoom) {
+			this.setState({selectedRoom: +selectedRoom})
+		}
+	}
+
+	componentDidUpdate() {
+		const {
+			selectedRoom,
+			activeStatus
+		} = this.props;
+		if (selectedRoom && activeStatus === 'roomRecieved' && this.state.selectedRoom !== +selectedRoom) {
+			this.setState({selectedRoom: +selectedRoom})
 		}
 	}
 
@@ -69,8 +90,8 @@ class MenuInit extends React.Component {
 									</div>
 								</Col>
 								<Col className={'client-row__content-col'}>
-									<h1>{clients.rooms[keys].client.nick}</h1>
-									<span className={'content-col__title'}>{clients.rooms[keys].title}</span>
+									<h1>{clients.rooms[keys].client.nick || 'Аноним'}</h1>
+									<span className={'content-col__title'}>{clients.rooms[keys].lastMessage}</span>
 								</Col>
 								<Col>
 							<span className={'client-row__new-messages-col'}>
@@ -132,11 +153,11 @@ class MenuInit extends React.Component {
 				break;
 			case 'active-messages':
 				getExtraInfo(false);
-				socket.sendWithBody('getRoomsByStatus', {type: 'roomBusy'});
+				socket.sendWithBody('getRoomsByStatus', {type: 'roomRecieved'});
 				break;
 			case 'closed-messages':
 				getExtraInfo(false);
-				socket.sendWithBody('getRoomsByStatus', {type: 'roomClose'});
+				socket.sendWithBody('getRoomsByStatus', {type: 'roomSend'});
 				break;
 		}
 	}
@@ -145,13 +166,14 @@ class MenuInit extends React.Component {
 		const {
 			activeStatus
 		} = this.props;
+		console.info(activeStatus);
 		switch (activeStatus) {
 			case 'roomNew':
 				return 'Новые';
-			case 'roomBusy':
+			case 'roomRecieved':
 				return 'В обработке';
-			case 'roomClose':
-				return 'Закрытые'
+			case 'roomSend':
+				return 'В ожидании';
 		}
 	}
 
@@ -177,26 +199,34 @@ class MenuInit extends React.Component {
 			path,
 			getExtraInfo,
 			match = {params: {}},
-			operatorInfo
+			operatorInfo,
+			activeStatus,
+			sended,
+			removeSendedFlag
 		} = this.props;
 		return (
 			<div>
 				<Row className={'user-info'}>
-						<div className={'user-info__group-icon'}/>
-						<div className={'user-info__info'}>
-							<Icon type={'user'} className={'user-info__user-icon'}/>
-							<span className={'user-info__user-info'}>{operatorInfo.fio}</span>
-							<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
-								<Icon type="down" />
-							</Popover>
+					<div className={'user-info__group-icon'}/>
+					<div className={'user-info__info'}>
+						<Icon type={'user'} className={'user-info__user-icon'}/>
+						<span className={'user-info__user-info'}>{operatorInfo.fio}</span>
+						<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
+							<Icon type="down"/>
+						</Popover>
 
-						</div>
-					</Row>
+					</div>
+				</Row>
 				<div className={'logo'}>
 					<div style={{background: 'white', minWidth: '6vw', height: '93vh', marginTop: '2px'}}>
 						<Menu theme={'light'} mode={'inline'}
 						      selectedKeys={[path]}
-						      onSelect={(event) => this.changeMessages(event)}>
+						      onSelect={(event) =>{
+							      if (sended) {
+								      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
+								      removeSendedFlag();
+							      }
+							      this.changeMessages(event)}}>
 							{this.getMainMenu()}
 						</Menu>
 					</div>
@@ -207,7 +237,14 @@ class MenuInit extends React.Component {
 						<Menu theme={'dark'} mode={'inline'}
 						      className={'client-menu'}
 						      selectedKeys={[match.params.id]}
-						      onClick={(event) => {
+						      onSelect={(event) => {
+							      if (sended) {
+								      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
+								      removeSendedFlag();
+							      }
+							      if (activeStatus === 'roomRecieved' && this.state.selectRoom !== +event.key) {
+								      this.setState({selectedRoom: +event.key})
+							      }
 							      selectRoom(+event.key);
 							      getExtraInfo(false);
 							      socket.sendWithBody('getAllMessages', {rid: +event.key});
@@ -227,7 +264,8 @@ const mapStateToProps = state => ({
 	activeStatus: state.activeStatus,
 	selectedRoom: state.selectedRoom,
 	newMessages: state.newMessages,
-	operatorInfo: state.operatorInfo
+	operatorInfo: state.operatorInfo,
+	sended: state.sended
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -236,7 +274,8 @@ const mapDispatchToProps = dispatch => ({
 	selectRoom: (rid) => dispatch(selectRoom(rid)),
 	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 	logoutSuccess: () => dispatch(logoutSuccess()),
-	logoutFailed: () => dispatch(logoutFailed())
+	logoutFailed: () => dispatch(logoutFailed()),
+	removeSendedFlag: () => dispatch(removeSendedFlag())
 });
 
 const MenuItems = connect(

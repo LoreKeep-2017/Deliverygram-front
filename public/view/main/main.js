@@ -81,42 +81,42 @@ class MainView extends React.Component {
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
-						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
+						<ChatLayout path={'active-messages'} match={props.match} status={'roomRecieved'}/>
 				}}/>
 				<Route exact path={'/active-messages/:id'} render={props => {
 					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
-						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
+						<ChatLayout path={'active-messages'} match={props.match} status={'roomRecieved'}/>
 				}}/>
 				<Route exact path={'/active-messages/:id/info'} render={props => {
 					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
-						<ChatLayout path={'active-messages'} match={props.match} status={'roomBusy'}/>
+						<ChatLayout path={'active-messages'} match={props.match} status={'roomRecieved'}/>
 				}}/>
 				<Route exact path={'/closed-messages'} render={props => {
 					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
-						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
+						<ChatLayout path={'closed-messages'} match={props.match} status={'roomSend'}/>
 				}}/>
 				<Route exact path={'/closed-messages/:id'} render={props => {
 					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
-						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
+						<ChatLayout path={'closed-messages'} match={props.match} status={'roomSend'}/>
 				}}/>
 				<Route exact path={'/closed-messages/:id/info'} render={props => {
 					return !operatorInfo ? <Redirect to={{
 							pathname: '/signin',
 							state: {url: props.match.url}
 						}}/> :
-						<ChatLayout path={'closed-messages'} match={props.match} status={'roomClose'}/>
+						<ChatLayout path={'closed-messages'} match={props.match} status={'roomSend'}/>
 				}}/>
 			</Switch>
 		);
