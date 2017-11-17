@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const pkg = require('./package.json');
 
 module.exports = {
@@ -53,29 +54,29 @@ module.exports = {
 		// }),
 
 		new webpack.optimize.DedupePlugin() ,
-		
+
 		new webpack.optimize.OccurrenceOrderPlugin(),
 
-		// new webpack.optimize.UglifyJsPlugin({
-		// 	beautify: false,
-		// 	comments: false,
-		// 	compress: {
-		// 		sequences     : true,
-		// 		booleans      : true,
-		// 		loops         : true,
-		// 		unused      : true,
-		// 		warnings    : false,
-		// 		drop_console: true,
-		// 		unsafe      : true
-		// 	}
-		// }),
+		new webpack.optimize.UglifyJsPlugin({
+			beautify: false,
+			comments: false,
+			compress: {
+				sequences     : true,
+				booleans      : true,
+				loops         : true,
+				unused      : true,
+				warnings    : false,
+				drop_console: true,
+				unsafe      : true
+			}
+		}),
 
 		new CompressionPlugin({
 			asset: '[path]',
 			algorithm: 'gzip',
 			test: /\.jsx?$/,
 			threshold: 10240,
-			minRatio: 0.8
+			minRatio: 0.9
 
 		}),
 	]

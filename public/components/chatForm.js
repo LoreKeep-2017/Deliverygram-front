@@ -98,15 +98,16 @@ class CreateChatFrom extends React.Component {
 			messages
 		} = this.props;
 		if (messages) {
-			return messages.map((item, position) => (
+			return messages.map((item, position) => {
+				return (
 				<div className={`chat-card__${item.author}-message`} key={`chat_message_${position}`}>
 					<div className={`${item.author}-message__position`}>
 						<p className={`${item.author}-message`} key={position}>{this.parseMessage(item.body)}</p>
 					</div>
 					<p className={'message__time'}
-					   key={`message_${position}-time__${item.time}`}>{moment(item.time).format('HH:MM')}</p>
+					   key={`message_${position}-time__${item.time}`}>{moment.unix(item.time).format('HH:mm')}</p>
 				</div>
-			))
+			)})
 		}
 	}
 
@@ -188,7 +189,7 @@ class CreateChatFrom extends React.Component {
 		return (
 			<Row className={'messandger-area'}>
 				<Row className={'close-option'}>
-					<Button icon={'close'} className={'closeButton'} onClick={() => this.close()}/>
+					<Button icon={'close'} className={'close-button'} onClick={() => this.close()}/>
 				</Row>
 				<Card title={'Напишите ваше сообщение'} bordered>
 					{nickInput}
@@ -202,7 +203,7 @@ class CreateChatFrom extends React.Component {
 					<Form className={`chat-form`}>
 						<Form.Item/>
 						{getFieldDecorator('message', {})(
-							<Input.TextArea autosize={{minRows: 3, maxRows: 4}}
+							<Input.TextArea autosize={{minRows: 3, maxRows: 3}}
 							                className={'chat-input__textarea'}
 							                placeholder={'Введите свое сообщение'}
 							                onPressEnter={(event) => this.onClick(event)}

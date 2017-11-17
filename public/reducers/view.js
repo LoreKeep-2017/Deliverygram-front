@@ -35,10 +35,12 @@ const dataWorking = (state = initialState, action) => {
 				delete newState.lastPosition;
 				newState.messages = [];
 			}
+			newState.switchToButton = true;
 			return newState;
 		case SWITCH_TO_CHAT_FORM:
 			newState.position = 'chatForm';
 			delete newState.newMessages;
+			delete newState.switchToButton;
 			return newState;
 		case RESTORE_LAST_CHAT:
 			newState.position = 'chatForm';
@@ -61,6 +63,7 @@ const dataWorking = (state = initialState, action) => {
 				newState.newMessages = newState.newMessages || 0;
 				++newState.newMessages;
 			}
+			newState.greetingMessage.time = newState.messages[0].time;
 			newState.messages.unshift(newState.greetingMessage);
 			return newState;
 		}

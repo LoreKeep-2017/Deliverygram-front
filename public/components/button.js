@@ -20,11 +20,10 @@ class ChatButton extends React.Component {
 			receiveGreetingMessage,
 			sendGreetingMessage
 		} = this.props;
-		axios.get('http://139.59.139.151/greating/',  { crossdomain: true })
+		axios.get('http://139.59.139.151/greating/', {crossdomain: true})
 			.then(response => {
 				receiveGreetingMessage();
 				localforage.setItem('greeting', {greetingMessage: response.data.greating});
-				console.info('ololol')
 				sendGreetingMessage({
 					author: 'operator',
 					body: response.data.greating,
@@ -46,10 +45,12 @@ class ChatButton extends React.Component {
 	render() {
 		const {
 			position,
-			newMessages
+			newMessages,
+			switchToButton
 		} = this.props;
-		let notification;
+		let notification, classList = 'start-button';
 		if (newMessages) {
+			classList += ' start-button__messages_appear';
 			notification = `+${newMessages}`;
 		}
 		if (position) {
@@ -60,13 +61,18 @@ class ChatButton extends React.Component {
 					return <h1>{'Sorry, there is some problem'}</h1>
 			}
 		}
+		if (switchToButton) {
+			classList += ' start-button_appear';
+		}
 		return (
 			<Button
 				onClick={() => this.onClick()}
 				size='large'
-				className={'start-button'}
+				className={classList}
 				icon={'mail'}>
-				{notification}
+				<span className={'notification_appear'}>
+					{notification}
+					</span>
 			</Button>)
 	}
 }
@@ -76,7 +82,8 @@ const FormButton = Form.create()(ChatButton);
 const mapStateToProps = (state) => {
 	return {
 		position: state.position,
-		newMessages: state.newMessages
+		newMessages: state.newMessages,
+		switchToButton: state.switchToButton
 	}
 };
 
