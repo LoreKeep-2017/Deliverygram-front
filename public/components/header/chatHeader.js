@@ -63,8 +63,8 @@ class InitChatHeader extends React.Component {
 			}
 			return (<Row className={'header'}>
 				<div className={'header__info'}>
-					<span className={'info__author'}>{`${clients.rooms[selectedRoom].client.nick}`}</span>
-					<span className={'info__title'}>{`${clients.rooms[selectedRoom].description}`}</span>
+					<span className={'info__author'}>{`${clients.rooms[selectedRoom].client.nick || 'Аноним'}`}</span>
+					<span className={'info__title'}>{`${clients.rooms[selectedRoom].description || clients.rooms[selectedRoom].lastMessage}`}</span>
 				</div>
 				<div className={'header__actions'}>
 					{button}

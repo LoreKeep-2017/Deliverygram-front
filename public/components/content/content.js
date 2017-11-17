@@ -28,7 +28,6 @@ class CreateInitContent extends React.Component {
 			messages
 		} = this.props;
 		let allMessages = [];
-		console.info(messages);
 		if (messages[selectedRoom] && messages[selectedRoom][0].room === +selectedRoom) {
 			messages[selectedRoom].forEach((item, position) => {
 				allMessages.push(
@@ -37,7 +36,7 @@ class CreateInitContent extends React.Component {
 							{this.parseMessage(item.body)}
 						</div>
 						<p className={'message__time'}
-						   key={`message_${position}-time__${item.time}`}>{moment(item.time, 'X').format('HH:MM')}</p>
+						   key={`message_${position}-time__${item.time}`}>{moment(item.time, 'X').format('HH:mm')}</p>
 					</div>)
 			});
 			return (

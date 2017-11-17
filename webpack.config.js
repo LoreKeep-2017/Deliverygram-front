@@ -18,7 +18,7 @@ module.exports = {
 },
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: path.join('assets', 'js', '[name].bundle.[chunkhash].js'),
+		filename: path.join('assets', 'js', '[name].bundle.1.js'),
 		publicPath: '/'
 	},
 	module: {

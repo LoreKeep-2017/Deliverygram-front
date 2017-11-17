@@ -85,9 +85,7 @@ class MenuInit extends React.Component {
 						<Link to={`/${path}/${keys}`} className={'client-menu-item__href'}>
 							<Row className={'client-menu-item__client-row'}>
 								<Col className={'client-row__avatar-div'}>
-									<div className={'client-row__avatar'}>
-										{this.getInitials(clients.rooms[keys].client.nick).toUpperCase()}
-									</div>
+									{this.getAvatar(keys)}
 								</Col>
 								<Col className={'client-row__content-col'}>
 									<h1>{clients.rooms[keys].client.nick || 'Аноним'}</h1>
@@ -105,6 +103,18 @@ class MenuInit extends React.Component {
 			}
 		}
 		return allClients;
+	}
+
+	getAvatar(keys) {
+		const {
+			clients
+		} = this.props;
+		if (clients.rooms[keys].client.nick) {
+			return <div className={'client-row__avatar'}>
+				{this.getInitials(clients.rooms[keys].client.nick).toUpperCase()}
+			</div>
+		}
+		return <Icon style={{fontSize: '2.5em', color: 'white'}} type="question" />
 	}
 
 	getPopoverContent() {

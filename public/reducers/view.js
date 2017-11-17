@@ -38,9 +38,11 @@ const dataWorking = (state = initialState, action) => {
 					delete newState.newMessages[messages[0].room];
 				}
 			}
-			console.info(action, newState);
-			newState.clients.rooms[messages[0].room].lastMessage = newState.messages[messages[0].room][newState.messages[messages[0].room] - 1];
-			newState.messages = newState.messages.map(item => item);
+			if (messages[0]) {
+				let selectRoom = messages[0].room;
+				newState.clients.rooms[selectRoom].lastMessage = newState.messages[selectRoom][newState.messages[selectRoom].length - 1].body;
+				newState.messages = newState.messages.map(item => item);
+			}
 			return newState;
 		case SEND_MESSAGE: {
 			const {
@@ -57,6 +59,7 @@ const dataWorking = (state = initialState, action) => {
 			}
 			newState.messages[room].push(message);
 			newState.sended = true;
+			console.log(newState.clients.rooms, room);
 			if (newState.clients.rooms[room]) {
 				newState.clients.rooms[room].lastMessage = newState.messages[room][newState.messages[room] - 1];
 			}
@@ -102,6 +105,10 @@ const dataWorking = (state = initialState, action) => {
 				rid
 			} = action.payload;
 			newState.selectedRoom = rid;
+			// if (newState.clients.rooms && newState.clients.rooms[rid]) {
+			// 	newState.clients.rooms[rid].lastMessage = newState.messages[rid][newState.messages[rid] - 1];
+			// }
+			console.info(newState.cleints, rid);
 			return newState;
 		}
 		case GET_CHAT_INFO: {
@@ -118,7 +125,7 @@ const dataWorking = (state = initialState, action) => {
 			} = action.payload;
 			newState.chooseOperator = choose;
 			newState.redirectFromInfo = false;
-			if (!choose){
+			if (!choose) {
 				delete newState.rid;
 				delete newState.selectedRoom;
 				newState.redirectFromInfo = true;

@@ -34,12 +34,13 @@ class moreInfoInit extends React.Component {
 				getFieldDecorator
 			},
 			cancelOperatorChange,
-			activeStatus
+			activeStatus,
+			operatorInfo
 		} = this.props;
 		if (clients.rooms && clients.rooms[selectedRoom] && activeStatus !== 'roomNew') {
 			if (chooseOperator && operators) {
 				let options = operators.map(item => {
-					if (clients.rooms[selectedRoom].operator.fio !== item.fio) {
+					if (operatorInfo.fio !== item.fio) {
 						return <Select.Option value={`${item.id}`}
 						                      key={`operator_${item.id}`}>{item.fio}</Select.Option>
 					}
@@ -47,7 +48,7 @@ class moreInfoInit extends React.Component {
 				return (
 					<Form className={'right-sider-content operator-info'}>
 						<Form.Item className={'operator-info__select'}>
-							{getFieldDecorator('newOperator', {initialValue: `${clients.rooms[selectedRoom].operator.id}`})(
+							{getFieldDecorator('newOperator', {initialValue: `${operatorInfo.fio}`})(
 								<Select className={'operator-info__select'}
 								        dropdownMatchSelectWidth={false}
 								        onSelect={() => this.setState({disabled: false})}>
@@ -75,11 +76,15 @@ class moreInfoInit extends React.Component {
 			if (clients.rooms[selectedRoom].operator) {
 				return (
 					<Row className={'moreInfo__operator right-sider-content'}>
-						<div>{`Оператор:  ${clients.rooms[selectedRoom].operator.fio}`}</div>
+						<div>{`Оператор:  ${operatorInfo.fio}`}</div>
 						<Button className={'moreInfo__operator-button'} onClick={() => {
 							chooseNewOperator(true);
 							socket.sendWithoutBody('getOperators')
-						}}>{'Сменить оператора'}</Button>
+						}}>
+							<div style={{ whiteSpace: 'pre-line', maxHeight: '3em'}}>
+								{'Сменить оператора'}
+							</div>
+						</Button>
 					</Row>
 				)
 			}
@@ -152,15 +157,16 @@ class moreInfoInit extends React.Component {
 			getInfo,
 		} = this.props;
 		if (selectedRoom && getInfo && clients && clients.rooms && clients.rooms[selectedRoom]) {
+			console.log(clients.rooms[selectedRoom]);
 			return (
 				<div>
 					<div style={{fontSize: '24px', color: 'white'}}>{'Подробная информация о проблеме'}</div>
 					{this.changeOperator()}
 					<div className={'moreInfo__content right-sider-content'}>
-						<div>{`Автор: ${clients.rooms[selectedRoom].client.nick}`}</div>
-						<div>{`Время обращения:  ${moment(clients.rooms[selectedRoom].time, 'X').format('HH:MM DD.MM.YYYY')}`}</div>
+						<div>{`Автор: ${clients.rooms[selectedRoom].client.nick || 'Аноним'}`}</div>
+						<div>{`Время обращения:  ${moment(clients.rooms[selectedRoom].time, 'X').format('HH:mm DD.MM.YYYY')}`}</div>
 						<div>{`Статус:  ${this.getTitle(clients.rooms[selectedRoom].status)}`}</div>
-						<div>{`Подробное описание проблемы:  ${clients.rooms[selectedRoom].description}`}</div>
+						<div>{`Подробное описание проблемы:  ${clients.rooms[selectedRoom].description || clients.rooms[selectedRoom].lastMessage}`}</div>
 					</div>
 				</div>
 			)
@@ -187,7 +193,8 @@ const mapStateToProps = state => ({
 	getInfo: state.getInfo,
 	chooseOperator: state.chooseOperator,
 	operators: state.operators,
-	activeStatus: state.activeStatus
+	activeStatus: state.activeStatus,
+	operatorInfo: state.operatorInfo,
 });
 
 const mapDispatchToProps = dispatch => ({
