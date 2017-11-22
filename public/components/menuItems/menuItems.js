@@ -9,13 +9,15 @@ import {
 	Row,
 	Col,
 	Icon,
-	Popover
+	Popover,
+	Form,
+	Input
 } from 'antd';
 import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
-	getExtraInfo, logoutFailed, logoutSuccess, removeSendedFlag,
+	getExtraInfo, infoSearch, logoutFailed, logoutSuccess, removeSendedFlag,
 	selectRoom
 } from '../../view/action';
 import {axiosGet} from "../../models/axios";
@@ -202,6 +204,32 @@ class MenuInit extends React.Component {
 			});
 	}
 
+	search(){
+		const{
+			form:{
+				getFieldValue
+			},
+			socket,
+			activeStatus,
+			infoSearch
+		} = this.props;
+		let searchTag = getFieldValue('search');
+		infoSearch();
+		socket.sendWithBody('search', {
+			type: activeStatus,
+			pattern: `%${searchTag}%`
+		})
+	}
+
+	resetField() {
+		const {
+			form: {
+				resetFields
+			}
+		} = this.props;
+		resetFields(['search']);
+	}
+
 	render() {
 		const {
 			socket,
@@ -212,7 +240,10 @@ class MenuInit extends React.Component {
 			operatorInfo,
 			activeStatus,
 			sended,
-			removeSendedFlag
+			removeSendedFlag,
+			form: {
+				getFieldDecorator
+			}
 		} = this.props;
 		return (
 			<div>
@@ -244,6 +275,14 @@ class MenuInit extends React.Component {
 					<span className={'menu-title'}>
 						{this.getTitle()}
 					</span>
+						<Form className={'search-form'}>
+							<Form.Item>
+								{getFieldDecorator('search', {initialValue: ''})(
+									<Input className={'input-search'} placeholder={'Поиск ...'} onPressEnter={() => this.search()}/>
+								)}
+							</Form.Item>
+							<Icon type='close-circle-o' className={'clear-icon'} onClick={() => this.resetField()}/>
+						</Form>
 						<Menu theme={'dark'} mode={'inline'}
 						      className={'client-menu'}
 						      selectedKeys={[match.params.id]}
@@ -267,6 +306,8 @@ class MenuInit extends React.Component {
 	}
 }
 
+const MenuFormInit = Form.create()(MenuInit);
+
 const mapStateToProps = state => ({
 	messages: state.messages,
 	clients: state.clients,
@@ -285,12 +326,13 @@ const mapDispatchToProps = dispatch => ({
 	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 	logoutSuccess: () => dispatch(logoutSuccess()),
 	logoutFailed: () => dispatch(logoutFailed()),
-	removeSendedFlag: () => dispatch(removeSendedFlag())
+	removeSendedFlag: () => dispatch(removeSendedFlag()),
+	infoSearch: () => dispatch(infoSearch())
 });
 
 const MenuItems = connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(MenuInit);
+)(MenuFormInit);
 
 export default MenuItems;
