@@ -22,12 +22,26 @@ import {
 	sendGreetingMessage
 } from './action';
 import Socket from '../models/socket'
+import Messages from './messages';
 import localforage from 'localforage';
 import axios from 'axios';
 import './chatForm.less';
 import _ from 'lodash';
+import {Picker} from 'emoji-mart';
+import Twemoji from 'react-twemoji';
+import ContentEditable from 'react-contenteditable'
+
 
 class CreateChatFrom extends React.Component {
+
+	constructor() {
+		super();
+		this.state = {
+			showPicker: false,
+			contentState: 'Введите сообщение...',
+			sendState: ''
+		}
+	}
 
 	componentDidMount() {
 		this.restorePrev();
@@ -43,11 +57,6 @@ class CreateChatFrom extends React.Component {
 	onClick(event) {
 		event.preventDefault();
 		const {
-			form: {
-				getFieldValue,
-				resetFields,
-				setFieldsValue
-			},
 			messageSend,
 			addToNewRoom,
 			roomClosed,
@@ -55,13 +64,7 @@ class CreateChatFrom extends React.Component {
 			rid,
 			askNickname
 		} = this.props;
-		let message = getFieldValue('message');
-		if (event.ctrlKey) {
-			message += '\n';
-			setFieldsValue({message});
-			return;
-		}
-		resetFields();
+		let message = this.state.sendState;
 		if (!this.socket) {
 			this.socket = new Socket({messageSend, addToNewRoom, roomClosed, message, restore, rid});
 			if (restore) {
@@ -72,43 +75,17 @@ class CreateChatFrom extends React.Component {
 			} else {
 				askNickname();
 			}
-
 		} else {
 			this.socket.sendWithBody('sendMessage', {
 				author: 'client',
 				body: message
 			});
 		}
-	}
-
-	parseMessage(message) {
-		let parsed = [];
-		while (message.indexOf('\n') > -1) {
-			let breakPosition = message.indexOf('\n');
-			parsed.push(message.substring(0, breakPosition));
-			message = message.substring(breakPosition + 1);
-		}
-		parsed.push(message);
-		parsed = parsed.map((item, position) => (<Row key={`message__row_${position}`}>{item}</Row>))
-		return parsed;
-	}
-
-	getMessages() {
-		const {
-			messages
-		} = this.props;
-		if (messages) {
-			return messages.map((item, position) => {
-				return (
-				<div className={`chat-card__${item.author}-message`} key={`chat_message_${position}`}>
-					<div className={`${item.author}-message__position`}>
-						<p className={`${item.author}-message`} key={position}>{this.parseMessage(item.body)}</p>
-					</div>
-					<p className={'message__time'}
-					   key={`message_${position}-time__${item.time}`}>{moment.unix(item.time).format('HH:mm')}</p>
-				</div>
-			)})
-		}
+		this.editable.lastHtml = '';
+		this.setState({
+			contentState: '\n',
+			sendState: ''
+		})
 	}
 
 	restorePrev() {
@@ -129,7 +106,6 @@ class CreateChatFrom extends React.Component {
 					}
 					if (messages) {
 						getMessagesFromStore(messages);
-						console.info(messages);
 						if (messages[1].room) {
 							axios.get(`http://139.59.139.151/diff/?id=${messages[1].room}&size=${messages.length - 1}`)
 								.then(response => {
@@ -159,6 +135,16 @@ class CreateChatFrom extends React.Component {
 		closeNickname();
 	}
 
+	addEmojiToInput(emoji) {
+		let message = this.editable.lastHtml;
+		message += emoji.native;
+		this.setState({
+			showPicker: false,
+			contentState: message,
+			sendState: message
+		})
+	}
+
 	render() {
 		const {
 			form: {
@@ -167,7 +153,13 @@ class CreateChatFrom extends React.Component {
 			nickname,
 			closeNickname
 		} = this.props;
-		let nickInput;
+		let nickInput, picker;
+		if (this.state.showPicker) {
+			picker =
+				<Picker className={'emoji-picker'} style={{position: 'absolute', right: 0, bottom: 80}}
+				        set={'emojione'}
+				        onClick={(emoji, moreInfo) => this.addEmojiToInput(emoji)}/>
+		}
 		if (nickname) {
 			nickInput = (
 				<Card className={'nickname-card'}>
@@ -193,22 +185,51 @@ class CreateChatFrom extends React.Component {
 				</Row>
 				<Card title={'Напишите ваше сообщение'} bordered>
 					{nickInput}
-					<Card className={'card-content'}
-					      ref={card => {
-						      if (card)
-							      card.container.scrollTop = card.container.scrollHeight
-					      }}>
-						{this.getMessages()}
-					</Card>
+					<Messages/>
+					{picker}
 					<Form className={`chat-form`}>
-						<Form.Item/>
-						{getFieldDecorator('message', {})(
-							<Input.TextArea autosize={{minRows: 3, maxRows: 3}}
-							                className={'chat-input__textarea'}
-							                placeholder={'Введите свое сообщение'}
-							                onPressEnter={(event) => this.onClick(event)}
-							/>)}
-						<Form.Item/>
+						<Twemoji options={{className: 'twemoji'}}>
+							<ContentEditable
+								ref={editable => this.editable = editable}
+								className={'chat-input__textarea'}
+								html={this.state.contentState}
+								onKeyDown={event => {
+									if (event.key === 'Control' || event.key === 'Enter') {
+										this[event.key] = true;
+									}
+									if (!this.Control && this.Enter) {
+										this.onClick(event);
+									}
+									if (this.Control && this.Enter) {
+										document.execCommand('insertHTML', false, '<br><br>');
+										this.setState({sendState: this.state.sendState + '\n'})
+									}
+									if (event.key.length === 1){
+										this.setState({sendState: this.state.sendState + event.key})
+									}
+								}}
+								onKeyUp={event => {
+									if (event.key === 'Control' || event.key === 'Enter') {
+										this[event.key] = false;
+									}
+								}}
+								onBlur={() => {
+									if (!this.editable.lastHtml) {
+										this.setState({contentState: 'Введите сообщение...'})
+									}
+								}}
+								onFocus={() => {
+									if (this.state.contentState === 'Введите сообщение...') {
+										this.setState({contentState: ''})
+									}
+								}}>
+							</ContentEditable>
+						</Twemoji>
+						<Button className={'picker-button'}>
+							<p className={'emoji-select'}
+							   onClick={event => this.setState({showPicker: true})}>{String.fromCodePoint(0x1F600)}
+							</p>
+						</Button>
 					</Form>
 				</Card>
 			</Row>);

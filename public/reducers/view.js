@@ -77,7 +77,6 @@ const dataWorking = (state = initialState, action) => {
 			newState.rid = messages[0].room;
 			newState.messages.unshift(newState.greetingMessage);
 			newState.restore = true;
-			console.info(newState);
 			return newState;
 		}
 		case SEND_GREETING_MESSAGE:
@@ -101,7 +100,6 @@ const dataWorking = (state = initialState, action) => {
 				messages
 			} = action.payload;
 			newState.messages = _.concat(newState.messages, messages);
-			console.info(newState);
 			return newState;
 		default:
 			return newState;
