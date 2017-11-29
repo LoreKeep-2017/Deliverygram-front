@@ -13,3 +13,7 @@ export const RECEIVE_GREETING_MESSAGE = 'chat/RECEIVE_GREETING_MESSAGE';
 export const ASK_NICKNAME = 'chat/ASK_NICKNAME';
 export const CLOSE_NICKNAME = 'chat/CLOSE_NICKNAME';
 export const GET_EXTRA_MESSAGES = 'chat/GET_EXTRA_MESSAGES';
+export const SHOW_EMOJIS = 'chat/SHOW_EMOJIS';
+export const HIDE_EMOJIS = 'chat/HIDE_EMOJIS';
+export const IMAGE_UPLOAD = 'chat/IMAGE_UPLOAD';
+export const REMOVE_IMAGE = 'chat/REMOVE_IMAGE';

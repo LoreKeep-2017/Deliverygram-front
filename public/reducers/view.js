@@ -10,7 +10,8 @@ import {
 	GET_MESSAGES_FROM_STORE,
 	RESTORE_LAST_CHAT,
 	SEND_GREETING_MESSAGE,
-	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES
+	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES, SHOW_EMOJIS, HIDE_EMOJIS, IMAGE_UPLOAD,
+	REMOVE_IMAGE
 } from '../actions/action-types';
 import _ from 'lodash';
 
@@ -101,6 +102,30 @@ const dataWorking = (state = initialState, action) => {
 			} = action.payload;
 			newState.messages = _.concat(newState.messages, messages);
 			return newState;
+		case SHOW_EMOJIS:
+			newState.showPicker = true;
+			return newState;
+		case HIDE_EMOJIS:
+			newState.showPicker = false;
+			return newState;
+		case IMAGE_UPLOAD: {
+			const {
+				image
+			} = action.payload;
+			newState.images = newState.images || [];
+			newState.images.push(image);
+			newState.images = newState.images.map(item => item);
+			return newState;
+		}
+		case REMOVE_IMAGE: {
+			const {
+				position
+			} = action.payload;
+			let part1 = _.slice(newState.images, 0, position);
+			let part2 = _.slice(newState.images, position + 1);
+			newState.images = _.concat(part1, part2);
+			return newState;
+		}
 		default:
 			return newState;
 	}

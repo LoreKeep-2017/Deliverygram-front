@@ -6,6 +6,7 @@ export default class Socket {
 
 	constructor({messageSend, addToNewRoom, roomClosed, message, restore, rid}) {
 		this.socket = new WebSocket('ws://139.59.139.151/api/v1/client');
+		this.socket.binaryType = "arraybuffer";
 		this.queue = [];
 
 		this.socket.onopen = () => {
@@ -73,5 +74,9 @@ export default class Socket {
 			}
 
 		})
+	}
+
+	sendFile(picture){
+		this.socket.send(picture);
 	}
 }
