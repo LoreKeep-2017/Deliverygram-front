@@ -4,14 +4,14 @@ import localforage from 'localforage';
 
 export default class Socket {
 
-	constructor({messageSend, addToNewRoom, roomClosed, message, restore, rid}) {
+	constructor({messageSend, addToNewRoom, roomClosed, body, restore, rid}) {
 		this.socket = new WebSocket('ws://139.59.139.151/api/v1/client');
 		this.socket.binaryType = "arraybuffer";
 		this.queue = [];
 
 		this.socket.onopen = () => {
 			if (!restore) {
-				this.socket.send(this.createInitData(message));
+				this.socket.send(this.createInitData(body));
 			} else {
 				this.socket.send(this.createRestoreData(rid))
 			}
@@ -53,15 +53,11 @@ export default class Socket {
 		this.socket.send(JSON.stringify(jsonBody));
 	}
 
-	createInitData(initContent) {
+	createInitData(body) {
 		return JSON.stringify({
 			type: 'client',
 			action: 'sendFirstMessage',
-			body: {
-				author: 'client',
-				body: initContent
-			}
-
+			body
 		})
 	}
 

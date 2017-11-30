@@ -41,7 +41,6 @@ class CreateChatFrom extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			ignore: true,
 			contentState: '<p class="placeholder">Введите сообщение...</p>',
 			sendState: '',
 			mainRowClass: 'messandger-area messandger-area_appear'
@@ -67,25 +66,36 @@ class CreateChatFrom extends React.Component {
 			roomClosed,
 			restore,
 			rid,
-			askNickname
+			askNickname,
+			images,
+			format,
+			removeImage
 		} = this.props;
-		let message = this.state.sendState;
+		let body;
+		if (images.length > 0) {
+			body = {
+				'author': 'client',
+				'body': this.state.sendState,
+				'image': images[0],
+				'imageFormat': format[0]
+			};
+		} else {
+			body = {
+				author: 'client',
+				body: message
+			};
+		}
 		if (!this.socket) {
-			this.socket = new Socket({messageSend, addToNewRoom, roomClosed, message, restore, rid});
+			this.socket = new Socket({messageSend, addToNewRoom, roomClosed, body, restore, rid});
 			if (restore) {
-				this.socket.sendWithBody('sendMessage', {
-					author: 'client',
-					body: message
-				});
+				this.socket.sendWithBody('sendMessage', body);
 			} else {
 				askNickname();
 			}
 		} else {
-			this.socket.sendWithBody('sendMessage', {
-				author: 'client',
-				body: message
-			});
+			this.socket.sendWithBody('sendMessage', body);
 		}
+		removeImage(0);
 		this.editable.lastHtml = '';
 		this.setState({
 			contentState: '\n',
@@ -153,7 +163,6 @@ class CreateChatFrom extends React.Component {
 	}
 
 	fileLoad(file) {
-		console.info(file);
 		const {
 			imageUpload,
 			images
@@ -166,13 +175,7 @@ class CreateChatFrom extends React.Component {
 				reader.onload = (event) => {
 					let base64 = reader.result;
 					base64 = base64.replace('/\\r?\\n|\\r/g', '');
-					imageUpload(base64);
-					// this.socket.sendWithBody('sendMessage', {
-					// 	'author': 'client',
-					// 	'body': '',
-					// 	'image': base64,
-					// 	'imageFormat': 'jpeg'
-					// });
+					imageUpload(base64, item.type.slice(item.type.indexOf('/') + 1));
 				};
 				reader.readAsDataURL(blob);
 			}
@@ -216,7 +219,6 @@ class CreateChatFrom extends React.Component {
 		if (images && images.length > 0) {
 			mainRowClass += ' messandger-area_extra-height';
 			chatFormClass += ' chat-form_extra-height';
-			console.info(images);
 			images.forEach((image, position) => {
 				imagesContent.push(
 					<div className={'image-content__content'} key={`image_content_${position}`}>
@@ -256,11 +258,8 @@ class CreateChatFrom extends React.Component {
 		return (
 			<Row className={mainRowClass}
 			     onClick={() => {
-				     if (!this.state.ignore) {
-					     hideEmojis();
-					     this.setState({ignore: true});
-				     } else {
-					     this.setState({ignore: false});
+				     if (showPicker) {
+					     hideEmojis()
 				     }
 			     }}>
 				<Row className={'close-option'}>
@@ -302,9 +301,9 @@ class CreateChatFrom extends React.Component {
 						<div className={'control-buttons'}>
 							<Button className={'picker-button'}>
 								<p className={'emoji-select'}
-								   onClick={() => {
+								   onClick={(event) => {
 									   showEmojis();
-									   this.setState({ignore: false});
+									   event.stopPropagation();
 								   }}>
 									<Twemoji>
 										{String.fromCodePoint(0x1F600)}
@@ -342,7 +341,8 @@ const mapStateToProps = state => ({
 	rid: state.rid,
 	nickname: state.nickname,
 	showPicker: state.showPicker,
-	images: state.images
+	images: state.images,
+	format: state.format
 });
 
 const mapDispatchToProps = dispatch => {
@@ -359,7 +359,7 @@ const mapDispatchToProps = dispatch => {
 		getExtraMessages: (messages) => dispatch(getExtraMessages(messages)),
 		showEmojis: () => dispatch(showEmojis()),
 		hideEmojis: () => dispatch(hideEmojis()),
-		imageUpload: (image) => dispatch(imageUpload(image)),
+		imageUpload: (image, format) => dispatch(imageUpload(image, format)),
 		removeImage: (position) => dispatch(removeImage(position))
 	}
 }

@@ -110,10 +110,13 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case IMAGE_UPLOAD: {
 			const {
-				image
+				image,
+				format
 			} = action.payload;
 			newState.images = newState.images || [];
+			newState.format = newState.format || [];
 			newState.images.push(image);
+			newState.format.push(format);
 			newState.images = newState.images.map(item => item);
 			return newState;
 		}

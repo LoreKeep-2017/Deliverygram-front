@@ -82,9 +82,9 @@ export const hideEmojis = () => ({
 	type: HIDE_EMOJIS
 });
 
-export const imageUpload = (image) => ({
+export const imageUpload = (image, format) => ({
 	type: IMAGE_UPLOAD,
-	payload: {image}
+	payload: {image, format}
 });
 
 export const removeImage = (position) => ({
