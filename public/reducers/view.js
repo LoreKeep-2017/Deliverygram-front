@@ -18,6 +18,7 @@ import _ from 'lodash';
 const initialState = {
 	messages: [],
 	restore: false,
+	mainRowClass: 'messandger-area messandger-area_appear'
 }
 
 const dataWorking = (state = initialState, action) => {
@@ -56,9 +57,9 @@ const dataWorking = (state = initialState, action) => {
 		}
 		case SEND_MESSAGE: {
 			const {data} = action.payload;
-			newState.messages = data;
-			if (!newState.rid && data[0]){
-				newState.rid = data[0].room;
+			newState.messages = data.messages;
+			if (!newState.rid && data.id){
+				newState.rid = data.id;
 			}
 			if (!newState.position) {
 				newState.newMessages = newState.newMessages || 0;
@@ -111,13 +112,20 @@ const dataWorking = (state = initialState, action) => {
 		case IMAGE_UPLOAD: {
 			const {
 				image,
-				format
+				format,
+				name
 			} = action.payload;
 			newState.images = newState.images || [];
 			newState.format = newState.format || [];
+			newState.name = newState.name || [];
+			newState.activeName = newState.activeName || [];
 			newState.images.push(image);
 			newState.format.push(format);
+			newState.name.push(name);
+			newState.activeName.push(newState.name.length - 1);
+			delete newState.noImages;
 			newState.images = newState.images.map(item => item);
+			newState.mainRowClass = 'messandger-area';
 			return newState;
 		}
 		case REMOVE_IMAGE: {
@@ -127,6 +135,9 @@ const dataWorking = (state = initialState, action) => {
 			let part1 = _.slice(newState.images, 0, position);
 			let part2 = _.slice(newState.images, position + 1);
 			newState.images = _.concat(part1, part2);
+			if (newState.images.length === 0){
+				newState.noImages = true;
+			}
 			return newState;
 		}
 		default:

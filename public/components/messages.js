@@ -12,15 +12,17 @@ import Twemoji from 'react-twemoji';
 class MessagesInit extends React.Component {
 
 	parseMessage(message) {
-		let parsed = [];
-		while (message.indexOf('\n') > -1) {
-			let breakPosition = message.indexOf('\n');
-			parsed.push(message.substring(0, breakPosition));
-			message = message.substring(breakPosition + 1);
+		if (message) {
+			let parsed = [];
+			while (message.indexOf('\n') > -1) {
+				let breakPosition = message.indexOf('\n');
+				parsed.push(message.substring(0, breakPosition));
+				message = message.substring(breakPosition + 1);
+			}
+			parsed.push(message);
+			parsed = parsed.map((item, position) => (<Row key={`message__row_${position}`}>{item}</Row>))
+			return parsed;
 		}
-		parsed.push(message);
-		parsed = parsed.map((item, position) => (<Row key={`message__row_${position}`}>{item}</Row>))
-		return parsed;
 	}
 
 	getMessages() {
@@ -29,9 +31,16 @@ class MessagesInit extends React.Component {
 		} = this.props;
 		if (messages) {
 			return messages.map((item, position) => {
+				let image;
+				if (item.imageUrl) {
+					image = <img src={`${item.room}/${item.imageUrl}`}/>
+				}
 				return (
 					<div className={`chat-card__${item.author}-message`} key={`chat_message_${position}`}>
 						<div className={`${item.author}-message__position`}>
+							<div className={`${item.author}-message-images`}>
+								{image}
+							</div>
 							<p className={`${item.author}-message`} key={position}>{this.parseMessage(item.body)}</p>
 						</div>
 						<p className={'message__time'}

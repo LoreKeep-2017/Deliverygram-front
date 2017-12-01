@@ -25,27 +25,15 @@ import {
 	sendGreetingMessage,
 	showEmojis
 } from './action';
-import Socket from '../models/socket'
 import Messages from './messages';
+import MainForm from './mainForm';
 import localforage from 'localforage';
 import axios from 'axios';
 import './chatForm.less';
 import _ from 'lodash';
 import {Picker} from 'emoji-mart';
-import Twemoji from 'react-twemoji';
-import ContentEditable from 'react-contenteditable'
-import Files from 'react-files'
 
 class CreateChatFrom extends React.Component {
-
-	constructor() {
-		super();
-		this.state = {
-			contentState: '<p class="placeholder">Введите сообщение...</p>',
-			sendState: '',
-			mainRowClass: 'messandger-area messandger-area_appear'
-		}
-	}
 
 	componentDidMount() {
 		this.restorePrev();
@@ -56,51 +44,6 @@ class CreateChatFrom extends React.Component {
 			closeStartForm
 		} = this.props;
 		closeStartForm(position || 'chatForm');
-	}
-
-	onClick(event) {
-		event.preventDefault();
-		const {
-			messageSend,
-			addToNewRoom,
-			roomClosed,
-			restore,
-			rid,
-			askNickname,
-			images,
-			format,
-			removeImage
-		} = this.props;
-		let body;
-		if (images.length > 0) {
-			body = {
-				'author': 'client',
-				'body': this.state.sendState,
-				'image': images[0],
-				'imageFormat': format[0]
-			};
-		} else {
-			body = {
-				author: 'client',
-				body: message
-			};
-		}
-		if (!this.socket) {
-			this.socket = new Socket({messageSend, addToNewRoom, roomClosed, body, restore, rid});
-			if (restore) {
-				this.socket.sendWithBody('sendMessage', body);
-			} else {
-				askNickname();
-			}
-		} else {
-			this.socket.sendWithBody('sendMessage', body);
-		}
-		removeImage(0);
-		this.editable.lastHtml = '';
-		this.setState({
-			contentState: '\n',
-			sendState: ''
-		})
 	}
 
 	restorePrev() {
@@ -137,6 +80,18 @@ class CreateChatFrom extends React.Component {
 		})
 	}
 
+	addEmojiToInput(emoji) {
+		const {
+			hideEmojis
+		} = this.props;
+		let message = this.editable.lastHtml || '';
+		message += emoji.native;
+		hideEmojis();
+		this.setState({
+			contentState: message,
+		})
+	}
+
 	getNickname() {
 		const {
 			form: {
@@ -149,56 +104,6 @@ class CreateChatFrom extends React.Component {
 		closeNickname();
 	}
 
-	addEmojiToInput(emoji) {
-		const {
-			hideEmojis
-		} = this.props;
-		let message = this.editable.lastHtml || '';
-		message += emoji.native;
-		hideEmojis();
-		this.setState({
-			contentState: message,
-			sendState: message
-		})
-	}
-
-	fileLoad(file) {
-		const {
-			imageUpload,
-			images
-		} = this.props;
-		file.forEach((item, position) => {
-			if (!images || position >= images.length) {
-				console.info(item);
-				let blob = new Blob([item], {type: item.type});
-				let reader = new FileReader();
-				reader.onload = (event) => {
-					let base64 = reader.result;
-					base64 = base64.replace('/\\r?\\n|\\r/g', '');
-					imageUpload(base64, item.type.slice(item.type.indexOf('/') + 1));
-				};
-				reader.readAsDataURL(blob);
-			}
-		})
-		this.setState({mainRowClass: 'messandger-area'})
-	}
-
-	onKeyDown(event) {
-		if (event.key === 'Control' || event.key === 'Enter') {
-			this[event.key] = true;
-		}
-		if (!this.Control && this.Enter) {
-			this.onClick(event);
-		}
-		if (this.Control && this.Enter) {
-			document.execCommand('insertHTML', false, '<br><br>');
-			this.setState({sendState: this.state.sendState + '\n'})
-		}
-		if (event.key.length === 1) {
-			this.setState({sendState: this.state.sendState + event.key})
-		}
-	}
-
 	render() {
 		const {
 			form: {
@@ -206,30 +111,18 @@ class CreateChatFrom extends React.Component {
 			},
 			nickname,
 			closeNickname,
-			showEmojis,
 			hideEmojis,
 			showPicker,
 			images,
-			removeImage
+		} = this.props;
+		let {
+			mainRowClass
 		} = this.props;
 		let nickInput, picker;
-		let {mainRowClass} = this.state;
-		let chatFormClass = 'chat-form';
-		let imagesContent = [];
 		if (images && images.length > 0) {
 			mainRowClass += ' messandger-area_extra-height';
-			chatFormClass += ' chat-form_extra-height';
-			images.forEach((image, position) => {
-				imagesContent.push(
-					<div className={'image-content__content'} key={`image_content_${position}`}>
-						<Button icon={'close'} className={'remove-button'} onClick={() => removeImage(position)}/>
-						<img src={image} className={'download-image'}/>
-					</div>
-				)
-			})
 		} else if (mainRowClass.indexOf('messandger-area_appear') === -1) {
 			mainRowClass += ' messandger-area_extra-height-remove';
-			chatFormClass += ' chat-form_extra-height-remove';
 		}
 		if (showPicker) {
 			picker =
@@ -269,62 +162,7 @@ class CreateChatFrom extends React.Component {
 					{nickInput}
 					<Messages/>
 					{picker}
-					<Form className={chatFormClass}>
-						<Twemoji options={{className: 'twemoji'}}>
-							<div className={'text-image'}>
-								<ContentEditable
-									ref={editable => this.editable = editable}
-									className={'chat-input__textarea'}
-									html={this.state.contentState}
-									onKeyDown={event => this.onKeyDown(event)}
-									onKeyUp={event => {
-										if (event.key === 'Control' || event.key === 'Enter') {
-											this[event.key] = false;
-										}
-									}}
-									onBlur={() => {
-										if (!this.editable.lastHtml) {
-											this.setState({contentState: '<p class="placeholder">Введите сообщение...</p>'})
-										}
-									}}
-									onFocus={() => {
-										if (this.state.contentState === '<p class="placeholder">Введите сообщение...</p>') {
-											this.setState({contentState: ''})
-										}
-									}}>
-								</ContentEditable>
-								<div className={'images-content'}>
-									{imagesContent}
-								</div>
-							</div>
-						</Twemoji>
-						<div className={'control-buttons'}>
-							<Button className={'picker-button'}>
-								<p className={'emoji-select'}
-								   onClick={(event) => {
-									   showEmojis();
-									   event.stopPropagation();
-								   }}>
-									<Twemoji>
-										{String.fromCodePoint(0x1F600)}
-									</Twemoji>
-								</p>
-							</Button>
-							<Button icon={'download'} className={'picker-image__button'}>
-								<Files
-									className='files-dropzone'
-									onChange={(event) => this.fileLoad(event)}
-									onError={(event, some) => console.log(event)}
-									accepts={['image/*']}
-									multiple
-									maxFiles={3}
-									maxFileSize={10000000}
-									minFileSize={0}
-									clickable
-								/>
-							</Button>
-						</div>
-					</Form>
+					<MainForm/>
 				</Card>
 			</Row>);
 	}
@@ -342,7 +180,9 @@ const mapStateToProps = state => ({
 	nickname: state.nickname,
 	showPicker: state.showPicker,
 	images: state.images,
-	format: state.format
+	format: state.format,
+	name: state.name,
+	mainRowClass: state.mainRowClass
 });
 
 const mapDispatchToProps = dispatch => {
@@ -359,7 +199,7 @@ const mapDispatchToProps = dispatch => {
 		getExtraMessages: (messages) => dispatch(getExtraMessages(messages)),
 		showEmojis: () => dispatch(showEmojis()),
 		hideEmojis: () => dispatch(hideEmojis()),
-		imageUpload: (image, format) => dispatch(imageUpload(image, format)),
+		imageUpload: (image, format, name) => dispatch(imageUpload(image, format, name)),
 		removeImage: (position) => dispatch(removeImage(position))
 	}
 }

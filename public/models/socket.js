@@ -26,10 +26,8 @@ export default class Socket {
 						addToNewRoom(recievedMessage.body);
 						return;
 					case 'sendMessage':
-						localforage.setItem('message', recievedMessage.body)
-							.then( response =>
-								messageSend(recievedMessage.body)
-							);
+						localforage.setItem('message', recievedMessage.body.messages)
+							.then( response => messageSend(recievedMessage.body));
 						return;
 					case 'roomClosed':
 						roomClosed(recievedMessage.body);
