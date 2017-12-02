@@ -7,9 +7,10 @@ import {
 	Row,
 	Button,
 	Select,
-	Form
+	Form,
+	Input
 } from 'antd';
-import {cancelOperatorChange, chooseNewOperator, getExtraInfo} from '../../view/action';
+import {cancelOperatorChange, chooseNewOperator, getExtraInfo, updateNote} from '../../view/action';
 import moment from 'moment';
 
 
@@ -81,7 +82,7 @@ class moreInfoInit extends React.Component {
 							chooseNewOperator(true);
 							socket.sendWithoutBody('getOperators')
 						}}>
-							<div style={{ whiteSpace: 'pre-line', maxHeight: '3em'}}>
+							<div style={{whiteSpace: 'pre-line', maxHeight: '3em'}}>
 								{'Сменить оператора'}
 							</div>
 						</Button>
@@ -150,17 +151,40 @@ class moreInfoInit extends React.Component {
 		}
 	}
 
+	save() {
+		const {
+			form: {
+				getFieldValue
+			},
+			updateNote,
+			socket,
+			selectedRoom
+		} = this.props;
+		let note = getFieldValue('note');
+		updateNote();
+		socket.sendWithBody('sendNote', {
+			rid: +selectedRoom,
+			note
+		})
+	}
+
 	getInfo() {
 		const {
 			clients,
 			selectedRoom,
 			getInfo,
+			form: {
+				getFieldDecorator
+			}
 		} = this.props;
 		if (selectedRoom && getInfo && clients && clients.rooms && clients.rooms[selectedRoom]) {
-			console.log(clients.rooms[selectedRoom]);
 			return (
 				<div>
-					<div style={{fontSize: '24px', color: 'white'}}>{'Подробная информация о проблеме'}</div>
+					<div style={{
+						fontSize: '24px',
+						color: 'white',
+						marginBottom: '12px'
+					}}>{'Подробная информация о проблеме'}</div>
 					{this.changeOperator()}
 					<div className={'moreInfo__content right-sider-content'}>
 						<div>{`Автор: ${clients.rooms[selectedRoom].client.nick || 'Аноним'}`}</div>
@@ -168,6 +192,18 @@ class moreInfoInit extends React.Component {
 						<div>{`Статус:  ${this.getTitle(clients.rooms[selectedRoom].status)}`}</div>
 						<div>{`Подробное описание проблемы:  ${clients.rooms[selectedRoom].description || clients.rooms[selectedRoom].lastMessage}`}</div>
 					</div>
+					<Form className={'right-sider-content note-info'}>
+						<Form.Item className={'note-form-item'}>
+							{getFieldDecorator('note', {initialValue: ``})(
+								<Input.TextArea rows={4} placeholder={'Заметка...'} className={'note-input'}/>
+							)}
+						</Form.Item>
+						<Form.Item className={'note-form-item'}>
+							<Button type={'submit'} onClick={() => this.save()}>
+								{'Сохранить'}
+							</Button>
+						</Form.Item>
+					</Form>
 				</div>
 			)
 		}
@@ -200,7 +236,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 	chooseNewOperator: (choose) => dispatch(chooseNewOperator(choose)),
 	getExtraInfo: (status) => dispatch(getExtraInfo(status)),
-	cancelOperatorChange: () => dispatch(cancelOperatorChange())
+	cancelOperatorChange: () => dispatch(cancelOperatorChange()),
+	updateNote: () => dispatch(updateNote())
 });
 
 const MoreInfo = connect(

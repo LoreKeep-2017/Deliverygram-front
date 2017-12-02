@@ -17,7 +17,7 @@ import {
 	CHECK_AUTH_FAILED,
 	LOGOUT_SUCCESS,
 	LOGOUT_FAILED, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS, CANCEL_OPERATOR_CHANGE, REDIRECT_DONE, REMOVE_SENDED_FLAG,
-	UPDATE_INFO, INFO_SEARCH
+	UPDATE_INFO, INFO_SEARCH, UPDATE_NOTE_INFO
 } from '../actions/action-types';
 
 export const receiveClients = (clients) => ({
@@ -123,4 +123,8 @@ export const updateInfo = (body) => ({
 
 export const infoSearch = () => ({
 	type: INFO_SEARCH
+})
+
+export const updateNote = () => ({
+	type: UPDATE_NOTE_INFO
 })

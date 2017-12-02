@@ -16,6 +16,7 @@ export const REDIRECT_DONE = 'chat/REDIRECT_DONE';
 export const REMOVE_SENDED_FLAG = 'chat/REMOVE_SENDED_FLAG';
 export const UPDATE_INFO = 'chat/UPDATE_INFO';
 export const INFO_SEARCH = 'chat/INFO_SEARCH';
+export const UPDATE_NOTE_INFO = 'chat/UPDATE_NOTE_INFO';
 
 export const LOGIN_PENDING = 'auth/LOGIN_PENDING';
 export const LOGIN_FAILED = 'auth/LOGIN_FAILED';

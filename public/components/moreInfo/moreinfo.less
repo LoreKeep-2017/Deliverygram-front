@@ -26,6 +26,38 @@
   }
 }
 
+.note-info{
+  display: flex;
+  flex-direction: column;
+  padding-right: 1vw;
+  padding-left: 1vw;
+  margin-top: 2vh;
+
+  .note-form-item{
+    width: 100% !important;
+
+    .ant-form-item-control-wrapper{
+      width: 100% !important;
+
+      .ant-form-item-control{
+        width: 100% !important;
+
+        .note-input{
+          width: 100% !important;
+          font-size: 1.4em;
+          overflow-x: hidden;
+        }
+      }
+
+    }
+
+  }
+  .ant-form-item-control{
+    display: flex;
+    justify-content: center;
+  }
+}
+
 :global {
   .ant-layout-sider-trigger {
     top: 30px;
@@ -35,7 +67,7 @@
 }
 
 .right-sider-content {
-  width: 25vw !important;
+  width: 29vw !important;
   background-color: black;
   right: 0;
   max-width: none !important;

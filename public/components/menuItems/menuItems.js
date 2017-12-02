@@ -281,7 +281,7 @@ class MenuInit extends React.Component {
 									<Input className={'input-search'} placeholder={'Поиск ...'} onPressEnter={() => this.search()}/>
 								)}
 							</Form.Item>
-							<Icon type='close-circle-o' className={'clear-icon'} onClick={() => this.resetField()}/>
+							<Button icon={'close-circle-o'} className={'clear-icon'} onClick={() => this.resetField()}/>
 						</Form>
 						<Menu theme={'dark'} mode={'inline'}
 						      className={'client-menu'}
