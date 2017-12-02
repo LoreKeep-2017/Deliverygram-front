@@ -86,7 +86,18 @@ class MainFormInit extends React.Component {
 		}
 		this.message = '';
 		if (icon) {
-			this.setState({contentState: '<p class="placeholder">Введите сообщение...</p>'});
+			if (this.state.lastState === '') {
+				this.setState({
+					contentState: '<p class="placeholder">Введите сообщение...<br></p>',
+					lastState: ''
+				});
+			} else {
+				this.setState({
+					contentState: '<p class="placeholder">Введите сообщение...</p>',
+					lastState: '\n'
+				});
+			}
+			return;
 		}
 		if (this.state.lastState === '') {
 			this.setState({
@@ -213,8 +224,18 @@ class MainFormInit extends React.Component {
 								}
 							}}
 							onFocus={() => {
-								if (this.state.contentState === '<p class="placeholder">Введите сообщение...</p>') {
-									this.setState({contentState: '\n'})
+								if (this.state.contentState.indexOf('<p class="placeholder">Введите сообщение...') > -1) {
+									if (this.state.lastState === '') {
+										this.setState({
+											contentState: '',
+											lastState: '\n'
+										})
+									} else {
+										this.setState({
+											contentState: '\n',
+											lastState: ''
+										})
+									}
 								}
 							}}>
 						</ContentEditable>
