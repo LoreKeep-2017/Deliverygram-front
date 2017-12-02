@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import {
 	askNickname,
 	imageUpload,
-	messageSend, removeImage,
+	messageSend, removeImage, saveSocket,
 	showEmojis
 } from './action';
 import './chatForm.less';
@@ -25,10 +25,11 @@ class MainFormInit extends React.Component {
 		super();
 		this.state = {
 			contentState: '<p class="placeholder">Введите сообщение...</p>',
+			lastState: ''
 		}
 	}
 
-	onClick(event) {
+	onClick(event, icon) {
 		event.preventDefault();
 		const {
 			messageSend,
@@ -39,11 +40,12 @@ class MainFormInit extends React.Component {
 			askNickname,
 			images,
 			format,
-			removeImage
+			removeImage,
+			saveSocket
 		} = this.props;
 		let message = this.editable.lastHtml;
 		let startPosition = 0;
-		if (message || images) {
+		if (message || (images && images.length > 0)) {
 			if (message) {
 				while (message.indexOf('<br>', startPosition) > -1) {
 					let position = message.indexOf('<br>');
@@ -72,15 +74,28 @@ class MainFormInit extends React.Component {
 				} else {
 					askNickname();
 				}
+				saveSocket(this.socket);
 			} else {
 				this.socket.sendWithBody('sendMessage', body);
 			}
-			removeImage(0);
+			if (images && images.length > 0) {
+				removeImage(0);
+			}
 		}
-		this.editable.lastHtml = '';
-		this.setState({
-			contentState: '\n',
-		})
+		if (icon) {
+			this.setState({contentState: '<p class="placeholder">Введите сообщение...</p>'});
+		}
+		if (this.state.lastState === '') {
+			this.setState({
+				contentState: '',
+				lastState: '\n'
+			})
+		} else {
+			this.setState({
+				contentState: '\n',
+				lastState: ''
+			})
+		}
 	}
 
 	fileLoad(file) {
@@ -149,6 +164,7 @@ class MainFormInit extends React.Component {
 		} else if (noImages) {
 			chatFormClass += ' chat-form_extra-height-remove';
 		}
+		console.info(this.state.contentState);
 		return (
 			<Form className={chatFormClass}>
 				<Twemoji options={{className: 'twemoji'}}>
@@ -170,7 +186,7 @@ class MainFormInit extends React.Component {
 							}}
 							onFocus={() => {
 								if (this.state.contentState === '<p class="placeholder">Введите сообщение...</p>') {
-									this.setState({contentState: ''})
+									this.setState({contentState: '\n'})
 								}
 							}}>
 						</ContentEditable>
@@ -202,7 +218,7 @@ class MainFormInit extends React.Component {
 						/>
 					</Button>
 				</div>
-				<Button icon={'edit'} className={'send-button'} onClick={event => this.onClick(event)}/>
+				<Button icon={'edit'} className={'send-button'} onClick={event => this.onClick(event, true)}/>
 			</Form>
 		)
 	}
@@ -224,7 +240,8 @@ const mapDispatchToProps = dispatch => {
 		messageSend: (data) => dispatch(messageSend(data)),
 		showEmojis: () => dispatch(showEmojis()),
 		imageUpload: (image, format, name) => dispatch(imageUpload(image, format, name)),
-		removeImage: (position) => dispatch(removeImage(position))
+		removeImage: (position) => dispatch(removeImage(position)),
+		saveSocket: (socket) => dispatch(saveSocket(socket))
 	}
 }
 

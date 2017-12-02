@@ -11,7 +11,7 @@ import {
 	GET_MESSAGES_FROM_STORE,
 	SEND_GREETING_MESSAGE,
 	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES, SHOW_EMOJIS, HIDE_EMOJIS, IMAGE_UPLOAD,
-	REMOVE_IMAGE, MAKE_IMAGE_FULL_SCREEN, REMOVE_IMAGE_FULL_SCREEN
+	REMOVE_IMAGE, MAKE_IMAGE_FULL_SCREEN, REMOVE_IMAGE_FULL_SCREEN, SAVE_SOCKET
 } from '../actions/action-types';
 
 
@@ -95,8 +95,13 @@ export const removeImage = (position) => ({
 export const makeImageFullScreen = (src) => ({
 	type: MAKE_IMAGE_FULL_SCREEN,
 	payload: {src}
-})
+});
 
 export const removeFullScreenImage = () => ({
 	type: REMOVE_IMAGE_FULL_SCREEN
+});
+
+export const saveSocket = (socket) => ({
+	type: SAVE_SOCKET,
+	payload: {socket}
 })

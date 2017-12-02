@@ -43,7 +43,6 @@ export default class Socket {
 			'action': action,
 			'body': body
 		};
-		console.info(action, this.socket.readyState);
 		if (this.socket.readyState !== 1) {
 			this.queue.push(JSON.stringify(jsonBody));
 			return;

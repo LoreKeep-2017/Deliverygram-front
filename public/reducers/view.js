@@ -11,7 +11,7 @@ import {
 	RESTORE_LAST_CHAT,
 	SEND_GREETING_MESSAGE,
 	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES, SHOW_EMOJIS, HIDE_EMOJIS, IMAGE_UPLOAD,
-	REMOVE_IMAGE, MAKE_IMAGE_FULL_SCREEN, REMOVE_IMAGE_FULL_SCREEN
+	REMOVE_IMAGE, MAKE_IMAGE_FULL_SCREEN, REMOVE_IMAGE_FULL_SCREEN, SAVE_SOCKET
 } from '../actions/action-types';
 import _ from 'lodash';
 
@@ -149,6 +149,13 @@ const dataWorking = (state = initialState, action) => {
 		}
 		case REMOVE_IMAGE_FULL_SCREEN: {
 			delete newState.src;
+			return newState;
+		}
+		case SAVE_SOCKET: {
+			const{
+				socket
+			} = action.payload;
+			newState.socket = socket;
 			return newState;
 		}
 		default:

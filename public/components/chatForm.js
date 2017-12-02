@@ -12,18 +12,13 @@ import {
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {
-	addToNewRoom,
-	askNickname,
 	closeNickname,
 	closeStartForm,
 	getExtraMessages,
 	getMessagesFromStore,
-	hideEmojis, imageUpload,
-	messageSend, removeFullScreenImage, removeImage,
-	roomClosed,
-	sendClientMessage,
+	hideEmojis,
+	removeFullScreenImage,
 	sendGreetingMessage,
-	showEmojis
 } from './action';
 import Messages from './messages';
 import MainForm from './mainForm';
@@ -97,10 +92,11 @@ class CreateChatFrom extends React.Component {
 			form: {
 				getFieldValue
 			},
-			closeNickname
+			closeNickname,
+			socket
 		} = this.props;
 		let nickname = getFieldValue('nickname');
-		this.socket.sendWithBody('sendNickname', {nickname});
+		socket.sendWithBody('sendNickname', {nickname});
 		closeNickname();
 	}
 
@@ -198,28 +194,21 @@ const mapStateToProps = state => ({
 	format: state.format,
 	name: state.name,
 	mainRowClass: state.mainRowClass,
-	src: state.src
+	src: state.src,
+	socket: state.socket
 });
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addToNewRoom: (data) => dispatch(addToNewRoom(data)),
-		messageSend: (data) => dispatch(messageSend(data)),
-		roomClosed: (data) => dispatch(roomClosed(data)),
-		sendClientMessage: () => dispatch(sendClientMessage()),
 		getMessagesFromStore: (messages) => dispatch(getMessagesFromStore(messages)),
 		closeStartForm: (lastPosition) => dispatch(closeStartForm(lastPosition)),
 		sendGreetingMessage: (message) => dispatch(sendGreetingMessage(message)),
-		askNickname: () => dispatch(askNickname()),
 		closeNickname: () => dispatch(closeNickname()),
 		getExtraMessages: (messages) => dispatch(getExtraMessages(messages)),
-		showEmojis: () => dispatch(showEmojis()),
 		hideEmojis: () => dispatch(hideEmojis()),
-		imageUpload: (image, format, name) => dispatch(imageUpload(image, format, name)),
-		removeImage: (position) => dispatch(removeImage(position)),
 		removeFullScreenImage: () => dispatch(removeFullScreenImage())
 	}
-}
+};
 
 const ChatForm = connect(
 	mapStateToProps,
