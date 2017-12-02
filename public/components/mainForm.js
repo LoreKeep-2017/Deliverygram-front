@@ -7,7 +7,7 @@ import {
 } from 'antd'
 import {connect} from 'react-redux';
 import {
-	askNickname,
+	askNickname, hideEmojis,
 	imageUpload,
 	messageSend, removeImage, saveSocket,
 	showEmojis
@@ -15,6 +15,7 @@ import {
 import './chatForm.less';
 import _ from 'lodash';
 import Twemoji from 'react-twemoji';
+import {Picker} from 'emoji-mart';
 import ContentEditable from 'react-contenteditable'
 import Files from 'react-files'
 import Socket from '../models/socket';
@@ -23,6 +24,7 @@ class MainFormInit extends React.Component {
 
 	constructor() {
 		super();
+		this.message = '';
 		this.state = {
 			contentState: '<p class="placeholder">Введите сообщение...</p>',
 			lastState: ''
@@ -43,7 +45,7 @@ class MainFormInit extends React.Component {
 			removeImage,
 			saveSocket
 		} = this.props;
-		let message = this.editable.lastHtml;
+		let message = this.message || this.editable.lastHtml;
 		let startPosition = 0;
 		if (message || (images && images.length > 0)) {
 			if (message) {
@@ -82,6 +84,7 @@ class MainFormInit extends React.Component {
 				removeImage(0);
 			}
 		}
+		this.message = '';
 		if (icon) {
 			this.setState({contentState: '<p class="placeholder">Введите сообщение...</p>'});
 		}
@@ -135,17 +138,36 @@ class MainFormInit extends React.Component {
 				document.execCommand('insertHTML', false, '<br>');
 			}
 		}
+		console.info('olololo');
+		if (event.key.length === 1){
+			this.message += event.key;
+		}
 	}
+
+	addEmojiToInput(emoji) {
+		const {
+			hideEmojis
+		} = this.props;
+		let message = this.editable.lastHtml || '';
+		message += emoji.native;
+		this.message += emoji.native;
+		hideEmojis();
+		this.setState({
+			contentState: message,
+		})
+	}
+
 
 	render() {
 		const {
 			showEmojis,
 			images,
 			removeImage,
-			noImages
+			noImages,
+			showPicker
 		} = this.props;
 		let chatFormClass = 'chat-form';
-		let imagesContent;
+		let imagesContent, picker;
 		if (images && images.length > 0) {
 			chatFormClass += ' chat-form_extra-height';
 			let readyImages = [];
@@ -164,9 +186,15 @@ class MainFormInit extends React.Component {
 		} else if (noImages) {
 			chatFormClass += ' chat-form_extra-height-remove';
 		}
-		console.info(this.state.contentState);
+		if (showPicker) {
+			picker =
+				<Picker className={'emoji-picker'} style={{position: 'absolute', right: 0, bottom: 80}}
+				        set={'emojione'}
+				        onClick={(emoji, moreInfo) => this.addEmojiToInput(emoji)}/>
+		}
 		return (
 			<Form className={chatFormClass}>
+			      {picker}
 				<Twemoji options={{className: 'twemoji'}}>
 					<div className={'text-image'}>
 						<ContentEditable
@@ -180,7 +208,7 @@ class MainFormInit extends React.Component {
 								}
 							}}
 							onBlur={() => {
-								if (!this.editable.lastHtml) {
+								if (!this.editable.lastHtml && !this.message) {
 									this.setState({contentState: '<p class="placeholder">Введите сообщение...</p>'})
 								}
 							}}
@@ -231,7 +259,8 @@ const mapStateToProps = state => ({
 	format: state.format,
 	name: state.name,
 	noImages: state.noImages,
-	activeName: state.activeName
+	activeName: state.activeName,
+	showPicker: state.showPicker,
 });
 
 const mapDispatchToProps = dispatch => {
@@ -241,7 +270,8 @@ const mapDispatchToProps = dispatch => {
 		showEmojis: () => dispatch(showEmojis()),
 		imageUpload: (image, format, name) => dispatch(imageUpload(image, format, name)),
 		removeImage: (position) => dispatch(removeImage(position)),
-		saveSocket: (socket) => dispatch(saveSocket(socket))
+		saveSocket: (socket) => dispatch(saveSocket(socket)),
+		hideEmojis: () => dispatch(hideEmojis()),
 	}
 }
 

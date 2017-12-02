@@ -7,7 +7,6 @@ import {
 	Button,
 	Row,
 	Input,
-	Icon
 } from 'antd'
 import {connect} from 'react-redux';
 import moment from 'moment';
@@ -15,8 +14,7 @@ import {
 	closeNickname,
 	closeStartForm,
 	getExtraMessages,
-	getMessagesFromStore,
-	hideEmojis,
+	getMessagesFromStore, hideEmojis,
 	removeFullScreenImage,
 	sendGreetingMessage,
 } from './action';
@@ -26,7 +24,6 @@ import localforage from 'localforage';
 import axios from 'axios';
 import './chatForm.less';
 import _ from 'lodash';
-import {Picker} from 'emoji-mart';
 
 class CreateChatFrom extends React.Component {
 
@@ -75,18 +72,6 @@ class CreateChatFrom extends React.Component {
 		})
 	}
 
-	addEmojiToInput(emoji) {
-		const {
-			hideEmojis
-		} = this.props;
-		let message = this.editable.lastHtml || '';
-		message += emoji.native;
-		hideEmojis();
-		this.setState({
-			contentState: message,
-		})
-	}
-
 	getNickname() {
 		const {
 			form: {
@@ -108,9 +93,9 @@ class CreateChatFrom extends React.Component {
 			nickname,
 			closeNickname,
 			hideEmojis,
-			showPicker,
 			images,
 			src,
+			showPicker,
 			removeFullScreenImage
 		} = this.props;
 		let {
@@ -121,12 +106,6 @@ class CreateChatFrom extends React.Component {
 			mainRowClass += ' messandger-area_extra-height';
 		} else if (mainRowClass.indexOf('messandger-area_appear') === -1) {
 			mainRowClass += ' messandger-area_extra-height-remove';
-		}
-		if (showPicker) {
-			picker =
-				<Picker className={'emoji-picker'} style={{position: 'absolute', right: 0, bottom: 80}}
-				        set={'emojione'}
-				        onClick={(emoji, moreInfo) => this.addEmojiToInput(emoji)}/>
 		}
 		if (nickname) {
 			nickInput = (
@@ -150,7 +129,6 @@ class CreateChatFrom extends React.Component {
 			fullImage = (
 				<div className={'full-screen-image'}>
 					<Button icon={'close'} className={'close-full-image'} onClick={() => {
-						console.info('ololol');
 						removeFullScreenImage()
 					}}/>
 					<div className={'image-content'}>
@@ -161,6 +139,7 @@ class CreateChatFrom extends React.Component {
 		return (
 			<Row className={mainRowClass}
 			     onClick={() => {
+			     	console.info(showPicker);
 				     if (showPicker) {
 					     hideEmojis()
 				     }
@@ -201,11 +180,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => {
 	return {
 		getMessagesFromStore: (messages) => dispatch(getMessagesFromStore(messages)),
+		hideEmojis: () => dispatch(hideEmojis()),
 		closeStartForm: (lastPosition) => dispatch(closeStartForm(lastPosition)),
 		sendGreetingMessage: (message) => dispatch(sendGreetingMessage(message)),
 		closeNickname: () => dispatch(closeNickname()),
 		getExtraMessages: (messages) => dispatch(getExtraMessages(messages)),
-		hideEmojis: () => dispatch(hideEmojis()),
 		removeFullScreenImage: () => dispatch(removeFullScreenImage())
 	}
 };
