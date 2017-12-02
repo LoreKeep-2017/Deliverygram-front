@@ -7,6 +7,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import Twemoji from 'react-twemoji';
+import {makeImageFullScreen, removeFullScreenImage} from "./action";
 
 
 class MessagesInit extends React.Component {
@@ -27,34 +28,39 @@ class MessagesInit extends React.Component {
 
 	getMessages() {
 		const {
-			messages
+			messages,
+			makeImageFullScreen
 		} = this.props;
 		if (messages) {
 			return messages.map((item, position) => {
 				let image;
 				if (item.imageUrl) {
-					image = <img src={`${item.room}/${item.imageUrl}`}/>
+					image = (
+						<div className={`${item.author}-message-images`}
+						     onClick={() => makeImageFullScreen(`${item.room}/${item.imageUrl}`)}>
+							<img src={`${item.room}/${item.imageUrl}`}/>
+						</div>
+					)
 				}
 				return (
 					<div className={`chat-card__${item.author}-message`} key={`chat_message_${position}`}>
 						<div className={`${item.author}-message__position`}>
-							<div className={`${item.author}-message-images`}>
-								{image}
-							</div>
+							{image}
 							<p className={`${item.author}-message`} key={position}>{this.parseMessage(item.body)}</p>
 						</div>
 						<p className={'message__time'}
 						   key={`message_${position}-time__${item.time}`}>{moment.unix(item.time).format('HH:mm')}</p>
 					</div>
-				)})
+				)
+			})
 		}
 	}
 
-	shouldComponentUpdate(nextProps){
+	shouldComponentUpdate(nextProps) {
 		return nextProps.messages.length !== this.props.messages.length;
 	}
 
-	render () {
+	render() {
 		return (
 			<Card className={'card-content'}
 			      ref={card => {
@@ -70,10 +76,12 @@ class MessagesInit extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	messages: state.messages
+	messages: state.messages,
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+	makeImageFullScreen: (src) => dispatch(makeImageFullScreen(src)),
+});
 
 const Messages = connect(
 	mapStateToProps,

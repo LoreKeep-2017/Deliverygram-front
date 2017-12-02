@@ -17,7 +17,7 @@ import _ from 'lodash';
 import Twemoji from 'react-twemoji';
 import ContentEditable from 'react-contenteditable'
 import Files from 'react-files'
-import Socket from "../models/socket";
+import Socket from '../models/socket';
 
 class MainFormInit extends React.Component {
 
@@ -112,7 +112,13 @@ class MainFormInit extends React.Component {
 			this.onClick(event);
 		}
 		if (this.Control && this.Enter) {
-			document.execCommand('insertHTML', false, '<br><br>');
+			let sel = window.getSelection();
+			let range = sel.getRangeAt(0);
+			if (range.endOffset === this.editable.lastHtml.length) {
+				document.execCommand('insertHTML', false, '<br><br>');
+			} else {
+				document.execCommand('insertHTML', false, '<br>');
+			}
 		}
 	}
 

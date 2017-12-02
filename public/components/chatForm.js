@@ -19,7 +19,7 @@ import {
 	getExtraMessages,
 	getMessagesFromStore,
 	hideEmojis, imageUpload,
-	messageSend, removeImage,
+	messageSend, removeFullScreenImage, removeImage,
 	roomClosed,
 	sendClientMessage,
 	sendGreetingMessage,
@@ -114,11 +114,13 @@ class CreateChatFrom extends React.Component {
 			hideEmojis,
 			showPicker,
 			images,
+			src,
+			removeFullScreenImage
 		} = this.props;
 		let {
 			mainRowClass
 		} = this.props;
-		let nickInput, picker;
+		let nickInput, picker, fullImage;
 		if (images && images.length > 0) {
 			mainRowClass += ' messandger-area_extra-height';
 		} else if (mainRowClass.indexOf('messandger-area_appear') === -1) {
@@ -148,6 +150,18 @@ class CreateChatFrom extends React.Component {
 				</Card>
 			)
 		}
+		if (src) {
+			fullImage = (
+				<div className={'full-screen-image'}>
+					<Button icon={'close'} className={'close-full-image'} onClick={() => {
+						console.info('ololol');
+						removeFullScreenImage()
+					}}/>
+					<div className={'image-content'}>
+					<img src={src}/>
+					</div>
+				</div>)
+		}
 		return (
 			<Row className={mainRowClass}
 			     onClick={() => {
@@ -164,6 +178,7 @@ class CreateChatFrom extends React.Component {
 					{picker}
 					<MainForm/>
 				</Card>
+				{fullImage}
 			</Row>);
 	}
 }
@@ -182,7 +197,8 @@ const mapStateToProps = state => ({
 	images: state.images,
 	format: state.format,
 	name: state.name,
-	mainRowClass: state.mainRowClass
+	mainRowClass: state.mainRowClass,
+	src: state.src
 });
 
 const mapDispatchToProps = dispatch => {
@@ -200,7 +216,8 @@ const mapDispatchToProps = dispatch => {
 		showEmojis: () => dispatch(showEmojis()),
 		hideEmojis: () => dispatch(hideEmojis()),
 		imageUpload: (image, format, name) => dispatch(imageUpload(image, format, name)),
-		removeImage: (position) => dispatch(removeImage(position))
+		removeImage: (position) => dispatch(removeImage(position)),
+		removeFullScreenImage: () => dispatch(removeFullScreenImage())
 	}
 }
 

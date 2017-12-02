@@ -11,7 +11,7 @@ import {
 	RESTORE_LAST_CHAT,
 	SEND_GREETING_MESSAGE,
 	RECEIVE_GREETING_MESSAGE, ASK_NICKNAME, CLOSE_NICKNAME, GET_EXTRA_MESSAGES, SHOW_EMOJIS, HIDE_EMOJIS, IMAGE_UPLOAD,
-	REMOVE_IMAGE
+	REMOVE_IMAGE, MAKE_IMAGE_FULL_SCREEN, REMOVE_IMAGE_FULL_SCREEN
 } from '../actions/action-types';
 import _ from 'lodash';
 
@@ -58,7 +58,7 @@ const dataWorking = (state = initialState, action) => {
 		case SEND_MESSAGE: {
 			const {data} = action.payload;
 			newState.messages = data.messages;
-			if (!newState.rid && data.id){
+			if (!newState.rid && data.id) {
 				newState.rid = data.id;
 			}
 			if (!newState.position) {
@@ -135,9 +135,20 @@ const dataWorking = (state = initialState, action) => {
 			let part1 = _.slice(newState.images, 0, position);
 			let part2 = _.slice(newState.images, position + 1);
 			newState.images = _.concat(part1, part2);
-			if (newState.images.length === 0){
+			if (newState.images.length === 0) {
 				newState.noImages = true;
 			}
+			return newState;
+		}
+		case MAKE_IMAGE_FULL_SCREEN: {
+			const {
+				src
+			} = action.payload;
+			newState.src = src;
+			return newState;
+		}
+		case REMOVE_IMAGE_FULL_SCREEN: {
+			delete newState.src;
 			return newState;
 		}
 		default:

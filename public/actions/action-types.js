@@ -17,3 +17,5 @@ export const SHOW_EMOJIS = 'chat/SHOW_EMOJIS';
 export const HIDE_EMOJIS = 'chat/HIDE_EMOJIS';
 export const IMAGE_UPLOAD = 'chat/IMAGE_UPLOAD';
 export const REMOVE_IMAGE = 'chat/REMOVE_IMAGE';
+export const MAKE_IMAGE_FULL_SCREEN = 'chat/MAKE_IMAGE_FULL_SCREEN';
+export const REMOVE_IMAGE_FULL_SCREEN = 'chat/REMOVE_IMAGE_FULL_SCREEN';
