@@ -27,7 +27,7 @@ export default class Socket {
 						changeRoomStatus(receivedMessage.body);
 						return;
 					case 'sendMessage':
-						receiveMessages(receivedMessage.body);
+						receiveMessages(receivedMessage.body.messages);
 						return;
 					case 'getAllMessages':
 						receiveMessages(receivedMessage.body);

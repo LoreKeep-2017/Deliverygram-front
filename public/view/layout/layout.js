@@ -7,7 +7,10 @@ import {Link, Redirect} from 'react-router-dom';
 import {
 	Layout,
 	Form,
-	Icon
+	Row,
+	Popover,
+	Icon,
+	Button
 } from 'antd';
 import Socket from '../../models/socket';
 import {
@@ -26,17 +29,18 @@ import '../main/main.less';
 import MenuItems from '../../components/menuItems/menuItems';
 import ChatContent from '../../components/content/content';
 import MoreInfo from "../../components/moreInfo/moreInfo";
+import ChatHeader from "../../components/header/chatHeader";
 
 const {
-	Footer,
-	Sider
+	Header,
+	Sider,
+	Content
 } = Layout;
 
 class InitLayout extends React.Component {
 
 	constructor() {
 		super();
-		this.rightSiderClass = 'right-sider';
 	}
 
 	componentDidMount() {
@@ -68,29 +72,17 @@ class InitLayout extends React.Component {
 			receiveMessages,
 			receiveOperators,
 			changeRoomStatus,
-			selectedRoom,
-			getInfo,
 			operatorInfo,
 			updateInfo
 		} = this.props;
-		this.socket = new Socket({receiveClients, receiveMessages, receiveOperators, changeRoomStatus, updateInfo, operatorInfo});
-		if (selectedRoom && getInfo) {
-			this.rightSiderClass += ` right-sider__content`
-		} else {
-			this.rightSiderClass = 'right-sider';
-		}
-	}
-
-	componentWillUpdate(nextProps, nextState) {
-		const {
-			getInfo,
-			selectedRoom
-		} = nextProps;
-		if (selectedRoom && getInfo) {
-			this.rightSiderClass += ` right-sider__content`
-		} else {
-			this.rightSiderClass = 'right-sider';
-		}
+		this.socket = new Socket({
+			receiveClients,
+			receiveMessages,
+			receiveOperators,
+			changeRoomStatus,
+			updateInfo,
+			operatorInfo
+		});
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -102,7 +94,7 @@ class InitLayout extends React.Component {
 			status,
 			redirectFromInfo
 		} = this.props;
-		if (redirectFromInfo){
+		if (redirectFromInfo) {
 			return;
 		}
 		if (status !== prevProps.status)
@@ -115,57 +107,39 @@ class InitLayout extends React.Component {
 		}
 	}
 
-
 	render() {
 		const {
-			form: {
-				getFieldDecorator
-			},
-			getExtraInfo,
-			getInfo = false,
 			path,
-			selectedRoom,
 			match,
 			signRedirect,
 			redirectFromInfo,
-			redirectDone
+			redirectDone,
+			operatorInfo,
 		} = this.props;
-		let url, sider;
 		if (signRedirect) {
 			return <Redirect to={'/signin'}/>
 		}
-		if (redirectFromInfo){
+		if (redirectFromInfo) {
 			redirectDone();
 			return <Redirect to={'/active-messages'}/>
 		}
-		if (path && selectedRoom) {
-			if (!getInfo) {
-				url = `/${path}/${selectedRoom}/info`;
-			} else {
-				url = `/${path}/${selectedRoom}`;
-			}
-			sider = (
-				<Sider className={this.rightSiderClass}
-				       collapsible={true}
-				       defaultCollapsed={!getInfo}
-				       trigger={null}>
-					<Link to={url} onClick={(collapsed) => getExtraInfo(!collapsed)}>
-						<div className={'right_sider__trigger'}>
-							<Icon type={getInfo ? 'menu-unfold' : 'menu-fold'} style={{fontSize: 24}}/>
-						</div>
-					</Link>
-					<MoreInfo socket={this.socket}/>
-				</Sider>)
-		}
 		return (
 			<Layout style={{width: '100vw'}}>
-				<Sider className={'left-sider'} style={{maxWidth: 'none', minWidth: 'none'}}>
-					<MenuItems socket={this.socket} path={path} match={match}/>
-				</Sider>
-				<ChatContent socket={this.socket}/>
-				{sider}
+				<Header>
+					<ChatHeader socket={this.socket}/>
+				</Header>
+				<section className={'main-content'}>
+					<Sider className={'left-sider'}>
+						<MenuItems socket={this.socket} path={path} match={match}/>
+					</Sider>
+					<ChatContent className={'main-content__chat-content'} socket={this.socket}/>
+					<Sider className={'right-sider right-sider__content'}>
+						<MoreInfo socket={this.socket}/>
+					</Sider>
+				</section>
 			</Layout>
-		);
+		)
+			;
 	}
 }
 
@@ -174,7 +148,6 @@ const mapStateToProps = state => {
 		messages: state.messages,
 		clients: state.clients,
 		rid: state.rid,
-		getInfo: state.getInfo,
 		selectedRoom: state.selectedRoom,
 		operatorInfo: state.operatorInfo,
 		signRedirect: state.loginStatuses.signRedirect,
@@ -194,7 +167,6 @@ const mapDispatchToProps = dispatch => {
 		selectRoom: (rid) => dispatch(selectRoom(rid)),
 		receiveOperators: (operators) => dispatch(receiveOperators(operators)),
 		redirectDone: () => dispatch(redirectDone()),
-		updateInfo: (body) => dispatch(updateInfo(body))
 	}
 }
 

@@ -7,9 +7,26 @@ import {
 	ENTER_ROOM,
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
-	SELECT_ROOM, GET_CHAT_INFO, LOGIN_SUCCESS, SAVE_LAST_URL, CHECK_AUTH_FAILED, LOGIN_PENDING, LOGIN_FAILED,
-	LOGOUT_SUCCESS, CHOOSE_NEW_OPERATOR, RECEIVE_OPERATORS, CANCEL_OPERATOR_CHANGE, REDIRECT_DONE, REMOVE_SENDED_FLAG,
-	UPDATE_INFO
+	SELECT_ROOM,
+	GET_CHAT_INFO,
+	LOGIN_SUCCESS,
+	SAVE_LAST_URL,
+	CHECK_AUTH_FAILED,
+	LOGIN_PENDING,
+	LOGIN_FAILED,
+	LOGOUT_SUCCESS,
+	CHOOSE_NEW_OPERATOR,
+	RECEIVE_OPERATORS,
+	CANCEL_OPERATOR_CHANGE,
+	REDIRECT_DONE,
+	REMOVE_SENDED_FLAG,
+	UPDATE_INFO,
+	SHOW_EMOJIS,
+	HIDE_EMOJIS,
+	REMOVE_IMAGE,
+	IMAGE_UPLOAD,
+	MAKE_IMAGE_FULL_SCREEN,
+	REMOVE_IMAGE_FULL_SCREEN
 } from '../actions/action-types';
 
 const initialState = {
@@ -28,6 +45,7 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case RECEIVE_MESSAGE:
 			let {messages} = action.payload;
+			console.info(messages);
 			if (messages.length > 0) {
 				if (messages[0].room !== +newState.selectedRoom) {
 					let len = newState.messages[messages[0].room] ? newState.messages[messages[0].room].length : 0;
@@ -59,7 +77,6 @@ const dataWorking = (state = initialState, action) => {
 			}
 			newState.messages[room].push(message);
 			newState.sended = true;
-			console.log(newState.clients.rooms, room);
 			if (newState.clients.rooms[room]) {
 				newState.clients.rooms[room].lastMessage = newState.messages[room][newState.messages[room] - 1];
 			}
@@ -108,7 +125,6 @@ const dataWorking = (state = initialState, action) => {
 			// if (newState.clients.rooms && newState.clients.rooms[rid]) {
 			// 	newState.clients.rooms[rid].lastMessage = newState.messages[rid][newState.messages[rid] - 1];
 			// }
-			console.info(newState.cleints, rid);
 			return newState;
 		}
 		case GET_CHAT_INFO: {
@@ -170,6 +186,54 @@ const dataWorking = (state = initialState, action) => {
 		case REMOVE_SENDED_FLAG:
 			delete newState.sended;
 			return newState;
+		case SHOW_EMOJIS:
+			newState.showPicker = true;
+			return newState;
+		case HIDE_EMOJIS:
+			newState.showPicker = false;
+			return newState;
+		case IMAGE_UPLOAD: {
+			const {
+				image,
+				format,
+				name
+			} = action.payload;
+			newState.images = newState.images || [];
+			newState.format = newState.format || [];
+			newState.name = newState.name || [];
+			newState.activeName = newState.activeName || [];
+			newState.images.push(image);
+			newState.format.push(format);
+			newState.name.push(name);
+			newState.activeName.push(newState.name.length - 1);
+			delete newState.noImages;
+			newState.images = newState.images.map(item => item);
+			newState.mainRowClass = 'messandger-area';
+			return newState;
+		}
+		case REMOVE_IMAGE: {
+			const {
+				position
+			} = action.payload;
+			let part1 = _.slice(newState.images, 0, position);
+			let part2 = _.slice(newState.images, position + 1);
+			newState.images = _.concat(part1, part2);
+			if (newState.images.length === 0) {
+				newState.noImages = true;
+			}
+			return newState;
+		}
+		case MAKE_IMAGE_FULL_SCREEN: {
+			const {
+				src
+			} = action.payload;
+			newState.src = src;
+			return newState;
+		}
+		case REMOVE_IMAGE_FULL_SCREEN: {
+			delete newState.src;
+			return newState;
+		}
 		default:
 			return newState;
 	}

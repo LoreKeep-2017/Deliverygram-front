@@ -172,12 +172,11 @@ class moreInfoInit extends React.Component {
 		const {
 			clients,
 			selectedRoom,
-			getInfo,
 			form: {
 				getFieldDecorator
 			}
 		} = this.props;
-		if (selectedRoom && getInfo && clients && clients.rooms && clients.rooms[selectedRoom]) {
+		if (selectedRoom && clients && clients.rooms && clients.rooms[selectedRoom]) {
 			return (
 				<div>
 					<div style={{
@@ -214,10 +213,7 @@ class moreInfoInit extends React.Component {
 		const {
 			getInfo
 		} = this.props;
-		if (getInfo) {
-			return this.getInfo();
-		}
-		return <div/>
+		return this.getInfo();
 	}
 }
 
@@ -226,7 +222,6 @@ const InitMoreInfo = Form.create()(moreInfoInit);
 const mapStateToProps = state => ({
 	clients: state.clients,
 	selectedRoom: state.selectedRoom,
-	getInfo: state.getInfo,
 	chooseOperator: state.chooseOperator,
 	operators: state.operators,
 	activeStatus: state.activeStatus,

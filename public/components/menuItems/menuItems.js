@@ -9,7 +9,6 @@ import {
 	Row,
 	Col,
 	Icon,
-	Popover,
 	Form,
 	Input
 } from 'antd';
@@ -17,10 +16,12 @@ import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
-	getExtraInfo, infoSearch, logoutFailed, logoutSuccess, removeSendedFlag,
+	getExtraInfo,
+	infoSearch,
+	logoutFailed,
+	logoutSuccess,
 	selectRoom
 } from '../../view/action';
-import {axiosGet} from "../../models/axios";
 
 class MenuInit extends React.Component {
 
@@ -38,34 +39,6 @@ class MenuInit extends React.Component {
 			return nick;
 		}
 		return (nick.indexOf(' ') === -1 ) ? nick[0] + nick[1] : nick[0] + nick[nick.indexOf(' ') + 1];
-	}
-
-	componentDidMount() {
-		const {
-			activeStatus,
-			selectedRoom,
-			socket,
-			match,
-		} = this.props;
-		if (activeStatus) {
-			socket.sendWithBody('getRoomsByStatus', {type: activeStatus});
-		}
-		if (selectedRoom) {
-			socket.sendWithBody('getAllMessages', {rid: +selectedRoom});
-		}
-		if (selectedRoom && activeStatus === 'roomRecieved' && this.state.selectedRoom !== +selectedRoom) {
-			this.setState({selectedRoom: +selectedRoom})
-		}
-	}
-
-	componentDidUpdate() {
-		const {
-			selectedRoom,
-			activeStatus
-		} = this.props;
-		if (selectedRoom && activeStatus === 'roomRecieved' && this.state.selectedRoom !== +selectedRoom) {
-			this.setState({selectedRoom: +selectedRoom})
-		}
 	}
 
 	getClientsRequests() {
@@ -116,97 +89,12 @@ class MenuInit extends React.Component {
 				{this.getInitials(clients.rooms[keys].client.nick).toUpperCase()}
 			</div>
 		}
-		return <Icon style={{fontSize: '2.5em', color: 'white'}} type="question" />
+		return <Icon style={{fontSize: '2.5em', color: 'white'}} type="question"/>
 	}
 
-	getPopoverContent() {
-		return (
-			<Button onClick={() => this.logout()}>
-				{'Выход'}
-			</Button>
-		)
-	}
-
-	getMainMenu() {
-		let menu = [];
-		menu.push(
-			<Menu.Item key={'new-messages'} className={'main-menu-item'}
-			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
-				<Link to={'/new-messages'}>
-					<Button shape={'circle'} icon={'mail'} key={'mail-button'} size={'large'}/>
-				</Link>
-			</Menu.Item>);
-		menu.push(
-			<Menu.Item key={'active-messages'} className={'main-menu-item'}
-			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
-				<Link to={'/active-messages'}>
-					<Button shape={'circle'} icon={'exception'} key={'exception-button'} size={'large'}/>
-				</Link>
-			</Menu.Item>);
-		menu.push(
-			<Menu.Item key={'closed-messages'} className={'main-menu-item'}
-			           style={{paddingLeft: 0, padding: 0, height: '12vh'}}>
-				<Link to={'/closed-messages'}>
-					<Button shape={'circle'} icon={'inbox'} key={'inbox-button'} size={'large'}/>
-				</Link>
-			</Menu.Item>);
-		return menu;
-	}
-
-	changeMessages(event) {
+	search() {
 		const {
-			socket,
-			getExtraInfo
-		} = this.props;
-		switch (event.key) {
-			case 'new-messages':
-				getExtraInfo(false);
-				socket.sendWithBody('getRoomsByStatus', {type: 'roomNew'});
-				break;
-			case 'active-messages':
-				getExtraInfo(false);
-				socket.sendWithBody('getRoomsByStatus', {type: 'roomRecieved'});
-				break;
-			case 'closed-messages':
-				getExtraInfo(false);
-				socket.sendWithBody('getRoomsByStatus', {type: 'roomSend'});
-				break;
-		}
-	}
-
-	getTitle() {
-		const {
-			activeStatus
-		} = this.props;
-		console.info(activeStatus);
-		switch (activeStatus) {
-			case 'roomNew':
-				return 'Новые';
-			case 'roomRecieved':
-				return 'В обработке';
-			case 'roomSend':
-				return 'В ожидании';
-		}
-	}
-
-	logout() {
-		const {
-			logoutSuccess,
-			logoutFailed
-		} = this.props;
-		axiosGet({path: '/logout/'})
-			.then(response => {
-				logoutSuccess();
-			})
-			.catch(error => {
-				console.info(error);
-				logoutFailed();
-			});
-	}
-
-	search(){
-		const{
-			form:{
+			form: {
 				getFieldValue
 			},
 			socket,
@@ -237,7 +125,6 @@ class MenuInit extends React.Component {
 			path,
 			getExtraInfo,
 			match = {params: {}},
-			operatorInfo,
 			activeStatus,
 			sended,
 			removeSendedFlag,
@@ -247,60 +134,34 @@ class MenuInit extends React.Component {
 		} = this.props;
 		return (
 			<div>
-				<Row className={'user-info'}>
-					<div className={'user-info__group-icon'}/>
-					<div className={'user-info__info'}>
-						<Icon type={'user'} className={'user-info__user-icon'}/>
-						<span className={'user-info__user-info'}>{operatorInfo.fio}</span>
-						<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
-							<Icon type="down"/>
-						</Popover>
-
-					</div>
-				</Row>
 				<div className={'logo'}>
-					<div style={{background: 'white', minWidth: '6vw', height: '93vh', marginTop: '2px'}}>
-						<Menu theme={'light'} mode={'inline'}
-						      selectedKeys={[path]}
-						      onSelect={(event) =>{
-							      if (sended) {
-								      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
-								      removeSendedFlag();
-							      }
-							      this.changeMessages(event)}}>
-							{this.getMainMenu()}
-						</Menu>
-					</div>
-					<div style={{width: '22vw'}}>
-					<span className={'menu-title'}>
-						{this.getTitle()}
-					</span>
-						<Form className={'search-form'}>
-							<Form.Item>
-								{getFieldDecorator('search', {initialValue: ''})(
-									<Input className={'input-search'} placeholder={'Поиск ...'} onPressEnter={() => this.search()}/>
-								)}
-							</Form.Item>
-							<Button icon={'close-circle-o'} className={'clear-icon'} onClick={() => this.resetField()}/>
-						</Form>
-						<Menu theme={'dark'} mode={'inline'}
-						      className={'client-menu'}
-						      selectedKeys={[match.params.id]}
-						      onSelect={(event) => {
-							      if (sended) {
-								      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
-								      removeSendedFlag();
-							      }
-							      if (activeStatus === 'roomRecieved' && this.state.selectRoom !== +event.key) {
-								      this.setState({selectedRoom: +event.key})
-							      }
-							      selectRoom(+event.key);
-							      getExtraInfo(false);
-							      socket.sendWithBody('getAllMessages', {rid: +event.key});
-						      }}>
-							{this.getClientsRequests()}
-						</Menu>
-					</div>
+
+					<Form className={'search-form'}>
+						<Form.Item>
+							{getFieldDecorator('search', {initialValue: ''})(
+								<Input className={'input-search'} placeholder={'Поиск ...'}
+								       onPressEnter={() => this.search()}/>
+							)}
+						</Form.Item>
+						<Button icon={'close-circle-o'} className={'clear-icon'} onClick={() => this.resetField()}/>
+					</Form>
+					<Menu theme={'dark'} mode={'inline'}
+					      className={'client-menu'}
+					      selectedKeys={[match.params.id]}
+					      onSelect={(event) => {
+						      if (sended) {
+							      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
+							      removeSendedFlag();
+						      }
+						      if (activeStatus === 'roomRecieved' && this.state.selectRoom !== +event.key) {
+							      this.setState({selectedRoom: +event.key})
+						      }
+						      selectRoom(+event.key);
+						      getExtraInfo(false);
+						      socket.sendWithBody('getAllMessages', {rid: +event.key});
+					      }}>
+						{this.getClientsRequests()}
+					</Menu>
 				</div>
 			</div>)
 	}
@@ -316,7 +177,6 @@ const mapStateToProps = state => ({
 	selectedRoom: state.selectedRoom,
 	newMessages: state.newMessages,
 	operatorInfo: state.operatorInfo,
-	sended: state.sended
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -326,7 +186,6 @@ const mapDispatchToProps = dispatch => ({
 	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 	logoutSuccess: () => dispatch(logoutSuccess()),
 	logoutFailed: () => dispatch(logoutFailed()),
-	removeSendedFlag: () => dispatch(removeSendedFlag()),
 	infoSearch: () => dispatch(infoSearch())
 });
 
