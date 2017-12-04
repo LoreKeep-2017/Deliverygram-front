@@ -126,7 +126,7 @@ class InitLayout extends React.Component {
 		return (
 			<Layout style={{width: '100vw'}}>
 				<Header>
-					<ChatHeader socket={this.socket}/>
+					<ChatHeader socket={this.socket} match={match}/>
 				</Header>
 				<section className={'main-content'}>
 					<Sider className={'left-sider'}>

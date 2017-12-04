@@ -16,7 +16,6 @@ import './menuItems.less';
 import {
 	changeMessagesByStatus,
 	enterRoom,
-	getExtraInfo,
 	infoSearch,
 	logoutFailed,
 	logoutSuccess,
@@ -123,7 +122,6 @@ class MenuInit extends React.Component {
 			socket,
 			selectRoom,
 			path,
-			getExtraInfo,
 			match = {params: {}},
 			activeStatus,
 			sended,
@@ -157,7 +155,6 @@ class MenuInit extends React.Component {
 							      this.setState({selectedRoom: +event.key})
 						      }
 						      selectRoom(+event.key);
-						      getExtraInfo(false);
 						      socket.sendWithBody('getAllMessages', {rid: +event.key});
 					      }}>
 						{this.getClientsRequests()}
@@ -183,7 +180,6 @@ const mapDispatchToProps = dispatch => ({
 	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 	enterRoom: (rid) => dispatch(enterRoom(rid)),
 	selectRoom: (rid) => dispatch(selectRoom(rid)),
-	getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 	logoutSuccess: () => dispatch(logoutSuccess()),
 	logoutFailed: () => dispatch(logoutFailed()),
 	infoSearch: () => dispatch(infoSearch())

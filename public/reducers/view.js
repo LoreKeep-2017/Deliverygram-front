@@ -127,14 +127,6 @@ const dataWorking = (state = initialState, action) => {
 			// }
 			return newState;
 		}
-		case GET_CHAT_INFO: {
-			const {
-				getInfo
-			} = action.payload;
-			newState.getInfo = getInfo;
-			newState.redirectFromInfo = false;
-			return newState;
-		}
 		case CHOOSE_NEW_OPERATOR:
 			const {
 				choose

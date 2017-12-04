@@ -2,14 +2,15 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
 import {
 	Layout,
 	Button,
 	Row,
 	Icon,
 	Popover,
-	Tabs
+	Tabs,
+	Col
 } from 'antd'
 import {
 	changeMessagesByStatus,
@@ -29,7 +30,8 @@ class InitChatHeader extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			selectedRoom: -1
+			selectedRoom: -1,
+			event: ''
 		}
 	}
 
@@ -77,8 +79,8 @@ class InitChatHeader extends React.Component {
 			switch (status) {
 				case 'roomNew':
 					button = (
-						<Link to={`/active-messages/${selectedRoom}`}>
-							<Button className={'action-button'} onClick={() => this.changeToChat()}>
+						<Link to={`/active-messages/${selectedRoom}`} onClick={() => this.changeToChat()}>
+							<Button className={'action-button'}>
 								{'Забрать'}
 							</Button>
 						</Link>);
@@ -123,7 +125,12 @@ class InitChatHeader extends React.Component {
 			activeStatus
 		} = this.props;
 		if (selectedRoom && activeStatus === 'roomRecieved' && this.state.selectedRoom !== +selectedRoom) {
-			this.setState({selectedRoom: +selectedRoom})
+			this.setState({
+				selectedRoom: +selectedRoom,
+				event: ''
+			})
+		} else if (this.state.event) {
+			this.setState({event: ''});
 		}
 	}
 
@@ -147,13 +154,16 @@ class InitChatHeader extends React.Component {
 	getMainMenu() {
 		let menu = [];
 		menu.push(
-			<Tabs.TabPane key={'new-messages'} className={'main-menu-item'} tab={<Link to={'/new-messages'}>{'Входящие'}</Link>} forceRender={true}
+			<Tabs.TabPane key={'new-messages'} className={'main-menu-item'}
+			              tab={<p className={'tab__link'}>{'Входящие'}</p>} forceRender={true}
 			              style={{paddingLeft: 0, padding: 0, height: '12vh'}}/>);
 		menu.push(
-			<Tabs.TabPane key={'active-messages'} className={'main-menu-item'} tab={<Link to={'/active-messages'}>{'Принятые'}</Link>} forceRender={true}
+			<Tabs.TabPane key={'active-messages'} className={'main-menu-item'}
+			              tab={<p className={'tab__link'}>{'Принятые'}</p>} forceRender={true}
 			              style={{paddingLeft: 0, padding: 0, height: '12vh'}}/>);
 		menu.push(
-			<Tabs.TabPane key={'closed-messages'} className={'main-menu-item'} tab={<Link to={'/closed-messages'}>{'Обрботанные'}</Link>} forceRender={true}
+			<Tabs.TabPane key={'closed-messages'} className={'main-menu-item'}
+			              tab={<p className={'tab__link'}>{'Обработанные'}</p>} forceRender={true}
 			              style={{paddingLeft: 0, padding: 0, height: '12vh'}}/>);
 		return menu;
 	}
@@ -164,31 +174,49 @@ class InitChatHeader extends React.Component {
 			sended,
 			socket,
 			removeSendedFlag,
-			changeMessagesByStatus
+			changeMessagesByStatus,
+			match
 		} = this.props;
+		let activeKey;
+		if (this.state.event) {
+			return <Redirect to={`/${this.state.event}`}/>
+		}
+		if (match.url.indexOf('/', 1) > -1) {
+			activeKey = match.url.slice(1, match.url.indexOf('/', 1));
+		} else {
+			activeKey = match.url.slice(1);
+		}
 		return (
 			<section>
 				<Row className={'header'}>
-					<Tabs onChange={(event) => {
-						if (sended) {
-							socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
-							removeSendedFlag();
-						}
-						changeMessagesByStatus(event);
-						this.changeMessages(event)
-					}}>
-						{this.getMainMenu()}
-					</Tabs>
+					<Col className={'header__company'}>
+						<p className={'header__company_name'}>{'Технопарк'}</p>
+					</Col>
+					<Col className={'header__links'}>
+						<Tabs activeKey={activeKey}
+						      onChange={(event) => {
+							if (sended) {
+								socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
+								removeSendedFlag();
+							}
+							changeMessagesByStatus(event);
+							this.changeMessages(event);
+							this.setState({event})
+						}}>
+							{this.getMainMenu()}
+						</Tabs>
+					</Col>
 
-					<div className={'user-info__group-icon'}/>
-					<div className={'user-info__info'}>
-						<Icon type={'user'} className={'user-info__user-icon'}/>
-						<span className={'user-info__user-info'}>{operatorInfo.fio}</span>
-						<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
-							<Icon type="down"/>
-						</Popover>
+					<Col className={'header__user'}>
+						<div className={'user-info__info'}>
+							<Icon type={'user'} className={'user-info__user-icon'}/>
+							<span className={'user-info__user-info'}>{operatorInfo.fio}</span>
+							<Popover className={'user-info__exit-icon'} content={this.getPopoverContent()}>
+								<Icon type="down"/>
+							</Popover>
 
-					</div>
+						</div>
+					</Col>
 				</Row>
 				{/*{this.getMainHeaderContent()}*/}
 			</section>

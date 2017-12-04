@@ -1,7 +1,8 @@
 'use strict';
 
 import React from 'react';
-import {connect} from 'react-redux'
+import {connect} from 'react-redux';
+import {Link} from 'react-router-dom';
 import './moreinfo.less'
 import {
 	Row,
@@ -10,7 +11,13 @@ import {
 	Form,
 	Input
 } from 'antd';
-import {cancelOperatorChange, chooseNewOperator, getExtraInfo, updateNote} from '../../view/action';
+import {
+	cancelOperatorChange, changeMessagesByStatus,
+	chooseNewOperator, enterRoom,
+	getExtraInfo,
+	updateNote
+} from '../../view/action';
+import Twemoji from 'react-twemoji';
 import moment from 'moment';
 
 
@@ -47,7 +54,7 @@ class moreInfoInit extends React.Component {
 					}
 				});
 				return (
-					<Form className={'right-sider-content operator-info'}>
+					<Form className={'operator-info'}>
 						<Form.Item className={'operator-info__select'}>
 							{getFieldDecorator('newOperator', {initialValue: `${operatorInfo.fio}`})(
 								<Select className={'operator-info__select'}
@@ -62,10 +69,11 @@ class moreInfoInit extends React.Component {
 								{this.getChangeButton()}
 							</Form.Item>
 							<Form.Item className={'operator-info__button'}>
-								<Button onClick={() => {
-									this.setState({disabled: true});
-									cancelOperatorChange()
-								}}>
+								<Button className={'operator-info__change-button'}
+								        onClick={() => {
+									        this.setState({disabled: true});
+									        cancelOperatorChange()
+								        }}>
 									{'Отмена'}
 								</Button>
 							</Form.Item>
@@ -76,17 +84,12 @@ class moreInfoInit extends React.Component {
 			}
 			if (clients.rooms[selectedRoom].operator) {
 				return (
-					<Row className={'moreInfo__operator right-sider-content'}>
-						<div>{`Оператор:  ${operatorInfo.fio}`}</div>
-						<Button className={'moreInfo__operator-button'} onClick={() => {
-							chooseNewOperator(true);
-							socket.sendWithoutBody('getOperators')
-						}}>
-							<div style={{whiteSpace: 'pre-line', maxHeight: '3em'}}>
-								{'Сменить оператора'}
-							</div>
-						</Button>
-					</Row>
+					<Button className={'moreInfo__take-button'} onClick={() => {
+						chooseNewOperator(true);
+						socket.sendWithoutBody('getOperators')
+					}}>
+						{'Сменить оператора'}
+					</Button>
 				)
 			}
 		}
@@ -96,13 +99,14 @@ class moreInfoInit extends React.Component {
 	getChangeButton() {
 		if (this.state.disabled) {
 			return (
-				<Button disabled>
+				<Button className={'operator-info__change-button'} disabled>
 					{'Сменить'}
 				</Button>
 			)
 		} else {
 			return (
 				<Button onClick={() => this.onChangeOperator()}
+				        className={'operator-info__change-button'}
 				        htmlType={'submit'}>
 					{'Сменить'}
 				</Button>
@@ -168,52 +172,86 @@ class moreInfoInit extends React.Component {
 		})
 	}
 
-	getInfo() {
+	changeToChat() {
+		const {
+			enterRoom,
+			socket,
+			selectedRoom,
+			changeMessagesByStatus
+		} = this.props;
+		enterRoom(selectedRoom);
+		socket.sendWithBody('getRoomsByStatus', {type: 'roomRecieved'});
+		socket.sendWithBody('enterRoom', {rid: +selectedRoom});
+
+	}
+
+	render() {
 		const {
 			clients,
 			selectedRoom,
 			form: {
 				getFieldDecorator
-			}
+			},
+			status
 		} = this.props;
+		let takeButton;
+		if (status === 'roomNew') {
+			takeButton = (
+				<Link to={`/active-messages/${selectedRoom}`}>
+					<Button className={'moreInfo__take-button'}
+					        onClick={() => this.changeToChat()}>{'Принять заявку'}</Button>
+				</Link>
+			)
+		}
+		console.info(selectedRoom, clients);
 		if (selectedRoom && clients && clients.rooms && clients.rooms[selectedRoom]) {
 			return (
-				<div>
-					<div style={{
-						fontSize: '24px',
-						color: 'white',
-						marginBottom: '12px'
-					}}>{'Подробная информация о проблеме'}</div>
-					{this.changeOperator()}
-					<div className={'moreInfo__content right-sider-content'}>
-						<div>{`Автор: ${clients.rooms[selectedRoom].client.nick || 'Аноним'}`}</div>
-						<div>{`Время обращения:  ${moment(clients.rooms[selectedRoom].time, 'X').format('HH:mm DD.MM.YYYY')}`}</div>
-						<div>{`Статус:  ${this.getTitle(clients.rooms[selectedRoom].status)}`}</div>
-						<div>{`Подробное описание проблемы:  ${clients.rooms[selectedRoom].description || clients.rooms[selectedRoom].lastMessage}`}</div>
+				<div className={'more-info'}>
+					<div className={'more-info__title'}>{'Подробная информация'}</div>
+					<div className={'moreInfo__content'}>
+						<div className={'moreInfo__block'}>
+							<div className={'moreInfo__block-title'}>{`Автор`}</div>
+							<div
+								className={'moreInfo__block-content'}>{`${clients.rooms[selectedRoom].client.nick || 'Аноним'}`}</div>
+						</div>
+						<div className={'moreInfo__block'}>
+							<div className={'moreInfo__block-title'}>{`Время`}</div>
+							<div
+								className={'moreInfo__block-content'}>{`${moment(clients.rooms[selectedRoom].time, 'X').format('HH:mm')}`}</div>
+							<div
+								className={'moreInfo__block-content'}>{`${moment(clients.rooms[selectedRoom].time, 'X').format('DD.MM.YYYY')}`}</div>
+						</div>
+						<div className={'moreInfo__block'}>
+							<div className={'moreInfo__block-title'}>{`Статус`}</div>
+							<div
+								className={'moreInfo__block-content'}>{`${this.getTitle(clients.rooms[selectedRoom].status)}`}</div>
+						</div>
+						<div className={'moreInfo__block'}>
+							<div className={'moreInfo__block-title'}>{`Описание проблемы`}</div>
+							<Twemoji>
+								<div
+									className={'moreInfo__block-content-description'}>{`${clients.rooms[selectedRoom].description || clients.rooms[selectedRoom].lastMessage}`}</div>
+							</Twemoji>
+						</div>
 					</div>
-					<Form className={'right-sider-content note-info'}>
+					<Form className={'note-info'}>
 						<Form.Item className={'note-form-item'}>
 							{getFieldDecorator('note', {initialValue: ``})(
-								<Input.TextArea rows={4} placeholder={'Заметка...'} className={'note-input'}/>
+								<Input.TextArea rows={3} placeholder={'Заметка...'} className={'note-input'}/>
 							)}
 						</Form.Item>
-						<Form.Item className={'note-form-item'}>
-							<Button type={'submit'} onClick={() => this.save()}>
+						<Form.Item className={'note-form-item-submit'}>
+							<Button type={'submit'} className={'note-form-input__button'} onClick={() => this.save()}>
 								{'Сохранить'}
 							</Button>
 						</Form.Item>
 					</Form>
+					{this.changeOperator()}
+					{takeButton}
 				</div>
 			)
 		}
 		return <div/>
-	}
-
-	render() {
-		const {
-			getInfo
-		} = this.props;
-		return this.getInfo();
 	}
 }
 
@@ -221,6 +259,7 @@ const InitMoreInfo = Form.create()(moreInfoInit);
 
 const mapStateToProps = state => ({
 	clients: state.clients,
+	status: state.activeStatus,
 	selectedRoom: state.selectedRoom,
 	chooseOperator: state.chooseOperator,
 	operators: state.operators,
@@ -232,7 +271,9 @@ const mapDispatchToProps = dispatch => ({
 	chooseNewOperator: (choose) => dispatch(chooseNewOperator(choose)),
 	getExtraInfo: (status) => dispatch(getExtraInfo(status)),
 	cancelOperatorChange: () => dispatch(cancelOperatorChange()),
-	updateNote: () => dispatch(updateNote())
+	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
+	updateNote: () => dispatch(updateNote()),
+	enterRoom: (room) => dispatch(enterRoom(room))
 });
 
 const MoreInfo = connect(

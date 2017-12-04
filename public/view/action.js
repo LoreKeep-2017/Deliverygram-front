@@ -59,10 +59,6 @@ export const selectRoom = (rid) => ({
 	type: SELECT_ROOM,
 	payload: {rid}
 })
-export const getExtraInfo = (getInfo) => ({
-	type: GET_CHAT_INFO,
-	payload: {getInfo}
-})
 
 export const chooseNewOperator = (choose) => ({
 	type: CHOOSE_NEW_OPERATOR,
