@@ -45,7 +45,7 @@ class MainFormInit extends React.Component {
 			removeImage,
 			saveSocket
 		} = this.props;
-		let message = this.message || this.editable.lastHtml;
+		let message = this.message;
 		let startPosition = 0;
 		if (message || (images && images.length > 0)) {
 			if (message) {
@@ -149,8 +149,10 @@ class MainFormInit extends React.Component {
 				document.execCommand('insertHTML', false, '<br>');
 			}
 		}
-		console.info('olololo');
-		if (event.key.length === 1){
+		if(event.key === 'Backspace'){
+			this.message = this.message.slice(0, this.message.length - 1);
+		}
+		if (event.key.length === 1) {
 			this.message += event.key;
 		}
 	}
@@ -205,8 +207,8 @@ class MainFormInit extends React.Component {
 		}
 		return (
 			<Form className={chatFormClass}>
-			      {picker}
-				<Twemoji options={{className: 'twemoji'}}>
+				{picker}
+				<Twemoji options={{className: 'twemoji'}} className={'twemoji'}>
 					<div className={'text-image'}>
 						<ContentEditable
 							ref={editable => this.editable = editable}
@@ -239,22 +241,17 @@ class MainFormInit extends React.Component {
 								}
 							}}>
 						</ContentEditable>
-						{imagesContent}
 					</div>
-				</Twemoji>
-				<div className={'control-buttons'}>
 					<Button className={'picker-button'}
 					        onClick={(event) => {
 						        showEmojis();
 						        event.stopPropagation();
 					        }}>
-						<p className={'emoji-select'}>
-							<Twemoji>
-								{String.fromCodePoint(0x1F600)}
-							</Twemoji>
-						</p>
+						{String.fromCodePoint(0x1F600)}
 					</Button>
-					<Button icon={'download'} className={'picker-image__button'}>
+				</Twemoji>
+				<div className={'control-buttons'}>
+					<Button icon={'picture'} className={'picker-image__button'}>
 						<Files
 							className='files-dropzone'
 							onChange={(event) => this.fileLoad(event)}
@@ -266,8 +263,11 @@ class MainFormInit extends React.Component {
 							clickable
 						/>
 					</Button>
+					<Button className={'send-button'} onClick={event => this.onClick(event, true)}>
+						{'Отправить'}
+					</Button>
 				</div>
-				<Button icon={'edit'} className={'send-button'} onClick={event => this.onClick(event, true)}/>
+				{imagesContent}
 			</Form>
 		)
 	}

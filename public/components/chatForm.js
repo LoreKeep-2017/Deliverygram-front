@@ -60,7 +60,8 @@ class CreateChatFrom extends React.Component {
 							axios.get(`http://139.59.139.151/diff/?id=${messages[1].room}&size=${messages.length - 1}`)
 								.then(response => {
 									if (response.data.body) {
-										messages = _.concat(messages, response.data.body);
+										response.data.body.messages = _.reverse(response.data.body.messages);
+										messages = _.concat(messages, response.data.body.messages);
 										localforage.setItem('message', messages).then(item =>
 											getExtraMessages(response.data.body)
 										)

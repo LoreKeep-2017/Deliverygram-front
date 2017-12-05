@@ -12,7 +12,12 @@ const store = createStore(dataWorking);
 let divParent = document.createElement('div');
 divParent.className = 'deliverygramm-fixed';
 
+let fonts = document.createElement('link');
+fonts.href = 'https://fonts.googleapis.com/css?family=Montserrat';
+fonts.rel = 'stylesheet';
+
 document.body.appendChild(divParent);
+document.head.appendChild(fonts);
 
 ReactDOM.render(
 	<Provider store={store}>

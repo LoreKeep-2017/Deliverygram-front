@@ -13,6 +13,14 @@
     }
   }
 
+  .ant-card {
+    height: 100%;
+
+    .ant-card-body{
+      height: 440px;
+    }
+  }
+
   .nickname-card {
     z-index: 111111112;
     position: absolute;
@@ -40,12 +48,14 @@
   }
 
   .card-content {
-    height: 490px;
     width: 100%;
     display: flex;
     flex-direction: column-reverse;
     overflow-x: hidden;
     overflow-y: auto;
+    padding-top: 0 !important;
+    padding-right: 32px;
+    padding-left: 32px;
 
     .ant-card-body {
       display: flex;
@@ -57,32 +67,29 @@
       div {
         width: 100%;
       }
-
     }
+
   }
 
   .chat-card__client-message {
-    max-width: 80% !important;
-    margin-left: 20%;
     display: flex;
     flex-direction: row-reverse;
     align-items: flex-end;
-    padding-right: 8px;
     animation: message-appear .6s forwards ease;
 
     .client-message__position {
+      max-width: 90% !important;
       width: auto !important;
-      padding: .5em;
+      padding: 8px 16px;
       margin-left: .8em;
       margin-top: .4em;
       margin-bottom: .4em;
-      border-radius: .5em;
       display: flex;
       justify-content: flex-end;
       flex-direction: column;
-      max-width: 80%;
       font-size: 18px;
-      background: #B0BEC5;
+      margin-right: 8px;
+      border: solid 2px #f0f0f0;
 
       .client-message-images {
         height: 100px;
@@ -112,11 +119,10 @@
   }
 
   .chat-card__operator-message {
-    max-width: 80% !important;
+    max-width: 90% !important;
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
-    padding-left: 8px;
     animation: message-appear .6s forwards ease;
 
     .operator-message__position {
@@ -125,12 +131,12 @@
       justify-content: flex-start;
       flex-direction: column;
       font-size: 18px;
-      border-radius: .5em;
-      padding: .6em;
+      padding: 8px 16px;
       margin-right: .8em;
       margin-top: .4em;
       margin-bottom: .4em;
-      background: #BCAAA4;
+      margin-left: 8px;
+      background-color: #f0f0f0;
 
       .operator-message-images {
         width: 100px;
@@ -158,28 +164,39 @@
 
   .chat-form {
     width: 100%;
-    margin: 0;
-    padding: 0;
     display: flex;
+    flex-direction: column;
     align-items: stretch;
-    max-height: 7.5em;
-    height: 7.5em;
+    max-height: 125px;
+    height: 125px;
+    margin-bottom: 32px;
+    padding-left: 32px;
+    padding-right: 32px;
 
-    .emoji-mart{
+    .emoji-mart {
+      position: fixed;
+      right: 360px;
+      bottom: 80px;
+      z-index: 2;
 
-      .emoji-mart-preview-skins{
+      .emoji-mart-preview-skins {
         display: none;
       }
     }
 
-    div {
-
+    .twemoji {
       width: 100%;
+      border-bottom: solid 2px #979797;
+      display: flex;
+      justify-content: space-between;
 
       .text-image {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        height: 100%;
+        width: 90%;
+        max-width: 90%;
 
         .chat-input__textarea {
           margin-top: .4em;
@@ -194,46 +211,12 @@
           img {
             width: .9em;
             height: .9em;
+            display: inline-block;
+            border: none;
           }
 
           .placeholder {
             color: grey;
-          }
-        }
-
-        .images-content {
-          height: 120px;
-          display: flex;
-
-          .image-content__content {
-            height: 80px;
-            width: 100px;
-            position: relative;
-
-            .remove-button {
-              position: absolute;
-              right: 12px;
-              top: 12px;
-              padding: 0;
-              background: black;
-              opacity: .1;
-              border: none;
-              color: white;
-              font-size: 1.5em;
-              height: 1.5em;
-              width: 1.5em;
-            }
-
-            .remove-button:hover {
-              background: black;
-              opacity: .4;
-            }
-
-            .download-image {
-              max-height: 100px;
-              max-width: 100px;
-              padding: 1em;
-            }
           }
         }
 
@@ -243,33 +226,23 @@
       }
     }
 
+    .picker-button {
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        height: 2.5em;
+        width: 2.5em;
+        border-bottom: none;
+      }
+    }
+
     .control-buttons {
       display: flex;
-      flex-direction: column;
-      width: 4em;
       align-items: center;
-      justify-content: flex-start;
-
-      .picker-button {
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .emoji-select {
-          color: black;
-          font-size: 2em;
-          position: absolute;
-          margin-right: .15em;
-          right: 0;
-          margin-top: .5em;
-
-          img {
-            height: 1em;
-            width: 1em;
-          }
-        }
-      }
+      justify-content: space-between;
 
       .picker-image__button {
         margin-top: 12px;
@@ -290,11 +263,48 @@
       }
     }
 
+    .images-content {
+      height: 120px;
+      display: flex;
+
+      .image-content__content {
+        height: 80px;
+        width: 100px;
+        position: relative;
+
+        .remove-button {
+          position: absolute;
+          right: 12px;
+          top: 12px;
+          padding: 0;
+          background: black;
+          opacity: .1;
+          border: none;
+          color: white;
+          font-size: 1.5em;
+          height: 1.5em;
+          width: 1.5em;
+        }
+
+        .remove-button:hover {
+          background: black;
+          opacity: .4;
+        }
+
+        .download-image {
+          max-height: 100px;
+          max-width: 100px;
+          padding: 1em;
+        }
+      }
+    }
+
     .send-button {
       border: none;
       background: none;
-      font-size: 2em;
-      color: black;
+      font-size: 18px;
+      font-weight: 500;
+      color: #353535;
       margin-top: 12px;
     }
   }
@@ -350,17 +360,17 @@
 }
 
 .chat-form_extra-height {
-  height: 14em !important;
-  max-height: 14em !important;
+  height: 225px !important;
+  max-height: 225px !important;
   animation: form_add-extra-height .8s ease;
-}
-
-.messandger-area_extra-height-remove {
-  animation: area_remove-extra-height .8s ease;
 }
 
 .chat-form_extra-height-remove {
   animation: form_remove-extra-height .8s ease;
+}
+
+.messandger-area_extra-height-remove {
+  animation: area_remove-extra-height .8s ease;
 }
 
 .card-content .ant-card-body::-webkit-scrollbar-track {
@@ -422,17 +432,6 @@
   }
 }
 
-@keyframes form_add-extra-height {
-  from {
-    height: 7.5em;
-    max-height: 7.5em;
-  }
-  to {
-    height: 14em;
-    max-height: 14em;
-  }
-}
-
 @keyframes area_remove-extra-height {
   from {
     height: 750px;
@@ -442,13 +441,24 @@
   }
 }
 
-@keyframes form_remove-extra-height {
+@keyframes form_add-extra-height {
   from {
-    height: 14em;
-    max-height: 14em;
+    height: 125px;
+    max-height: 125px;
   }
   to {
-    height: 7.5em;
-    max-height: 7.5em;
+    height: 225px;
+    max-height: 225px;
+  }
+}
+
+@keyframes form_remove-extra-height {
+  from {
+    height: 225px;
+    max-height: 225px;
+  }
+  to {
+    height: 125px;
+    max-height: 125px;
   }
 }
