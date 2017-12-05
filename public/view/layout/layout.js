@@ -19,11 +19,10 @@ import {
 	closeChat,
 	receiveMessages,
 	changeRoomStatus,
-	getExtraInfo,
 	changeMessagesByStatus,
 	selectRoom,
 	receiveOperators,
-	redirectDone, updateInfo
+	redirectDone,
 } from '../action';
 import '../main/main.less';
 import MenuItems from '../../components/menuItems/menuItems';
@@ -48,16 +47,12 @@ class InitLayout extends React.Component {
 			match,
 			status,
 			changeMessagesByStatus,
-			getExtraInfo,
 			selectRoom
 		} = this.props;
 		changeMessagesByStatus(status);
 		this.socket.sendWithBody('getRoomsByStatus', {
 			type: status
 		});
-		if (match.path.indexOf('info') > -1) {
-			getExtraInfo(true)
-		}
 		if (match.path.indexOf(':id') > -1) {
 			this.socket.sendWithBody('getAllMessages', {
 				rid: +match.params.id
@@ -88,7 +83,6 @@ class InitLayout extends React.Component {
 	componentDidUpdate(prevProps, prevState) {
 		const {
 			changeMessagesByStatus,
-			getExtraInfo,
 			selectRoom,
 			match,
 			status,
@@ -99,9 +93,6 @@ class InitLayout extends React.Component {
 		}
 		if (status !== prevProps.status)
 			changeMessagesByStatus(status);
-		if (match.path.indexOf('info') > -1) {
-			getExtraInfo(true)
-		}
 		if (match.path.indexOf(':id') > -1) {
 			selectRoom(match.params.id);
 		}
@@ -124,7 +115,7 @@ class InitLayout extends React.Component {
 			return <Redirect to={'/active-messages'}/>
 		}
 		return (
-			<Layout style={{width: '100vw'}}>
+			<Layout style={{width: '100vw', height: '100vh'}}>
 				<Header>
 					<ChatHeader socket={this.socket} match={match}/>
 				</Header>
@@ -162,7 +153,6 @@ const mapDispatchToProps = dispatch => {
 		closeChat: (room) => dispatch(closeChat(room)),
 		receiveMessages: (messages) => dispatch(receiveMessages(messages)),
 		changeRoomStatus: (room) => dispatch(changeRoomStatus(room)),
-		getExtraInfo: (getInfo) => dispatch(getExtraInfo(getInfo)),
 		changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 		selectRoom: (rid) => dispatch(selectRoom(rid)),
 		receiveOperators: (operators) => dispatch(receiveOperators(operators)),

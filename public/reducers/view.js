@@ -45,7 +45,6 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		case RECEIVE_MESSAGE:
 			let {messages} = action.payload;
-			console.info(messages);
 			if (messages.length > 0) {
 				if (messages[0].room !== +newState.selectedRoom) {
 					let len = newState.messages[messages[0].room] ? newState.messages[messages[0].room].length : 0;
@@ -58,9 +57,11 @@ const dataWorking = (state = initialState, action) => {
 			}
 			if (messages[0]) {
 				let selectRoom = messages[0].room;
-				newState.clients.rooms[selectRoom].lastMessage = newState.messages[selectRoom][newState.messages[selectRoom].length - 1].body;
+				console.info(messages, messages[selectRoom], selectRoom, newState);
+				newState.clients.rooms[selectRoom].lastMessage = messages[messages.length - 1].body;
 				newState.messages = newState.messages.map(item => item);
 			}
+			newState.sended = true;
 			return newState;
 		case SEND_MESSAGE: {
 			const {
@@ -86,7 +87,6 @@ const dataWorking = (state = initialState, action) => {
 			const {
 				rid
 			} = action.payload;
-			delete newState.selectedRoom;
 			newState.rid = rid;
 			return newState;
 		case CHANGE_ROOM_STATUS: {
@@ -101,7 +101,6 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		}
 		case UPDATE_INFO: {
-			console.log(action.payload);
 			const {
 				nickname,
 				rid
@@ -110,10 +109,12 @@ const dataWorking = (state = initialState, action) => {
 			return newState;
 		}
 		case CHANGE_WATCHING_MESSAGES_STATUS: {
-			const {status} = action.payload;
+			const {status, takeButton} = action.payload;
 			newState.activeStatus = status;
-			delete newState.selectedRoom;
-			delete newState.rid;
+			if (!takeButton) {
+				delete newState.selectedRoom;
+				delete newState.rid;
+			}
 			newState.messages = newState.messages.map(item => item);
 			return newState;
 		}

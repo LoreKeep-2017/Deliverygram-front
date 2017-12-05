@@ -65,11 +65,12 @@ class MessagesInit extends React.Component {
 	render() {
 		return (
 			<Card className={'card-content'}
+			      bordered={false}
 			      ref={card => {
 				      if (card && card.container && card.container.children[0])
 					      card.container.children[0].scrollTop = card.container.children[0].scrollHeight
 			      }}>
-				<Twemoji options={{className: 'twemoji'}}>
+				<Twemoji options={{className: 'twemoji'}} className={'twemoji'}>
 					{this.getMessages()}
 				</Twemoji>
 			</Card>

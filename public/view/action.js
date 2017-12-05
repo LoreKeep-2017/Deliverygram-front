@@ -9,7 +9,6 @@ import {
 	CHANGE_ROOM_STATUS,
 	CHANGE_WATCHING_MESSAGES_STATUS,
 	SELECT_ROOM,
-	GET_CHAT_INFO,
 	LOGIN_PENDING,
 	LOGIN_FAILED,
 	LOGIN_SUCCESS,
@@ -50,9 +49,9 @@ export const changeRoomStatus = (room) => ({
     payload: {room}
 })
 
-export const changeMessagesByStatus = (status) => ({
+export const changeMessagesByStatus = (status, takeButton) => ({
 	type: CHANGE_WATCHING_MESSAGES_STATUS,
-	payload: {status}
+	payload: {status, takeButton}
 })
 
 export const selectRoom = (rid) => ({

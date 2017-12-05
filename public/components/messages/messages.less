@@ -1,10 +1,23 @@
+:global{
+  .ant-card-bordered {
+    border: none;
+  }
+
+  .ant-card:not(.ant-card-no-hovering):hover {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
 .card-content {
-  height: 490px;
   width: 100%;
   display: flex;
   flex-direction: column-reverse;
   overflow-x: hidden;
   overflow-y: auto;
+  padding-top: 0 !important;
+  padding-right: 32px;
+  padding-left: 32px;
 
   .ant-card-body {
     display: flex;
@@ -16,34 +29,31 @@
     div {
       width: 100%;
     }
-
   }
+
 }
 
-.chat-card__client-message {
-  max-width: 80% !important;
-  margin-left: 20%;
+.chat-card__operator-message {
   display: flex;
   flex-direction: row-reverse;
   align-items: flex-end;
-  padding-right: 8px;
   animation: message-appear .6s forwards ease;
 
-  .client-message__position {
+  .operator-message__position {
+    max-width: 90% !important;
     width: auto !important;
-    padding: .5em;
+    padding: 8px 16px;
     margin-left: .8em;
     margin-top: .4em;
     margin-bottom: .4em;
-    border-radius: .5em;
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
-    max-width: 80%;
     font-size: 18px;
-    background: #B0BEC5;
+    margin-right: 8px;
+    border: solid 2px #f0f0f0;
 
-    .client-message-images {
+    .operator-message-images {
       height: 100px;
       width: 100px;
 
@@ -70,28 +80,27 @@
   }
 }
 
-.chat-card__operator-message {
-  max-width: 80% !important;
+.chat-card__client-message {
+  max-width: 90% !important;
   display: flex;
   justify-content: flex-start;
   align-items: flex-end;
-  padding-left: 8px;
   animation: message-appear .6s forwards ease;
 
-  .operator-message__position {
+  .client-message__position {
     width: auto !important;
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
     font-size: 18px;
-    border-radius: .5em;
-    padding: .6em;
+    padding: 8px 16px;
     margin-right: .8em;
     margin-top: .4em;
     margin-bottom: .4em;
-    background: #BCAAA4;
+    margin-left: 8px;
+    background-color: #f0f0f0;
 
-    .operator-message-images {
+    .client-message-images {
       width: 100px;
       height: 100px;
 
@@ -114,3 +123,17 @@
     width: 50px;
   }
 }
+
+@keyframes message-appear {
+  from {
+    margin-bottom: 1.2em;
+  }
+  50% {
+    margin-top: .1em;
+    margin-bottom: 0;
+  }
+  to {
+    margin-top: 0;
+  }
+}
+

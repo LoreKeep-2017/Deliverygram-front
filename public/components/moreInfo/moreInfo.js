@@ -14,12 +14,11 @@ import {
 import {
 	cancelOperatorChange, changeMessagesByStatus,
 	chooseNewOperator, enterRoom,
-	getExtraInfo,
 	updateNote
 } from '../../view/action';
 import Twemoji from 'react-twemoji';
 import moment from 'moment';
-
+import _ from 'lodash';
 
 class moreInfoInit extends React.Component {
 
@@ -116,11 +115,9 @@ class moreInfoInit extends React.Component {
 
 	onChangeOperator() {
 		const {
-			getExtraInfo,
 			chooseNewOperator
 		} = this.props;
 		this.sendToNewOperator();
-		getExtraInfo(false);
 		chooseNewOperator(false);
 	}
 
@@ -140,7 +137,8 @@ class moreInfoInit extends React.Component {
 			socket.sendWithBody('changeOperator', {
 				to: +newOper,
 				rid: +selectedRoom
-			})
+			});
+			socket.sendWithBody('getRoomsByStatus', {type: 'roomRecieved'});
 		}
 	}
 
@@ -180,9 +178,7 @@ class moreInfoInit extends React.Component {
 			changeMessagesByStatus
 		} = this.props;
 		enterRoom(selectedRoom);
-		socket.sendWithBody('getRoomsByStatus', {type: 'roomRecieved'});
 		socket.sendWithBody('enterRoom', {rid: +selectedRoom});
-
 	}
 
 	render() {
@@ -192,18 +188,21 @@ class moreInfoInit extends React.Component {
 			form: {
 				getFieldDecorator
 			},
-			status
+			status,
+			changeMessagesByStatus
 		} = this.props;
 		let takeButton;
 		if (status === 'roomNew') {
 			takeButton = (
 				<Link to={`/active-messages/${selectedRoom}`}>
 					<Button className={'moreInfo__take-button'}
-					        onClick={() => this.changeToChat()}>{'Принять заявку'}</Button>
+					        onClick={() => {
+						        changeMessagesByStatus('roomRecieved', true);
+						        this.changeToChat();
+					        }}>{'Принять заявку'}</Button>
 				</Link>
 			)
 		}
-		console.info(selectedRoom, clients);
 		if (selectedRoom && clients && clients.rooms && clients.rooms[selectedRoom]) {
 			return (
 				<div className={'more-info'}>
@@ -269,7 +268,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
 	chooseNewOperator: (choose) => dispatch(chooseNewOperator(choose)),
-	getExtraInfo: (status) => dispatch(getExtraInfo(status)),
 	cancelOperatorChange: () => dispatch(cancelOperatorChange()),
 	changeMessagesByStatus: (status) => dispatch(changeMessagesByStatus(status)),
 	updateNote: () => dispatch(updateNote()),

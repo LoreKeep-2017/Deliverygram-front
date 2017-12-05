@@ -21,6 +21,7 @@ import {
 	logoutSuccess,
 	selectRoom
 } from '../../view/action';
+import Twemoji from 'react-twemoji';
 
 class MenuInit extends React.Component {
 
@@ -51,11 +52,7 @@ class MenuInit extends React.Component {
 			for (let keys in clients.rooms) {
 				let newMessage = newMessages[keys] ? `+${newMessages[keys]}` : '';
 				allClients.push(
-					<Menu.Item style={{
-						paddingLeft: 0,
-						padding: 0,
-						height: '9vh'
-					}} className={'client-menu-item'} key={clients.rooms[keys].id.toString()}>
+					<Menu.Item className={'client-menu-item'} key={clients.rooms[keys].id.toString()}>
 						<Link to={`/${path}/${keys}`} className={'client-menu-item__href'}>
 							<Row className={'client-menu-item__client-row'}>
 								<Col className={'client-row__avatar-div'}>
@@ -63,12 +60,14 @@ class MenuInit extends React.Component {
 								</Col>
 								<Col className={'client-row__content-col'}>
 									<h1>{clients.rooms[keys].client.nick || 'Аноним'}</h1>
-									<span className={'content-col__title'}>{clients.rooms[keys].lastMessage}</span>
+									<Twemoji options={{className: 'twemoji'}} className={'twemoji'}>
+										<span className={'content-col__title'}>{clients.rooms[keys].lastMessage}</span>
+									</Twemoji>
 								</Col>
 								<Col>
-							<span className={'client-row__new-messages-col'}>
-								{newMessage}
-							</span>
+									<span className={'client-row__new-messages-col'}>
+											{newMessage}
+									</span>
 								</Col>
 							</Row>
 						</Link>
@@ -137,28 +136,31 @@ class MenuInit extends React.Component {
 					<Form className={'search-form'}>
 						<Form.Item>
 							{getFieldDecorator('search', {initialValue: ''})(
-								<Input className={'input-search'} placeholder={'Поиск ...'}
+								<Input className={'input-search'} placeholder={'Поиск'}
 								       onPressEnter={() => this.search()}/>
 							)}
 						</Form.Item>
-						<Button icon={'close-circle-o'} className={'clear-icon'} onClick={() => this.resetField()}/>
+						<Button icon={'close'} className={'clear-icon'} onClick={() => this.resetField()}/>
 					</Form>
-					<Menu theme={'dark'} mode={'inline'}
-					      className={'client-menu'}
-					      selectedKeys={[match.params.id]}
-					      onSelect={(event) => {
-						      if (sended) {
-							      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
-							      removeSendedFlag();
-						      }
-						      if (activeStatus === 'roomRecieved' && this.state.selectRoom !== +event.key) {
-							      this.setState({selectedRoom: +event.key})
-						      }
-						      selectRoom(+event.key);
-						      socket.sendWithBody('getAllMessages', {rid: +event.key});
-					      }}>
-						{this.getClientsRequests()}
-					</Menu>
+					<div className={'menu_scroll'}>
+						<Menu theme={'dark'} mode={'inline'}
+						      className={'client-menu'}
+						      selectedKeys={[match.params.id]}
+						      onSelect={(event) => {
+							      console.info(sended);
+							      if (sended) {
+								      socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
+								      removeSendedFlag();
+							      }
+							      if (activeStatus === 'roomRecieved' && this.state.selectRoom !== +event.key) {
+								      this.setState({selectedRoom: +event.key})
+							      }
+							      selectRoom(+event.key);
+							      socket.sendWithBody('getAllMessages', {rid: +event.key});
+						      }}>
+							{this.getClientsRequests()}
+						</Menu>
+					</div>
 				</div>
 			</div>)
 	}

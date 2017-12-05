@@ -31,18 +31,9 @@ class InitChatHeader extends React.Component {
 		super();
 		this.state = {
 			selectedRoom: -1,
-			event: ''
+			event: '',
+			activeStatus: ''
 		}
-	}
-
-	changeToChat() {
-		const {
-			enterRoom,
-			socket,
-			selectedRoom
-		} = this.props;
-		enterRoom(selectedRoom);
-		socket.sendWithBody('enterRoom', {rid: +selectedRoom});
 	}
 
 	getPopoverContent() {
@@ -68,39 +59,6 @@ class InitChatHeader extends React.Component {
 			});
 	}
 
-	getMainHeaderContent() {
-		const {
-			status,
-			clients,
-			selectedRoom,
-		} = this.props;
-		if (selectedRoom && clients && clients.rooms && clients.rooms[selectedRoom] && clients.rooms[selectedRoom].client) {
-			let button;
-			switch (status) {
-				case 'roomNew':
-					button = (
-						<Link to={`/active-messages/${selectedRoom}`} onClick={() => this.changeToChat()}>
-							<Button className={'action-button'}>
-								{'Забрать'}
-							</Button>
-						</Link>);
-					break;
-			}
-			return (<Row className={'header'}>
-				<div className={'header__info'}>
-					<span className={'info__author'}>{`${clients.rooms[selectedRoom].client.nick || 'Аноним'}`}</span>
-					<span
-						className={'info__title'}>{`${clients.rooms[selectedRoom].description || clients.rooms[selectedRoom].lastMessage}`}</span>
-				</div>
-				<div className={'header__actions'}>
-					{button}
-				</div>
-			</Row>)
-		} else {
-			return <Row/>
-		}
-	}
-
 	componentDidMount() {
 		const {
 			activeStatus,
@@ -122,8 +80,13 @@ class InitChatHeader extends React.Component {
 	componentDidUpdate() {
 		const {
 			selectedRoom,
-			activeStatus
+			activeStatus,
+			socket
 		} = this.props;
+		if (activeStatus !== this.state.activeStatus) {
+			socket.sendWithBody('getRoomsByStatus', {type: activeStatus});
+			this.setState({activeStatus});
+		}
 		if (selectedRoom && activeStatus === 'roomRecieved' && this.state.selectedRoom !== +selectedRoom) {
 			this.setState({
 				selectedRoom: +selectedRoom,
@@ -175,7 +138,8 @@ class InitChatHeader extends React.Component {
 			socket,
 			removeSendedFlag,
 			changeMessagesByStatus,
-			match
+			match,
+			selectedRoom
 		} = this.props;
 		let activeKey;
 		if (this.state.event) {
@@ -195,14 +159,14 @@ class InitChatHeader extends React.Component {
 					<Col className={'header__links'}>
 						<Tabs activeKey={activeKey}
 						      onChange={(event) => {
-							if (sended) {
-								socket.sendWithBody('roomStatusSend', {rid: +this.state.selectedRoom});
-								removeSendedFlag();
-							}
-							changeMessagesByStatus(event);
-							this.changeMessages(event);
-							this.setState({event})
-						}}>
+							      if (sended) {
+								      socket.sendWithBody('roomStatusSend', {rid: +selectedRoom});
+								      removeSendedFlag();
+							      }
+							      changeMessagesByStatus(event);
+							      this.changeMessages(event);
+							      this.setState({event})
+						      }}>
 							{this.getMainMenu()}
 						</Tabs>
 					</Col>
@@ -230,7 +194,8 @@ const mapStateToProps = state => ({
 	status: state.activeStatus,
 	selectedRoom: state.selectedRoom,
 	operatorInfo: state.operatorInfo,
-	sended: state.sended
+	sended: state.sended,
+	activeStatus: state.activeStatus
 
 })
 

@@ -6,6 +6,7 @@
 .main-content {
 
   display: flex;
+  height: 100%;
 
   .ant-layout-header{
     padding: 0 !important;
@@ -18,13 +19,23 @@
     max-width: none !important;
     min-width: 0 !important;
     flex: none !important;
-    background-color: #4a4a4a;
+    background-color: #404040;
+
+    .ant-layout-sider-children {
+      height: 100%;
+
+      div{
+        height: 100%;
+      }
+    }
   }
 
   .content{
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    background-color: #ffffff;
   }
 
   .right-sider {
@@ -36,9 +47,8 @@
 
   .right-sider__content {
     width: 352px !important;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 26px;
+    padding: 26px 32px;
+    overflow-y: auto;
   }
 }
 
@@ -62,6 +72,31 @@
   .ant-menu.ant-menu-dark .ant-menu-item-selected {
     height: 10vh !important;
   }
+}
+
+
+.right-sider::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: rgb(64, 64, 64);
+  border-radius: 10px;
+}
+
+.right-sider::-webkit-scrollbar {
+  width: 10px;
+  background-color: rgb(64, 64, 64);
+}
+
+.right-sider::-webkit-scrollbar-thumb {
+  background-color: #AAA;
+  border-radius: 10px;
+  background-image: -webkit-linear-gradient(90deg,
+  rgba(0, 0, 0, .2) 25%,
+  transparent 25%,
+  transparent 50%,
+  rgba(0, 0, 0, .2) 50%,
+  rgba(0, 0, 0, .2) 75%,
+  transparent 75%,
+  transparent)
 }
 
 @keyframes appear {
