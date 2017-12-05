@@ -56,14 +56,17 @@ class CreateChatFrom extends React.Component {
 					}
 					if (messages) {
 						getMessagesFromStore(messages);
-						if (messages[1].room) {
-							axios.get(`http://139.59.139.151/diff/?id=${messages[1].room}&size=${messages.length - 1}`)
+						messages.shift();
+						if (messages[0].room) {
+							axios.get(`http://139.59.139.151/diff/?id=${messages[0].room}&size=${messages.length - 1}`)
 								.then(response => {
 									if (response.data.body) {
 										response.data.body.messages = _.reverse(response.data.body.messages);
 										messages = _.concat(messages, response.data.body.messages);
-										localforage.setItem('message', messages).then(item =>
-											getExtraMessages(response.data.body)
+										localforage.setItem('message', messages).then(item => {
+												messages.shift();
+												getExtraMessages(messages)
+											}
 										)
 									}
 								})
@@ -133,14 +136,14 @@ class CreateChatFrom extends React.Component {
 						removeFullScreenImage()
 					}}/>
 					<div className={'image-content'}>
-					<img src={src}/>
+						<img src={src}/>
 					</div>
 				</div>)
 		}
 		return (
 			<Row className={mainRowClass}
 			     onClick={() => {
-			     	console.info(showPicker);
+				     console.info(showPicker);
 				     if (showPicker) {
 					     hideEmojis()
 				     }

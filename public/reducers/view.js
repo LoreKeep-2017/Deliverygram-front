@@ -101,7 +101,8 @@ const dataWorking = (state = initialState, action) => {
 			const {
 				messages
 			} = action.payload;
-			newState.messages = _.concat(newState.messages, messages);
+			// newState.messages = _.concat(newState.messages, messages);
+			newState.messages = messages;
 			return newState;
 		case SHOW_EMOJIS:
 			newState.showPicker = true;
